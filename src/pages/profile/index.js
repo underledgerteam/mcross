@@ -2,7 +2,7 @@ import { useState, Fragment } from "react";
 
 import Button from "../../components/Button";
 
-const TabProfile = (props) => {
+const TabCardProfile = (props) => {
   return(
     <div className="md:col-span-2 w-full p-6 rounded-lg shadow-lg bg-white my-0 md:my-20">
       <h5 className="text-gray-900 text-xl leading-tight font-medium mb-2">{ props.title }</h5>
@@ -61,27 +61,27 @@ const ProfilePage = () => {
             </div>
             
             { tab === "My Collection" && ( 
-              <TabProfile
+              <TabCardProfile
                 title="My Collection"
               >
                 No Record!
-              </TabProfile>
+              </TabCardProfile>
             )}
 
             { tab === "My Marketplace" && ( 
-              <TabProfile
+              <TabCardProfile
                 title="My Marketplace"
               >
                 No Record!
-              </TabProfile>
+              </TabCardProfile>
             )}
 
             { tab === "My Transaction" && ( 
-              <TabProfile
+              <TabCardProfile
                 title="My Transaction"
               >
                 No Record!
-              </TabProfile>
+              </TabCardProfile>
             )}
            
 

@@ -1,6 +1,5 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import Button from "./Button";
 
 // use context store wallet data to render wallet adress
 
@@ -50,14 +49,12 @@ const Navbar = () => {
                             </Link>
                         );
                     })}
-                    <Button
-                        text="Connect Wallet"
-                        textSize="text-xl"
-                        textColor="text-white"
-                        buttonColor="bg-gradient-to-r from-green-400 to-blue-500 hover:from-pink-500 hover:to-yellow-500"
-                        buttonStyle="py-2 px-4"
-                        size="w-48"
-                    />
+                    <button 
+                        type="button" 
+                        className="w-48 bg-gradient-to-r from-green-400 to-blue-500 hover:from-pink-500 hover:to-yellow-500 text-white font-bold py-2 px-4 text-xl rounded"
+                    >
+                        Connect Wallet
+                    </button>
                 </nav>
             </div>
         </div>

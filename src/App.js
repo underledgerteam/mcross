@@ -6,11 +6,8 @@ import Mint from './pages/mint/Mint';
 import Market from './pages/market/Market';
 import Converse from './pages/converse/Converse';
 import Profile from './pages/profile';
-<<<<<<< HEAD
 import CollectionDetail from './pages/profile/CollectionDetail'
-=======
 import NotFound from './pages/notFound/NotFound';
->>>>>>> dc846d6e5dabda02eb203eb745fdf847f726d800
 
 function App() {
   return (

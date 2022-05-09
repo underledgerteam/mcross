@@ -6,6 +6,7 @@ import Mint from './pages/mint/Mint';
 import Market from './pages/market/Market';
 import Converse from './pages/converse/Converse';
 import Profile from './pages/profile';
+import CollectionDetail from './pages/profile/CollectionDetail'
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
             <Route path="/market" element={<Market />} />
             <Route path="/converse" element={<Converse />} />
             <Route path="/profile" element={<Profile />} />
+            <Route path="/profile/collection/:id" element={<CollectionDetail />} />
           </Route>
         </Routes>
       </BrowserRouter>

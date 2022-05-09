@@ -1,7 +1,5 @@
 import { useState, Fragment } from "react";
 
-import Button from "../../components/Button";
-
 const HomePage = () => {
   const [ account, setAccount ] = useState(true);
   return (
@@ -22,34 +20,27 @@ const HomePage = () => {
             </h1>
 
             { account? (
-              <Button
-                text="Connect Wallet"
-                textSize="text-2xl"
-                textColor="text-white"
-                buttonColor="bg-gradient-to-r from-green-400 to-blue-500 hover:from-pink-500 hover:to-yellow-500"
-                buttonStyle="py-4 px-10"
-                size="w-96"
+              <button 
+                type="button" 
+                className="w-96 bg-gradient-to-r from-green-400 to-blue-500 hover:from-pink-500 hover:to-yellow-500 text-white font-bold py-4 px-10 text-2xl rounded"
                 onClick={()=> setAccount(false) }
-              />
-              
+                >
+                  Connect Wallet
+                </button>
             ): (
               <Fragment>
-                <Button
-                  text="Mint"
-                  textSize="text-2xl"
-                  textColor="text-white"
-                  buttonColor="bg-gradient-to-r from-green-400 to-blue-500 hover:from-pink-500 hover:to-yellow-500"
-                  buttonStyle="my-4 py-4 py-3 px-12 mr-4"
-                  size="w-60"
-                />
-                <Button
-                  text="Market"
-                  textSize="text-2xl"
-                  textColor="text-white"
-                  buttonColor="bg-gradient-to-r from-green-400 to-blue-500 hover:from-pink-500 hover:to-yellow-500"
-                  buttonStyle="my-4 py-4 py-3 px-12"
-                  size="w-60"
-                />
+                <button 
+                  type="button" 
+                  className="w-60 bg-gradient-to-r from-green-400 to-blue-500 hover:from-pink-500 hover:to-yellow-500 text-white font-bold my-4 py-4 px-12 mr-4 text-2xl rounded"
+                >
+                  Mint
+                </button>
+                <button 
+                  type="button" 
+                  className="w-60 bg-gradient-to-r from-green-400 to-blue-500 hover:from-pink-500 hover:to-yellow-500 text-white font-bold my-4 py-4 px-12 text-2xl rounded"
+                >
+                  Market
+                </button>
               </Fragment>
             ) }
           </div>

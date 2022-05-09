@@ -17,3 +17,19 @@ code {
 @tailwind components;
 
 @tailwind utilities;
+
+.btn-menu-profile {
+  @apply w-full font-bold py-3 px-12 mt-4 mr-4 rounded;
+}
+.btn-menu-profile {
+  @apply bg-white border border-gray-300;
+}
+.btn-menu-profile:hover {
+  @apply hover:bg-gray-100;
+}
+.btn-menu-profile.active {
+  @apply bg-gradient-to-r from-green-400 to-blue-500 text-white;
+}
+.btn-menu-profile.active:hover {
+  @apply hover:from-pink-500 hover:to-yellow-500;
+}

@@ -1,27 +1,29 @@
-import logo from './logo.svg';
 import './App.css';
-import Web3 from "web3";
-
-const web3 = new Web3(Web3.givenProvider || "http://localhost:8545");
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Layout from './containers/layout/Layout';
+import Home from './pages/home';
+import Mint from './pages/mint/Mint';
+import Market from './pages/market/Market';
+import Converse from './pages/converse/Converse';
+import Profile from './pages/profile';
+import NotFound from './pages/notFound/NotFound';
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <BrowserRouter>
+        <Routes>
+          <Route element={<Layout />} >
+            <Route index element={<Home />} />
+            <Route path="/mint" element={<Mint />} />
+            <Route path="/market" element={<Market />} />
+            <Route path="/converse" element={<Converse />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="*" element={<NotFound />} />
+          </Route>
+        </Routes>
+      </BrowserRouter>
+    </>
   );
 }
 

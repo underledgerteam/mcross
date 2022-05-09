@@ -1,5 +1,7 @@
-import React, { useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import React from "react";
+import { Link } from "react-router-dom";
+import Button from "./Button";
+
 // use context store wallet data to render wallet adress
 
 const navData = [
@@ -26,42 +28,36 @@ const navData = [
 ];
 
 const Navbar = () => {
-    const ref = useRef();
-    let navigate = useNavigate();
-
-    const redirectTo = (path) => {
-        navigate(path);
-    }
-
     return (
         <div className="bg-primary">
-            <div className="flex container w-full mx-auto justify-between items-center font-bold text-2xl px-5 py-6">
-                <div
-                    className="h-[2rem] flex items-center text-center text-white uppercase cursor-pointer"
-                    alt="logo"
-                    onClick={(e) => {
-                        e.preventDefault();
-                        redirectTo("/");
-                    }}
-                >
-                    mcross
-                </div>
+            <div className="flex container w-full mx-auto justify-between items-center font-bold px-5 py-6">
+                <Link to='/'>
+                    <div
+                        className="h-[2rem] flex text-center text-2xl text-white uppercase cursor-pointer"
+                        alt="logo"
+                    >
+                        mcross
+                    </div>
+                </Link>
 
-                <nav className="hidden md:flex space-x-10 items-center text-white">
+                <nav className="md:flex space-x-10 items-center text-white">
                     {navData.map((item) => {
                         return (
-                            <div
-                                key={item.name}
-                                className="text-xl uppercase cursor-pointer"
-                                onClick={(e) => {
-                                    e.preventDefault();
-                                    redirectTo(item.href);
-                                }}
-                            >
-                                {item.name}
-                            </div>
+                            <Link key={item.name} to={item.href}>
+                                <div className="text-xl uppercase hover:bg-violet-600 active:bg-violet-700 focus:outline-none focus:ring focus:ring-violet-300 cursor-pointer">
+                                    {item.name}
+                                </div>
+                            </Link>
                         );
                     })}
+                    <Button
+                        text="Connect Wallet"
+                        textSize="text-xl"
+                        textColor="text-white"
+                        buttonColor="bg-gradient-to-r from-green-400 to-blue-500 hover:from-pink-500 hover:to-yellow-500"
+                        buttonStyle="py-2 px-4"
+                        size="w-48"
+                    />
                 </nav>
             </div>
         </div>

@@ -6,7 +6,11 @@ import Mint from './pages/mint/Mint';
 import Market from './pages/market/Market';
 import Converse from './pages/converse/Converse';
 import Profile from './pages/profile';
+<<<<<<< HEAD
 import CollectionDetail from './pages/profile/CollectionDetail'
+=======
+import NotFound from './pages/notFound/NotFound';
+>>>>>>> dc846d6e5dabda02eb203eb745fdf847f726d800
 
 function App() {
   return (
@@ -15,12 +19,12 @@ function App() {
         <Routes>
           <Route element={<Layout />} >
             <Route index element={<Home />} />
-            <Route path="/" element={<Home />} />
             <Route path="/mint" element={<Mint />} />
             <Route path="/market" element={<Market />} />
             <Route path="/converse" element={<Converse />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/profile/collection/:id" element={<CollectionDetail />} />
+            <Route path="*" element={<NotFound />} />
           </Route>
         </Routes>
       </BrowserRouter>

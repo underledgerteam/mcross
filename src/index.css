@@ -12,8 +12,11 @@ code {
     monospace;
 }
 
-@tailwind base;
+.layout {
+  width: 90%;
+}
 
+@tailwind base;
 @tailwind components;
 
 @tailwind utilities;
@@ -33,3 +36,4 @@ code {
 .btn-menu-profile.active:hover {
   @apply hover:from-pink-500 hover:to-yellow-500;
 }
+@tailwind utilities;

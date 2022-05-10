@@ -4,18 +4,18 @@ const HomePage = () => {
   const [ account, setAccount ] = useState(true);
   return (
     <Fragment>
-      <div className="h-screen w-screen bg-gray-50 flex items-center justify-center">
+      <div className="h-screen w-screen flex items-center justify-center">
         <div className="container flex flex-col md:flex-row items-center justify-between px-5 text-gray-700">
           <div className="w-full lg:w-1/2 mx-8">
 
-            <div className="text-7xl text-gray-900 font-dark font-extrabold mb-8"> First Cross-Chain</div>
+            <div className="text-7xl text-gray-100 font-dark font-extrabold mb-8"> First Cross-Chain</div>
             {/* <h1 className="text-3xl md:text-3xl font-light mb-8">
               First Cross-Chain
             </h1> */}
-            <h1 className="text-3xl md:text-6xl font-light mb-8">
-              NFT Marketplace
+            <h1 className="text-3xl text-gray-100 md:text-6xl font-light mb-8">
+              <span className="font-semibold">NFT</span> Marketplace
             </h1>
-            <h1 className="text-3xl md:text-4xl font-light mb-8">
+            <h1 className="text-3xl text-gray-100 md:text-4xl font-light mb-8">
               Discover & Sell NFTs From Any Chain
             </h1>
 

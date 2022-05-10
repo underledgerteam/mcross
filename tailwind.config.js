@@ -1,21 +1,6 @@
-const colors = require("tailwindcss/colors");
-
 module.exports = {
   content: ["./src/**/*.{js,jsx,ts,tsx}"],
   theme: {
-    colors: {
-      ...colors,
-      transparent: "transparent",
-      primary: "#000",
-      secondary: "#fff",
-      black: "#000",
-      white: "#fff",
-      gray: {
-        ...colors.gray,
-        100: "#f7fafc",
-        900: "#1a202c",
-      }
-    },
     extend: {
       fontFamily: {
         display: ["Open Sans", "sans-serif"],
@@ -37,7 +22,23 @@ module.exports = {
         'fade-in-down': 'fade-in-down 0.5s ease-out'
       },
       visibility: ["group-hover"],
+      colors: {
+        custom: {
+          navbar: "#232533",
+          cardBg: "#101118",
+          black: "#0E0F15",
+          blue1: "#0088FF",
+          blue2: "#0F9AFF",
+          yellow1: "#FDD231",
+          yellow2: "#F9C200",
+          gray1: "#C5CAF6",
+          gray2: "#C4C8ED",
+        },
+      },
+      dropShadow: {
+        'navbar': '0 4px 4px rgba(0, 0, 0, 0.25)',
+      }
     },
   },
   plugins: [],
-}
+};

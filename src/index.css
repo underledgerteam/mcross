@@ -8,17 +8,11 @@ body {
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
-}
-
-.layout {
-  width: 90%;
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
 }
 
 @tailwind base;
 @tailwind components;
-
 @tailwind utilities;
 
 .btn-menu-profile {
@@ -36,4 +30,12 @@ code {
 .btn-menu-profile.active:hover {
   @apply hover:from-pink-500 hover:to-yellow-500;
 }
-@tailwind utilities;
+.btn-connect {
+  @apply font-bold text-xl text-white w-48 bg-gradient-to-t from-custom-blue1 to-custom-blue2 py-2 px-4 rounded;
+}
+.btn-connect:hover {
+  @apply hover:from-custom-yellow1 hover:to-custom-yellow2;
+}
+.btn-connect:active {
+  @apply active:bg-gradient-to-r active:from-green-400 active:to-blue-500;
+}

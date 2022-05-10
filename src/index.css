@@ -5,6 +5,7 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  @apply bg-cover bg-fixed bg-[url('/public/bg.png')];
 }
 
 code {
@@ -31,9 +32,9 @@ code {
   @apply hover:bg-gray-100;
 }
 .btn-menu-profile.active {
-  @apply bg-gradient-to-r from-green-400 to-blue-500 text-white;
+  @apply bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 text-white;
 }
 .btn-menu-profile.active:hover {
-  @apply hover:from-pink-500 hover:to-yellow-500;
+  @apply hover:from-indigo-700 hover:via-purple-700 hover:to-pink-700;
 }
-@tailwind utilities;
+

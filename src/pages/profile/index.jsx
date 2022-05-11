@@ -46,7 +46,7 @@ const ProfilePage = () => {
     }, 3500);
   }
   const onCloseModelSell = () => {
-    setOpenModelCancelSell(false);
+    setOpenModelSell(false);
   }
   // for open Model Cancel Sell
   const onOpenModelCancelSell = () => {

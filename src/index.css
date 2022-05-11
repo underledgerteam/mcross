@@ -24,12 +24,18 @@ code {
 }
 .btn-menu-profile:hover {
   @apply hover:bg-gray-100/30;
-}
+} 
 .btn-menu-profile.active {
-  @apply bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 text-white;
+  @apply bg-gradient-to-r from-custom-blue1/80 via-custom-purple1/80 to-pink-500/80 text-white;
 }
 .btn-menu-profile.active:hover {
-  @apply hover:from-indigo-700 hover:via-purple-700 hover:to-pink-700;
+  @apply hover:from-custom-blue1 hover:via-custom-purple1 hover:to-pink-500;
+}
+.btn-home {
+  @apply bg-gradient-to-r from-custom-purple1 to-custom-blue1 font-bold text-white text-2xl rounded;
+}
+.btn-home:hover {
+  @apply hover:from-custom-purple1/80 hover:to-custom-blue1/80;
 }
 .btn-connect {
   @apply font-bold text-xl text-white w-48 bg-gradient-to-t from-custom-blue1 to-custom-blue2 py-2 px-4 rounded;

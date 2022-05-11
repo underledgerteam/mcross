@@ -4,6 +4,9 @@ import { Table } from "web3uikit";
 
 import CardNFT from "../../components/profile/CardNFT";
 import TabCardProfile from "../../components/profile/TabCardProfile";
+import ModelSell from "../../components/profile/ModelSell";
+import ModelCancelSell from "../../components/profile/ModelCancelSell";
+import NotificationSellNFT from "../../components/profile/Notification";
 
 const menuProfile = [{
   text: "My Collection"
@@ -26,7 +29,40 @@ const data = [...Array(32)].map((v, key)=>{
 
 const ProfilePage = () => {
   
-  const [ tab, setTab ] = useState("My Transaction");
+  const [ tab, setTab ] = useState("My Collection");
+  const [ openModelSell, setOpenModelSell ] = useState(false);
+  const [ openModelCancelSell, setOpenModelCancelSell ] = useState(false);
+  const [ notification, setNotification ] = useState(false);
+  // for open Model Sell
+  const onOpenModelSell = () => {
+    setOpenModelSell(true);
+  }
+  const onConfirmSellNFT = () => {
+    // alert("Process MetaMask Sell NFT");
+    setOpenModelSell(false);
+    setNotification(true);
+    setTimeout(()=>{
+      setNotification(false);
+    }, 3500);
+  }
+  const onCloseModelSell = () => {
+    setOpenModelCancelSell(false);
+  }
+  // for open Model Cancel Sell
+  const onOpenModelCancelSell = () => {
+    setOpenModelCancelSell(true);
+  }
+  const onConfirmCancelSell = () => {
+    // alert("Process MetaMask Sell NFT");
+    setOpenModelCancelSell(false);
+    setNotification(true);
+    setTimeout(()=>{
+      setNotification(false);
+    }, 3500);
+  }
+  const onCloseModelCancelSell = () => {
+    setOpenModelCancelSell(false);
+  }
 
   const columns = useMemo(() => [
     'ID',
@@ -41,7 +77,9 @@ const ProfilePage = () => {
     <Fragment>
       <div className="h-screen w-screen">
         <div className="container md:container md:mx-auto">
-
+          { notification && (
+            <NotificationSellNFT />
+          ) }
           <div className="text-7xl font-dark font-extrabold mb-8">My Profile</div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -81,6 +119,7 @@ const ProfilePage = () => {
                     <CardNFT 
                       id={key}
                       key={key}
+                      onClickSell={()=> onOpenModelSell()}
                     />
                   )
                 })}
@@ -99,6 +138,7 @@ const ProfilePage = () => {
                       id={key}
                       key={key}
                       sell={true}
+                      onClickCancelSell={onOpenModelCancelSell}
                     />
                   )
                 })}
@@ -122,6 +162,21 @@ const ProfilePage = () => {
             )}
 
           </div>
+              
+          { openModelSell && (
+            <ModelSell 
+              onConfirm={onConfirmSellNFT}
+              onClose={onCloseModelSell}
+            />
+          ) }
+
+          { openModelCancelSell && (
+            <ModelCancelSell 
+              onConfirm={onConfirmCancelSell}
+              onClose={onCloseModelCancelSell}
+            />
+          ) }
+
 
         </div>
       </div>

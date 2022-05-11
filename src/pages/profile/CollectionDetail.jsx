@@ -1,15 +1,18 @@
 import { Fragment, useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 
 import ModelSell from "../../components/profile/ModelSell";
 import NotificationSellNFT from "../../components/profile/Notification";
 
 const CollectionDetail = () => {
   const params = useParams();
-
+  const navigate = useNavigate();
   const [ openModel, setOpenModel ] = useState(false);
   const [ notification, setNotification ] = useState(false);
   
+  const onHistoryBack = () => {
+    navigate("/profile");
+  }
   const onOpenModel = () => {
     setOpenModel(true);
   }
@@ -19,7 +22,11 @@ const CollectionDetail = () => {
     setNotification(true);
     setTimeout(()=>{
       setNotification(false);
-    }, 3500);
+    }, 1500);
+    setTimeout(()=>{
+      navigate('/profile');
+    }, 2000);
+    localStorage.setItem("myTab", "My Marketplace");
   }
   const onCloseModel = () => {
     setOpenModel(false);
@@ -78,11 +85,20 @@ const CollectionDetail = () => {
                   Using Any Token. From Any Chain
                 </p>
               </div>
-              <div className="flex justify-center mt-5">
+              <div className="flex justify-between mt-5">
                 <div className="w-56">
                   <button 
                     type="button" 
-                    className="btn-menu-profile active"
+                    className="btn-menu-profile border border-gray-300"
+                    onClick={()=> onHistoryBack()}
+                  >
+                    Back
+                  </button>
+                </div>
+                <div className="w-56">
+                  <button 
+                    type="button" 
+                    className="w-full font-bold py-3 px-12 mt-4 rounded bg-gradient-to-r from-custom-purple1 to-pink-500 hover:from-custom-purple1/90 hover:to-pink-500/90 text-white"
                     onClick={()=> onOpenModel()}
                   >
                     Sale

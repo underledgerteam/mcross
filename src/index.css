@@ -5,7 +5,7 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  @apply bg-no-repeat bg-center bg-cover bg-fixed bg-custom-black bg-[url('/public/bg_light.png')];
+  @apply bg-no-repeat bg-center bg-cover bg-fixed bg-custom-black bg-[url('/public/bg.png')];
 }
 
 code {
@@ -17,10 +17,10 @@ code {
 @tailwind utilities;
 
 .btn-menu-profile {
-  @apply w-full font-bold py-3 px-12 mt-4 mr-4 rounded;
+  @apply w-full font-bold py-3 px-12 mt-4 rounded;
 }
 .btn-menu-profile {
-  @apply bg-white/10 border border-gray-300;
+  @apply bg-white/10;
 }
 .btn-menu-profile:hover {
   @apply hover:bg-gray-100/30;

@@ -20,10 +20,10 @@ code {
   @apply w-full font-bold py-3 px-12 mt-4 mr-4 rounded;
 }
 .btn-menu-profile {
-  @apply bg-white border border-gray-300;
+  @apply bg-white/10 border border-gray-300;
 }
 .btn-menu-profile:hover {
-  @apply hover:bg-gray-100;
+  @apply hover:bg-gray-100/30;
 }
 .btn-menu-profile.active {
   @apply bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 text-white;

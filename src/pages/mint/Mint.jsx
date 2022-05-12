@@ -1,8 +1,10 @@
-import React, { useState } from "react";
-import { Form } from "web3uikit";
+import React, { useState, useContext } from "react";
+import { Web3Provider } from "../../contexts/connect.context";
 
 const Mint = () => {
-  const [connected, setConnect] = useState(false);
+  const { account, ConnectedWallet } = useContext(Web3Provider);
+  const [nftModalVisible, setNFtModalVisible] = useState(false);
+
   const nftQty = "1,000";
   return (
     <div className="w-full flex flex-col">
@@ -24,27 +26,27 @@ const Mint = () => {
           </p>
         </div>
 
-
-        {connected ? (
+        {!account ? (
+          <div className="w-full lg:w-1/2 flex-auto py-8 px-8 text-center">
+            <div className="">
+              <h1 className="text-gray-100 font-semibold text-3xl md:text-6xl mb-8">
+                Mint Collection
+              </h1>
+              <button type="button" className="w-96 px-10 py-4 btn-home" onClick={ConnectedWallet}>
+                Connect Wallet
+              </button>
+            </div>
+          </div>
+        ) : (
           <div className="w-full lg:w-1/2 flex-auto py-8 px-8 shadow-lg rounded-lg backdrop-blur-lg bg-[#323652]/50 text-center">
             <h1 className="text-gray-100 font-semibold text-3xl md:text-6xl mb-8">
               Mint Collection
             </h1>
             <div className="flex flex-col">
               <input name="qty" type="number" placeholder="Mint qty" className="text-black" />
-              <button type="button" className="btn-connect">
+              <p>aaa</p>
+              <button type="button" className="w-96 px-10 py-4 btn-home" onClick={() => { }}>
                 Mint
-              </button>
-            </div>
-          </div>
-        ) : (
-          <div className="w-full lg:w-1/2 flex-auto py-8 px-8 text-center">
-            <div className="">
-              <h1 className="text-gray-100 font-semibold text-3xl md:text-6xl mb-8">
-                Mint Collection
-              </h1>
-              <button type="button" className="btn-connect" onClick={() => setConnect(true)}>
-                Connect Wallet
               </button>
             </div>
           </div>

@@ -38,11 +38,11 @@ code {
   @apply hover:from-custom-purple1/80 hover:to-custom-blue1/80;
 }
 .btn-connect {
-  @apply font-bold text-xl text-white w-48 bg-gradient-to-t from-custom-blue1 to-custom-blue2 py-2 px-4 rounded;
+  @apply font-bold text-xl text-white bg-gradient-to-r from-custom-purple1 to-custom-blue1 rounded;
 }
 .btn-connect:hover {
-  @apply hover:from-custom-yellow1 hover:to-custom-yellow2;
+  @apply hover:from-custom-purple1/80 hover:to-custom-blue1/80;
 }
 .btn-connect:active {
-  @apply active:bg-gradient-to-r active:from-green-400 active:to-blue-500;
+  @apply active:from-custom-purple2 active:to-custom-blue2;
 }

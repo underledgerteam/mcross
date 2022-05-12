@@ -1,5 +1,7 @@
-import React from "react";
+import React, { Fragment, useContext } from "react";
 import { Link, useLocation } from "react-router-dom";
+import { Web3Provider } from "../contexts/connect.context";
+import { shortenAddress } from "../utils/shortenAddress.util";
 
 // use context store wallet data to render wallet adress
 
@@ -27,7 +29,11 @@ const navData = [
 ];
 
 const Navbar = () => {
+
+  const { account, ConnectedWallet } = useContext(Web3Provider);
   const { pathname } = useLocation();
+
+
   return (
     <div className="bg-custom-navbar drop-shadow-navbar">
       <div className="flex container w-full mx-auto justify-between items-center font-bold px-5 py-6">
@@ -51,12 +57,21 @@ const Navbar = () => {
               </Link>
             );
           })}
-          <button
-            type="button"
-            className="btn-connect"
-          >
-            Connect Wallet
-          </button>
+          {!account ? (
+            <button
+              type="button"
+              className="btn-connect"
+              onClick={ConnectedWallet}
+            >
+              Connect Wallet
+            </button>
+          ) : (
+            <Fragment>
+              <div className={`inline-block text-2xl px-4 py-2 leading-none border rounded-full text-white mt-4 lg:mt-0 cursor-pointer`}>
+                {shortenAddress(account)}
+              </div>
+            </Fragment>
+          )}
         </nav>
       </div>
     </div>

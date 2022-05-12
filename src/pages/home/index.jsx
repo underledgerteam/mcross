@@ -1,9 +1,12 @@
-import { useState, Fragment } from "react";
+import { Fragment, useContext } from "react";
 import { useNavigate } from "react-router-dom";
+import { Web3Provider } from "../../contexts/connect.context";
 
 const HomePage = () => {
+
   const navigate = useNavigate();
-  const [ account, setAccount ] = useState(true);
+  const { account, ConnectedWallet } = useContext(Web3Provider);
+
   return (
     <Fragment>
       <div className="h-screen w-screen flex items-center justify-center">
@@ -21,32 +24,33 @@ const HomePage = () => {
               Discover & Sell NFTs From Any Chain
             </h1>
 
-            { account? (
-              <button 
-                type="button" 
+
+            {!account ? (
+              <button
+                type="button"
                 className="md:w-96 w-72 py-4 px-10 btn-home"
-                onClick={()=> setAccount(false) }
-                >
-                  Connect Wallet
-                </button>
-            ): (
+                onClick={ConnectedWallet}
+              >
+                Connect Wallet
+              </button>
+            ) : (
               <Fragment>
-                <button 
-                  type="button" 
+                <button
+                  type="button"
                   className="w-60 my-4 py-4 px-12 mr-4 btn-home"
-                  onClick={()=> navigate('/mint')}
+                  onClick={() => navigate('/mint')}
                 >
                   Mint
                 </button>
-                <button 
-                  type="button" 
+                <button
+                  type="button"
                   className="w-60 my-4 py-4 px-12 btn-home"
-                  onClick={()=> navigate('/market')}
+                  onClick={() => navigate('/market')}
                 >
                   Market
                 </button>
               </Fragment>
-            ) }
+            )}
           </div>
 
           <div className="w-full lg:flex lg:justify-end lg:w-1/2 mx-5 my-12">
@@ -55,7 +59,7 @@ const HomePage = () => {
         </div>
       </div>
     </Fragment>
-  )
-}
+  );
+};
 
 export default HomePage;

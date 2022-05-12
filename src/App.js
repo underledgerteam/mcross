@@ -6,8 +6,9 @@ import Mint from './pages/mint/Mint';
 import Market from './pages/market/Market';
 import Converse from './pages/converse/Converse';
 import Profile from './pages/profile';
-import CollectionDetail from './pages/profile/CollectionDetail'
+import CollectionDetail from './pages/profile/CollectionDetail';
 import NotFound from './pages/notFound/NotFound';
+import ConnectWallet from "./pages/connect/ConnectWallet";
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
             <Route path="/market" element={<Market />} />
             <Route path="/converse" element={<Converse />} />
             <Route path="/profile" element={<Profile />} />
+            <Route path="/connect-wallet" element={<ConnectWallet />} />
             <Route path="/profile/collection/:id" element={<CollectionDetail />} />
             <Route path="*" element={<NotFound />} />
           </Route>

@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react";
 import Web3 from "web3";
+import { nftContractABI, nftContractAddress } from "../utils/constants";
 
 export const Web3Provider = React.createContext();
 
 export const WalletProvider = ({ children }) => {
   const [account, setAccount] = useState("");
   const [balance, setBalance] = useState(0);
+  const [nftContract, setNftContract] = useState();
 
   const detectCurrentProvider = () => {
     let provider;
@@ -64,9 +66,40 @@ export const WalletProvider = ({ children }) => {
     }
   };
 
+  const createNftContract = () => {
+    const web3 = new Web3(Web3.givenProvider || detectCurrentProvider());
+    const contract = new web3.eth.Contract(nftContractABI, nftContractAddress);
+    setNftContract(contract);
+  };
+
+  // test
+  const getMaxSupply = async () => {
+    // get values for each page
+    const result = await nftContract.methods.maxSupply().call();
+    console.log({ result });
+  };
+
+  const mintNft = async (mintAmount) => {
+    try {
+      const wei = Web3.utils.toWei((0.02 * mintAmount).toString(), 'ether');
+      const hex = Web3.utils.numberToHex(wei);
+      const tx = {
+        from: account,
+        gasPrice: Web3.utils.numberToHex(1000),
+        gas: Web3.utils.numberToHex(21000),
+        value: hex
+      };
+      const result = await nftContract.methods.mint(1).send(tx);
+      console.log({ result });
+    } catch (error) {
+      console.log({ error });
+    }
+  };
+
   useEffect(() => {
     checkWalletIsConnect();
-  });
+    createNftContract();
+  }, []);
 
   return (
     <Web3Provider.Provider
@@ -74,6 +107,7 @@ export const WalletProvider = ({ children }) => {
         ConnectedWallet,
         balance,
         account,
+        mintNft
       }}
     >
       {children}

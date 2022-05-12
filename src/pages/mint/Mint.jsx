@@ -2,7 +2,8 @@ import React, { useState, useContext } from "react";
 import { Web3Provider } from "../../contexts/connect.context";
 
 const Mint = () => {
-  const { account, ConnectedWallet } = useContext(Web3Provider);
+  const { account, ConnectedWallet, mintNft } = useContext(Web3Provider);
+  const [mintAmount, setMintAmount] = useState();
   const [nftModalVisible, setNFtModalVisible] = useState(false);
 
   const nftQty = "1,000";
@@ -43,15 +44,14 @@ const Mint = () => {
               Mint Collection
             </h1>
             <div className="flex flex-col">
-              <input name="qty" type="number" placeholder="Mint qty" className="text-black" />
-              <p>aaa</p>
-              <button type="button" className="w-96 px-10 py-4 btn-home" onClick={() => { }}>
+              <input name="qty" type="number" placeholder="Mint qty" className="text-black" onChange={(e) => setMintAmount(e.target.value)} />
+              <p>mint cost:</p>
+              <button type="button" className="w-96 px-10 py-4 btn-home" onClick={() => mintNft(mintAmount)}>
                 Mint
               </button>
             </div>
           </div>
         )}
-
 
       </div>
     </div>

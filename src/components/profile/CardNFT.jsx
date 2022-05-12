@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 
 const CardNFT = ({objData, sell = false, onClickSell = ()=>{}, onClickCancelSell = ()=> {}}) => {
   return(
-      <div className="max-w-sm rounded overflow-hidden shadow-md hover:shadow-xl cursor-pointer bg-[#292929] relative group">
+      <div className="w-full rounded overflow-hidden shadow-md hover:shadow-xl cursor-pointer bg-[#292929] relative group">
         {/* { sell && (
           <div className="hover:bg-gray-800 rounded h-full w-full hover:bg-opacity-80 absolute ">
             <button 

@@ -102,11 +102,11 @@ const ProfilePage = () => {
                     size="7.5rem"
                   />
                 </div>
-                <div className="grid justify-items-center">
-                  <h2 className="text-3xl font-semibold mt-4">0x58...40dd</h2>
-                  <div className="flex items-end">
-                    <div className="text-white text-3xl font-bold mr-4">China: </div>
-                    <div className="inline-block relative w-64 text-gray-700 mt-4">
+                <div className="flex flex-col">
+                  <h2 className="text-3xl font-semibold mt-4 text-center">0x58...40dd</h2>
+                  <div className="flex items-end mt-3 mx-auto">
+                    <div className="text-white text-xl lg:text-3xl font-bold mr-4">China: </div>
+                    <div className="inline-block relative w-full text-gray-700 mt-4">
                       <select 
                         className="block appearance-none w-full bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none focus:shadow-outline"
                         ref={refSelectChina}
@@ -143,7 +143,7 @@ const ProfilePage = () => {
                 title="My Collection"
               >
                 {/* No Record! */}
-                <div className="grid md:grid-cols-3 grid-cols-1 gap-4">
+                <div className="grid lg:grid-cols-3 grid-cols-1 gap-4">
                 { [...Array(10)].length > 0 ? [...Array(10)].map((v, key) => {
                   return(
                     <CardNFT 
@@ -164,7 +164,7 @@ const ProfilePage = () => {
               <TabCardProfile
                 title="My Marketplace"
               >
-                <div className="grid md:grid-cols-3 grid-cols-1 gap-4">
+                <div className="grid lg:grid-cols-3 grid-cols-1 gap-4">
                 { [...Array(10)].length > 0 ? [...Array(10)].map((v, key) => {
                   return(
                     <CardNFT 

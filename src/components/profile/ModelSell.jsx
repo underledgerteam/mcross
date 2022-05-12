@@ -27,7 +27,7 @@ const ModelSell = ({ onConfirm, onClose }) => {
                   <h5 className="text-warmGray-200 text-2xl">Price: </h5>
                   <input 
                     type="number" 
-                    className="mx-3 shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                    className="mx-3 shadow appearance-none w-full border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
                     ref={refPrice} 
                     onChange={onChangePrice}
                   />

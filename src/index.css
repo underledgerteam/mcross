@@ -5,7 +5,7 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  @apply bg-no-repeat bg-center bg-cover bg-fixed bg-custom-black bg-[url('/public/bg_light.png')];
+  @apply bg-no-repeat bg-center bg-cover bg-fixed bg-custom-black bg-[url('/public/bg.png')];
 }
 
 code {
@@ -17,19 +17,25 @@ code {
 @tailwind utilities;
 
 .btn-menu-profile {
-  @apply w-full font-bold py-3 px-12 mt-4 mr-4 rounded;
+  @apply w-full font-bold py-3 px-12 mt-4 rounded;
 }
 .btn-menu-profile {
-  @apply bg-white/10 border border-gray-300;
+  @apply bg-white/10;
 }
 .btn-menu-profile:hover {
   @apply hover:bg-gray-100/30;
-}
+} 
 .btn-menu-profile.active {
-  @apply bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 text-white;
+  @apply bg-gradient-to-r from-custom-blue1/80 via-custom-purple1/80 to-pink-500/80 text-white;
 }
 .btn-menu-profile.active:hover {
-  @apply hover:from-indigo-700 hover:via-purple-700 hover:to-pink-700;
+  @apply hover:from-custom-blue1 hover:via-custom-purple1 hover:to-pink-500;
+}
+.btn-home {
+  @apply bg-gradient-to-r from-custom-purple1 to-custom-blue1 font-bold text-white text-2xl rounded;
+}
+.btn-home:hover {
+  @apply hover:from-custom-purple1/80 hover:to-custom-blue1/80;
 }
 .btn-connect {
   @apply font-bold text-xl text-white w-48 bg-gradient-to-t from-custom-blue1 to-custom-blue2 py-2 px-4 rounded;

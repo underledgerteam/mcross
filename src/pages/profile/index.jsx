@@ -1,6 +1,6 @@
-import { useState, useMemo, Fragment } from "react";
+import { useState, useMemo, Fragment, useRef } from "react";
 
-import { Table } from "web3uikit";
+import { Table, CryptoLogos } from "web3uikit";
 
 import CardNFT from "../../components/profile/CardNFT";
 import TabCardProfile from "../../components/profile/TabCardProfile";
@@ -29,10 +29,20 @@ const data = [...Array(32)].map((v, key)=>{
 
 const ProfilePage = () => {
   
-  const [ tab, setTab ] = useState("My Collection");
+  const refSelectChina = useRef();
+  const [ tab, setTab ] = useState(localStorage.getItem("myTab") || "My Collection");
   const [ openModelSell, setOpenModelSell ] = useState(false);
   const [ openModelCancelSell, setOpenModelCancelSell ] = useState(false);
   const [ notification, setNotification ] = useState(false);
+  const [ china, setChina ] = useState("ethereum");
+
+  const onChangeChina = () => {
+    setChina(refSelectChina.current.value.toLowerCase());
+  }
+  const onClickTab = (tab) => {
+    setTab(tab);
+    localStorage.setItem("myTab", tab);
+  }
   // for open Model Sell
   const onOpenModelSell = () => {
     setOpenModelSell(true);
@@ -44,6 +54,7 @@ const ProfilePage = () => {
     setTimeout(()=>{
       setNotification(false);
     }, 3500);
+    setTab("My Marketplace");
   }
   const onCloseModelSell = () => {
     setOpenModelSell(false);
@@ -86,17 +97,36 @@ const ProfilePage = () => {
             <div  className="w-full">
               <div className="py-8 px-8 shadow-lg rounded-lg my-20 backdrop-blur-lg bg-[#323652]/50">
                 <div className="flex justify-center -mt-16">
-                  <img className="w-20 h-20 object-cover rounded-full  border-2 border-purple-500" src="https://th.jobsdb.com/en-th/cms/employer/wp-content/plugins/all-in-one-seo-pack/images/default-user-image.png" alt="avatar" />
+                  <CryptoLogos
+                    chain={china}
+                    size="7.5rem"
+                  />
                 </div>
                 <div className="grid justify-items-center">
                   <h2 className="text-3xl font-semibold mt-4">0x58...40dd</h2>
-
+                  <div className="flex items-end">
+                    <div className="text-white text-3xl font-bold mr-4">China: </div>
+                    <div className="inline-block relative w-64 text-gray-700 mt-4">
+                      <select 
+                        className="block appearance-none w-full bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none focus:shadow-outline"
+                        ref={refSelectChina}
+                        onChange={()=> onChangeChina()}
+                      >
+                        <option>Ethereum</option>
+                        <option>Polygon</option>
+                        <option>Avalanche</option>
+                      </select>
+                      <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                        <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+                      </div>
+                    </div>
+                  </div>
                   { menuProfile.map((item, key)=>{
                     return(
                       <button 
                         type="button" 
                         className={`btn-menu-profile ${tab===item.text && ("active")}`}
-                        onClick={()=> setTab(item.text)}
+                        onClick={()=> onClickTab(item.text)}
                         key={key}
                       >
                         {item.text}
@@ -114,15 +144,18 @@ const ProfilePage = () => {
               >
                 {/* No Record! */}
                 <div className="grid md:grid-cols-3 grid-cols-1 gap-4">
-                { [...Array(10)].map((v, key) => {
+                { [...Array(10)].length > 0 ? [...Array(10)].map((v, key) => {
                   return(
                     <CardNFT 
-                      id={key}
                       key={key}
+                      objData={{
+                        id: key,
+                        china: china
+                      }}
                       onClickSell={()=> onOpenModelSell()}
                     />
                   )
-                })}
+                }): (<h5 className="text-center text-2xl col-span-3 text-gray-200">Collection No Result...</h5>)}
                 </div>
               </TabCardProfile>
             )}
@@ -132,16 +165,19 @@ const ProfilePage = () => {
                 title="My Marketplace"
               >
                 <div className="grid md:grid-cols-3 grid-cols-1 gap-4">
-                { [...Array(10)].map((v, key) => {
+                { [...Array(10)].length > 0 ? [...Array(10)].map((v, key) => {
                   return(
                     <CardNFT 
-                      id={key}
                       key={key}
+                      objData={{
+                        id: key,
+                        china: china
+                      }}
                       sell={true}
                       onClickCancelSell={onOpenModelCancelSell}
                     />
                   )
-                })}
+                }): (<h5 className="text-center text-2xl col-span-3 text-gray-200">Marketplace No Result...</h5>)}
                 </div>
               </TabCardProfile>
             )}

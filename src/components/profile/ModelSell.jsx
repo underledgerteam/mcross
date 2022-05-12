@@ -77,7 +77,7 @@ const ModelSell = ({ onConfirm, onClose }) => {
                 Close
               </button>
               <button 
-                className="mb-2 text-white md:mb-0 bg-yellow-500 border border-yellow-500 px-5 py-2 text-sm shadow-sm font-medium tracking-wider rounded-full hover:shadow-lg hover:bg-yellow-600"
+                className="mb-2 text-white md:mb-0 bg-custom-purple2/90 border border-custom-purple1 px-5 py-2 text-sm shadow-sm font-medium tracking-wider rounded-full hover:shadow-lg hover:bg-custom-purple2"
                 onClick={()=> onConfirm()}
               >
                 Confirm

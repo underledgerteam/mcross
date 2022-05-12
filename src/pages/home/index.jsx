@@ -1,8 +1,10 @@
 import { Fragment, useContext } from "react";
+import { useNavigate } from "react-router-dom";
 import { Web3Provider } from "../../contexts/connect.context";
 
 const HomePage = () => {
 
+  const navigate = useNavigate();
   const { account, ConnectedWallet } = useContext(Web3Provider);
 
   return (
@@ -22,10 +24,11 @@ const HomePage = () => {
               Discover & Sell NFTs From Any Chain
             </h1>
 
+
             {!account ? (
               <button
                 type="button"
-                className="w-96 bg-gradient-to-r from-green-400 to-blue-500 hover:from-pink-500 hover:to-yellow-500 text-white font-bold py-4 px-10 text-2xl rounded"
+                className="w-96 py-4 px-10 btn-home"
                 onClick={ConnectedWallet}
               >
                 Connect Wallet
@@ -34,13 +37,15 @@ const HomePage = () => {
               <Fragment>
                 <button
                   type="button"
-                  className="w-60 bg-gradient-to-r from-green-400 to-blue-500 hover:from-pink-500 hover:to-yellow-500 text-white font-bold my-4 py-4 px-12 mr-4 text-2xl rounded"
+                  className="w-60 my-4 py-4 px-12 mr-4 btn-home"
+                  onClick={() => navigate('/mint')}
                 >
                   Mint
                 </button>
                 <button
                   type="button"
-                  className="w-60 bg-gradient-to-r from-green-400 to-blue-500 hover:from-pink-500 hover:to-yellow-500 text-white font-bold my-4 py-4 px-12 text-2xl rounded"
+                  className="w-60 my-4 py-4 px-12 btn-home"
+                  onClick={() => navigate('/market')}
                 >
                   Market
                 </button>

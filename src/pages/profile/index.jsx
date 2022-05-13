@@ -1,0 +1,223 @@
+import { useState, useMemo, Fragment, useRef } from "react";
+
+import { Table, CryptoLogos } from "web3uikit";
+
+import CardNFT from "../../components/profile/CardNFT";
+import TabCardProfile from "../../components/profile/TabCardProfile";
+import ModelSell from "../../components/profile/ModelSell";
+import ModelCancelSell from "../../components/profile/ModelCancelSell";
+import NotificationSellNFT from "../../components/profile/Notification";
+
+const menuProfile = [{
+  text: "My Collection"
+},{
+  text: "My Marketplace"
+},{
+  text: "My Transaction"
+}]
+
+const data = [...Array(32)].map((v, key)=>{
+  return [
+    key,
+    'Buy NFT Name : Doctor strange '+key,
+    '0x19...x25e',
+    '0x18...130e',
+    '0.1000 WETH',
+    '30/04/2022 08:09:54'
+  ]
+})
+
+const ProfilePage = () => {
+  
+  const refSelectChina = useRef();
+  const [ tab, setTab ] = useState(localStorage.getItem("myTab") || "My Collection");
+  const [ openModelSell, setOpenModelSell ] = useState(false);
+  const [ openModelCancelSell, setOpenModelCancelSell ] = useState(false);
+  const [ notification, setNotification ] = useState(false);
+  const [ china, setChina ] = useState("ethereum");
+
+  const onChangeChina = () => {
+    setChina(refSelectChina.current.value.toLowerCase());
+  }
+  const onClickTab = (tab) => {
+    setTab(tab);
+    localStorage.setItem("myTab", tab);
+  }
+  // for open Model Sell
+  const onOpenModelSell = () => {
+    setOpenModelSell(true);
+  }
+  const onConfirmSellNFT = () => {
+    // alert("Process MetaMask Sell NFT");
+    setOpenModelSell(false);
+    setNotification(true);
+    setTimeout(()=>{
+      setNotification(false);
+    }, 3500);
+    setTab("My Marketplace");
+  }
+  const onCloseModelSell = () => {
+    setOpenModelSell(false);
+  }
+  // for open Model Cancel Sell
+  const onOpenModelCancelSell = () => {
+    setOpenModelCancelSell(true);
+  }
+  const onConfirmCancelSell = () => {
+    // alert("Process MetaMask Sell NFT");
+    setOpenModelCancelSell(false);
+    setNotification(true);
+    setTimeout(()=>{
+      setNotification(false);
+    }, 3500);
+  }
+  const onCloseModelCancelSell = () => {
+    setOpenModelCancelSell(false);
+  }
+
+  const columns = useMemo(() => [
+    'ID',
+    'Event',
+    'From',
+    'To',
+    'Amount',
+    'Date UTC',
+  ], []);
+
+  return (
+    <Fragment>
+      <div className="h-screen w-screen">
+        <div className="container md:container md:mx-auto">
+          { notification && (
+            <NotificationSellNFT />
+          ) }
+          <div className="text-7xl font-dark font-extrabold mb-8">My Profile</div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div  className="w-full">
+              <div className="py-8 px-8 shadow-lg rounded-lg my-20 backdrop-blur-lg bg-[#323652]/50">
+                <div className="flex justify-center -mt-16">
+                  <CryptoLogos
+                    chain={china}
+                    size="7.5rem"
+                  />
+                </div>
+                <div className="grid justify-items-center">
+                  <h2 className="text-3xl font-semibold mt-4">0x58...40dd</h2>
+                  <div className="flex items-end">
+                    <div className="text-white text-3xl font-bold mr-4">China: </div>
+                    <div className="inline-block relative w-64 text-gray-700 mt-4">
+                      <select 
+                        className="block appearance-none w-full bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none focus:shadow-outline"
+                        ref={refSelectChina}
+                        onChange={()=> onChangeChina()}
+                      >
+                        <option>Ethereum</option>
+                        <option>Polygon</option>
+                        <option>Avalanche</option>
+                      </select>
+                      <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                        <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+                      </div>
+                    </div>
+                  </div>
+                  { menuProfile.map((item, key)=>{
+                    return(
+                      <button 
+                        type="button" 
+                        className={`btn-menu-profile ${tab===item.text && ("active")}`}
+                        onClick={()=> onClickTab(item.text)}
+                        key={key}
+                      >
+                        {item.text}
+                      </button>
+                    )
+                  }) }
+    
+                </div>
+              </div>
+            </div>
+            
+            { tab === "My Collection" && ( 
+              <TabCardProfile
+                title="My Collection"
+              >
+                {/* No Record! */}
+                <div className="grid md:grid-cols-3 grid-cols-1 gap-4">
+                { [...Array(10)].length > 0 ? [...Array(10)].map((v, key) => {
+                  return(
+                    <CardNFT 
+                      key={key}
+                      objData={{
+                        id: key,
+                        china: china
+                      }}
+                      onClickSell={()=> onOpenModelSell()}
+                    />
+                  )
+                }): (<h5 className="text-center text-2xl col-span-3 text-gray-200">Collection No Result...</h5>)}
+                </div>
+              </TabCardProfile>
+            )}
+
+            { tab === "My Marketplace" && ( 
+              <TabCardProfile
+                title="My Marketplace"
+              >
+                <div className="grid md:grid-cols-3 grid-cols-1 gap-4">
+                { [...Array(10)].length > 0 ? [...Array(10)].map((v, key) => {
+                  return(
+                    <CardNFT 
+                      key={key}
+                      objData={{
+                        id: key,
+                        china: china
+                      }}
+                      sell={true}
+                      onClickCancelSell={onOpenModelCancelSell}
+                    />
+                  )
+                }): (<h5 className="text-center text-2xl col-span-3 text-gray-200">Marketplace No Result...</h5>)}
+                </div>
+              </TabCardProfile>
+            )}
+
+            { tab === "My Transaction" && ( 
+              <TabCardProfile
+                title="My Transaction"
+              >
+                <Table
+                  columnsConfig="80px 3fr 2fr 2fr 2fr 3fr"
+                  data={data}
+                  header={columns}
+                  maxPages={3}
+                  onPageNumberChanged={(number)=> console.log(number)}
+                  pageSize={5}
+                />
+              </TabCardProfile>
+            )}
+
+          </div>
+              
+          { openModelSell && (
+            <ModelSell 
+              onConfirm={onConfirmSellNFT}
+              onClose={onCloseModelSell}
+            />
+          ) }
+
+          { openModelCancelSell && (
+            <ModelCancelSell 
+              onConfirm={onConfirmCancelSell}
+              onClose={onCloseModelCancelSell}
+            />
+          ) }
+
+
+        </div>
+      </div>
+    </Fragment>
+  )
+}
+
+export default ProfilePage;

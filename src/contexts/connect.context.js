@@ -1,14 +1,32 @@
 import React, { useState, useEffect } from "react";
 import Web3 from "web3";
-import { contractAddress, contractABI } from "../utils/constants";
-import { ipfsUriToHttps } from "../utils/ipfsUriToHttps";
+import { ipfsUriToHttps } from "../utils/ipfsUriToHttps.util";
+import { useNotification } from "web3uikit";
+import { nftContractABI, nftContractAddress } from "../utils/constants";
+
 export const Web3Provider = React.createContext();
 
 export const WalletProvider = ({ children }) => {
+  const dispatch = useNotification();
+
   const [account, setAccount] = useState("");
+  const [owner, setOwner] = useState("");
   const [balance, setBalance] = useState(0);
   const [myCollection, setMyCollection] = useState({list: [], loading: false});
   const [myCollectionById, setMyCollectionById] = useState({data: [], loading: false});
+  const [nftContract, setNftContract] = useState();
+  const [mintProcessing, setMintProcessing] = useState(false);
+  let nftContractTemp = null;
+
+  const handleNewNotification = (type, icon, position) => {
+    dispatch({
+      type,
+      title: 'New Notification',
+      message: 'test message',
+      icon,
+      position: position || 'topR',
+    });
+  };
 
   const detectCurrentProvider = () => {
     let provider;
@@ -52,6 +70,7 @@ export const WalletProvider = ({ children }) => {
         const web3 = new Web3(currentProvider);
         const userAccount = await web3.eth.getAccounts();
         const ethBalance = await web3.eth.getBalance(userAccount[0]);
+        
 
         setAccount(userAccount[0]);
         setBalance(ethBalance);
@@ -66,65 +85,94 @@ export const WalletProvider = ({ children }) => {
       throw new Error("No ethereum object");
     }
   };
+
   const GetByIdCollection = async (id) => {
     try {
-      const currentProvider = detectCurrentProvider();
-      if (currentProvider) {
-
-        await currentProvider.request({ method: 'eth_accounts' });
-
-        const web3 = new Web3(currentProvider);
-        const mContract = new web3.eth.Contract(contractABI, contractAddress);
-        const uri = await mContract.methods.tokenURI(id).call();
-        const responseUri = await fetch(ipfsUriToHttps(uri));
-        const objNFT = await responseUri.json();
-        setMyCollectionById({ ...myCollectionById, data: objNFT, loading: false});
-      } else {
-        setAccount("");
-        setBalance(0);
-      }
-    } catch (error) {
-      console.log(error);
-      throw new Error("Object");
-    }
-  }
-  const GetCollection = async () => {
-    try {
-      const currentProvider = detectCurrentProvider();
-      if (currentProvider) {
-
-        await currentProvider.request({ method: 'eth_accounts' });
-
-        const web3 = new Web3(currentProvider);
-        setMyCollection({ ...myCollection, loading: true});
-        const mContract = new web3.eth.Contract(contractABI, contractAddress);
-        const walletOfOwner = await mContract.methods.walletOfOwner(account).call();
-        let objNFTs = [];
-        for (var i = 0; i < walletOfOwner.length; i++) {
-          const uri = await mContract.methods.tokenURI(walletOfOwner[i]).call();
-          const responseUri = await fetch(ipfsUriToHttps(uri));
-          let objNFT = await responseUri.json();
-          objNFTs = [...objNFTs, {
-            ...objNFT, jsonUri: uri
-          }];
-          setMyCollection({ ...myCollection, list: objNFTs, loading: false});
-        }
-        console.log(objNFTs)
-        // setMyCollection({ ...myCollection, list: objNFTs, loading: false});
-      } else {
-        setAccount("");
-        setBalance(0);
-      }
-
+      setMyCollectionById({ ...myCollectionById, data: { }, loading: true});
+      const uri = await nftContract.methods.tokenURI(id).call();
+      const owner = await nftContract.methods.ownerOf(id).call();
+      const responseUri = await fetch(ipfsUriToHttps(uri));
+      const objNFT = await responseUri.json();
+      setMyCollectionById({ ...myCollectionById, data: {...objNFT, owner: owner}, loading: false});
     } catch (error) {
       console.log(error);
       throw new Error("Object");
     }
   };
   
+  const GetCollection = async () => {
+    try {
+      setMyCollection({ ...myCollection, loading: true});
+      const walletOfOwner = await nftContract.methods.walletOfOwner(account).call();
+      let objNFTs = [];
+      for (var i = 0; i < walletOfOwner.length; i++) {
+        const uri = await nftContract.methods.tokenURI(walletOfOwner[i]).call();
+        const responseUri = await fetch(ipfsUriToHttps(uri));
+        let objNFT = await responseUri.json();
+
+        objNFTs = [...objNFTs, {
+          ...objNFT, jsonUri: uri
+        }];
+      }
+      setMyCollection({ ...myCollection, list: objNFTs, loading: false});
+    } catch (error) {
+      console.log(error);
+      throw new Error("Object");
+    }
+  };
+  
+  const createNftContract = async() => {
+    const web3 = new Web3(Web3.givenProvider || detectCurrentProvider());
+    const contract = new web3.eth.Contract(nftContractABI, nftContractAddress);
+    nftContractTemp = contract;
+    const owner = await contract.methods.owner().call();
+    setOwner(owner);
+    setNftContract(contract);
+  };
+
+  // test
+  const getMaxSupply = async () => {
+    // get values for each page
+    const result = await nftContract.methods.maxSupply().call();
+    console.log({ result });
+  };
+
+  const mintNft = async (mintAmount = 0) => {
+    try {
+      setMintProcessing(true);
+      const valueWei = Web3.utils.toWei((0.02 * mintAmount).toString(), 'ether');
+      const valueHex = Web3.utils.numberToHex(valueWei);
+
+      // console.log("valueHex", valueHex);
+      // console.log("value", Web3.utils.numberToHex((20000000000000000 * mintAmount).toString()));
+
+      // const gas = await nftContract.methods.mint(mintAmount).estimateGas({ from: account, value: valueHex });
+      // console.log({ gas });
+
+      const tx = {
+        from: account,
+        gas: (285000 * mintAmount).toString(),
+        value: valueHex,
+      };
+
+      const mintResult = await nftContract.methods.mint(mintAmount).send(tx);
+      console.log({ mintResult });
+      handleNewNotification('success');
+      return mintResult;
+    } catch (error) {
+      console.log({ error });
+      // manage show error on notification
+      handleNewNotification('error');
+      return error;
+    } finally {
+      setMintProcessing(false);
+    }
+  };
+
   useEffect(() => {
     checkWalletIsConnect();
-  });
+    createNftContract();
+  }, []);
 
   return (
     <Web3Provider.Provider
@@ -134,8 +182,11 @@ export const WalletProvider = ({ children }) => {
         ConnectedWallet,
         myCollection,
         myCollectionById,
+        owner,
         balance,
         account,
+        mintNft,
+        mintProcessing
       }}
     >
       {children}

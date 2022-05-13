@@ -37,6 +37,9 @@ code {
 .btn-home:hover {
   @apply hover:from-custom-purple1/80 hover:to-custom-blue1/80;
 }
+.btn-home:disabled {
+  @apply disabled:bg-gray-100 cursor-not-allowed;
+}
 .btn-connect {
   @apply font-bold text-xl text-white bg-gradient-to-r from-custom-purple1 to-custom-blue1 rounded;
 }

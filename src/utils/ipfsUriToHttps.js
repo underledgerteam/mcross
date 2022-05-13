@@ -1,0 +1,1 @@
+export const ipfsUriToHttps = (uri) => uri.replace('ipfs://', 'https://ipfs.io/ipfs/');

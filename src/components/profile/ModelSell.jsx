@@ -1,11 +1,10 @@
-import { useState, useRef, Fragment } from "react";
+import { useState, useRef, Fragment, useContext } from "react";
 
-const ModelSell = ({ onConfirm, onClose }) => {
+const ModelSell = ({ objData, onConfirm, onClose }) => {
   // set default fees
   const serviceFee = 3, axelarFee = 2, creatorFee = 10;
   const refPrice = useRef();
   const [ price, setPrice ] = useState(0);
-
   const onChangePrice = () => {
     const priceVal = Number(refPrice.current.value);
     const amount = priceVal-((priceVal*serviceFee/100)+(priceVal*axelarFee/100));
@@ -21,7 +20,7 @@ const ModelSell = ({ onConfirm, onClose }) => {
           <div className="text-gray-500 ">
             <div className="text-center p-5 flex-auto justify-center">
               <h2 className="text-xl font-bold pt-4 text-gray-800">Sale NFT</h2>
-              <h2 className="text-xl font-bold pt-2 pb-4">Pikachu #513587985</h2>
+              <h2 className="text-xl font-bold pt-2 pb-4">{objData?.name}</h2>
               <div>
                 <div className="flex">
                   <h5 className="text-warmGray-200 text-2xl">Price: </h5>

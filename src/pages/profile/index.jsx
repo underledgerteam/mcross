@@ -1,12 +1,16 @@
-import { useState, useMemo, Fragment, useRef } from "react";
+import { useState, useMemo, Fragment, useRef, useContext, useEffect } from "react";
 
 import { Table, CryptoLogos } from "web3uikit";
+
+import { Web3Provider } from "../../contexts/connect.context";
 
 import CardNFT from "../../components/profile/CardNFT";
 import TabCardProfile from "../../components/profile/TabCardProfile";
 import ModelSell from "../../components/profile/ModelSell";
 import ModelCancelSell from "../../components/profile/ModelCancelSell";
 import NotificationSellNFT from "../../components/profile/Notification";
+
+import { shortenAddress } from "../../utils/shortenAddress.util";
 
 const menuProfile = [{
   text: "My Collection"
@@ -28,10 +32,12 @@ const data = [...Array(32)].map((v, key)=>{
 })
 
 const ProfilePage = () => {
-  
+  const { account, myCollection, GetCollection } = useContext(Web3Provider);
+
   const refSelectChina = useRef();
   const [ tab, setTab ] = useState(localStorage.getItem("myTab") || "My Collection");
   const [ openModelSell, setOpenModelSell ] = useState(false);
+  const [ myCollectionSell, setMyCollectionSell ] = useState({});
   const [ openModelCancelSell, setOpenModelCancelSell ] = useState(false);
   const [ notification, setNotification ] = useState(false);
   const [ china, setChina ] = useState("ethereum");
@@ -44,8 +50,9 @@ const ProfilePage = () => {
     localStorage.setItem("myTab", tab);
   }
   // for open Model Sell
-  const onOpenModelSell = () => {
+  const onOpenModelSell = (objData) => {
     setOpenModelSell(true);
+    setMyCollectionSell(objData);
   }
   const onConfirmSellNFT = () => {
     // alert("Process MetaMask Sell NFT");
@@ -84,12 +91,17 @@ const ProfilePage = () => {
     'Date UTC',
   ], []);
 
+  useEffect(()=>{
+    if(account){
+      GetCollection();
+    }
+  },[account]);
   return (
     <Fragment>
       <div className="h-screen w-screen">
         <div className="container md:container md:mx-auto">
           { notification && (
-            <NotificationSellNFT />
+            <NotificationSellNFT objData={myCollectionSell} />
           ) }
           <div className="text-7xl font-dark font-extrabold mb-8">My Profile</div>
 
@@ -103,7 +115,7 @@ const ProfilePage = () => {
                   />
                 </div>
                 <div className="flex flex-col">
-                  <h2 className="text-3xl font-semibold mt-4 text-center">0x58...40dd</h2>
+                  <h2 className="text-3xl font-semibold mt-4 text-center">{shortenAddress(account)}</h2>
                   <div className="flex items-end mt-3 mx-auto">
                     <div className="text-white text-xl lg:text-3xl font-bold mr-4">China: </div>
                     <div className="inline-block relative w-full text-gray-700 mt-4">
@@ -144,18 +156,20 @@ const ProfilePage = () => {
               >
                 {/* No Record! */}
                 <div className="grid lg:grid-cols-3 grid-cols-1 gap-4">
-                { [...Array(10)].length > 0 ? [...Array(10)].map((v, key) => {
-                  return(
-                    <CardNFT 
-                      key={key}
-                      objData={{
-                        id: key,
-                        china: china
-                      }}
-                      onClickSell={()=> onOpenModelSell()}
-                    />
-                  )
-                }): (<h5 className="text-center text-2xl col-span-3 text-gray-200">Collection No Result...</h5>)}
+                { myCollection.loading? (<h5 className="text-white text-4xl text-extrabold text-center leading-tight font-bold mb-8 col-span-3">Loading...</h5>): 
+                  myCollection?.list && myCollection.list.map((item, key) => {
+                    return(
+                      <CardNFT 
+                        key={key}
+                        objData={{
+                          ...item,
+                          china: china
+                        }}
+                        onClickSell={(objData)=> onOpenModelSell(objData)}
+                      />
+                    )
+                  }) || (<h5 className="text-center text-2xl col-span-3 text-gray-200">Collection No Result...</h5>)
+                }
                 </div>
               </TabCardProfile>
             )}
@@ -201,6 +215,7 @@ const ProfilePage = () => {
               
           { openModelSell && (
             <ModelSell 
+              objData={myCollectionSell}
               onConfirm={onConfirmSellNFT}
               onClose={onCloseModelSell}
             />

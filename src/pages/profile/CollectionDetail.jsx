@@ -1,15 +1,21 @@
-import { Fragment, useState, useEffect } from "react";
+import { Fragment, useState, useEffect, useContext } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+
+import { Web3Provider } from "../../contexts/connect.context";
 
 import ModelSell from "../../components/profile/ModelSell";
 import NotificationSellNFT from "../../components/profile/Notification";
+
+import { ipfsUriToHttps } from "../../utils/ipfsUriToHttps";
 
 const CollectionDetail = () => {
   const params = useParams();
   const navigate = useNavigate();
   const [ openModel, setOpenModel ] = useState(false);
   const [ notification, setNotification ] = useState(false);
-  
+  const [ myCollectionSell, setMyCollectionSell ] = useState({});
+  const { myCollectionById, GetByIdCollection } = useContext(Web3Provider);
+ 
   const onHistoryBack = () => {
     navigate("/profile");
   }
@@ -32,22 +38,26 @@ const CollectionDetail = () => {
     setOpenModel(false);
   }
 
+  useEffect(()=>{
+    GetByIdCollection(params.id);
+  },[]);
+
   return (
     <Fragment>
       <div className="h-screen w-screen">
         <div className="container md:container md:mx-auto">
 
         { notification && (
-          <NotificationSellNFT />
+          <NotificationSellNFT objData={myCollectionById.data} />
         ) }
       
-          <div className="text-6xl font-dark font-extrabold mb-8">Collection Detail #{params.id}</div>
+          <div className="text-6xl font-dark font-extrabold mb-8">Collection Detail</div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="w-full">
               <div className="py-8 px-8 shadow-lg rounded-lg md:my-5 lg:my-15 backdrop-blur-lg bg-[#323652]/50">
                 <div className="flex justify-center">
-                  <img className="w-48 h-48 lg:w-72 lg:h-72 object-cover border-8 border-purple-500" src="https://th.jobsdb.com/en-th/cms/employer/wp-content/plugins/all-in-one-seo-pack/images/default-user-image.png" alt="collection" />
+                  <img className="w-48 h-48 lg:w-72 lg:h-72 object-cover border-8 border-purple-500" src={myCollectionById?.data?.image && ipfsUriToHttps(myCollectionById?.data.image)} alt={myCollectionById?.data?.name} />
                 </div>
                 <div className="grid justify-items-center">
                   <h2 className="text-2xl font-semibold mt-4">Rarity : <span className="py-2 px-3 bg-purple-400 text-purple-900 text-base rounded-lg">Legend</span> </h2>
@@ -57,7 +67,7 @@ const CollectionDetail = () => {
             </div>
             
             <div className="md:col-span-2 w-full p-6 rounded-lg shadow-lg backdrop-blur-lg bg-[#323652]/50 md:my-5 lg:my-15">
-              <h5 className="text-4xl text-extrabold text-center leading-tight font-bold mb-2">Pikachu #5135879852</h5>
+              <h5 className="text-4xl text-extrabold text-center leading-tight font-bold mb-2">{myCollectionById?.data?.name}</h5>
               
               <div className="lg:flex justify-around">
                 <div className="flex mt-8 items-center px-5 py-5 bg-[#C0C9F6]/30 rounded-lg">
@@ -79,11 +89,7 @@ const CollectionDetail = () => {
               
               <div className="mt-5">
                 <h5 className="text-2xl">Detail : </h5>
-                <p className="text-lg">An AxelarSea sample NFT for Moonbeam testnet 
-                  (Moonbase alpha). AxelarSea is the First Cross-Chain 
-                  NFT Marketplace where you can Trade NFTs. 
-                  Using Any Token. From Any Chain
-                </p>
+                <p className="text-lg">{myCollectionById?.data?.description}</p>
               </div>
               <div className="flex justify-between mt-5">
                 <div className="w-56">
@@ -110,6 +116,7 @@ const CollectionDetail = () => {
         </div>
         { openModel && (
           <ModelSell 
+            objData={myCollectionById.data}
             onConfirm={onConfirmSellNFT}
             onClose={onCloseModel}
           />

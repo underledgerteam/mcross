@@ -49,3 +49,7 @@ code {
 .btn-connect:active {
   @apply active:from-custom-purple2 active:to-custom-blue2;
 }
+
+.lgkmjB > span {
+  margin-top: 2rem!important;
+}

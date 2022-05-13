@@ -16,18 +16,20 @@ export const WalletProvider = ({ children }) => {
   const [myCollectionById, setMyCollectionById] = useState({data: [], loading: false});
   const [nftContract, setNftContract] = useState();
   const [mintProcessing, setMintProcessing] = useState(false);
-  let nftContractTemp = null;
+  const [ chain, setChain ] = useState("ethereum");
 
-  const handleNewNotification = (type, icon, position) => {
+  const handleNewNotification = ({type, icon, title, message, position}) => {
     dispatch({
       type,
-      title: 'New Notification',
-      message: 'test message',
+      title: title || 'New Notification',
+      message: message|| 'test message',
       icon,
       position: position || 'topR',
     });
   };
-
+  const ChangeChain = (chain) => {
+    setChain(chain);
+  }
   const detectCurrentProvider = () => {
     let provider;
     if (window.ethereum) {
@@ -86,6 +88,50 @@ export const WalletProvider = ({ children }) => {
     }
   };
 
+  const CreateSellCollection = async (objNFT, handleSuccess = ()=>{}, handleError = ()=>{}) => {
+    try { 
+      console.log("objNFT=>", objNFT);
+      console.log("owner=>", owner);
+      handleNewNotification({
+        type: "success",
+        title: 'Success',
+        message: `You Success Sell NFT ${objNFT?.name} with 100 WETH`,
+      });
+      handleSuccess();
+    } catch (error) {
+      console.log(error);
+      handleError();
+      handleNewNotification({
+        type: "error",
+        title: 'Rejected',
+        message: `MetaMask Signature. User denied transaction signature`,
+      });
+      throw new Error("Object");
+    }
+  };
+
+  const CancelSellCollection = async (objNFT, handleSuccess = ()=>{}, handleError = ()=>{}) => {
+    try { 
+      console.log("objNFT=>", objNFT);
+      console.log("owner=>", owner);
+      handleNewNotification({
+        type: "success",
+        title: 'Success',
+        message: `You Cancel Sell NFT ${objNFT?.name}`,
+      });
+      handleSuccess();
+    } catch (error) {
+      console.log(error);
+      handleError();
+      handleNewNotification({
+        type: "error",
+        title: 'Rejected',
+        message: `MetaMask Signature. User denied transaction signature`,
+      });
+      throw new Error("Object");
+    }
+  };
+
   const GetByIdCollection = async (id) => {
     try {
       setMyCollectionById({ ...myCollectionById, data: { }, loading: true});
@@ -96,7 +142,7 @@ export const WalletProvider = ({ children }) => {
       setMyCollectionById({ ...myCollectionById, data: {...objNFT, owner: owner}, loading: false});
     } catch (error) {
       console.log(error);
-      throw new Error("Object");
+      throw new Error("Get By Id Collection Error");
     }
   };
   
@@ -117,14 +163,13 @@ export const WalletProvider = ({ children }) => {
       setMyCollection({ ...myCollection, list: objNFTs, loading: false});
     } catch (error) {
       console.log(error);
-      throw new Error("Object");
+      throw new Error("Get Collection Error");
     }
   };
   
   const createNftContract = async() => {
     const web3 = new Web3(Web3.givenProvider || detectCurrentProvider());
     const contract = new web3.eth.Contract(nftContractABI, nftContractAddress);
-    nftContractTemp = contract;
     const owner = await contract.methods.owner().call();
     setOwner(owner);
     setNftContract(contract);
@@ -177,9 +222,13 @@ export const WalletProvider = ({ children }) => {
   return (
     <Web3Provider.Provider
       value={{
+        ChangeChain,
         GetByIdCollection,
         GetCollection,
         ConnectedWallet,
+        CreateSellCollection,
+        CancelSellCollection,
+        chain,
         myCollection,
         myCollectionById,
         owner,

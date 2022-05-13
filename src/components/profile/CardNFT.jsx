@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
-import { ipfsUriToHttps } from "../../utils/ipfsUriToHttps";
+import { ipfsUriToHttps } from "../../utils/ipfsUriToHttps.util";
 
-const CardNFT = ({objData, sell = false, onClickSell = ()=>{}, onClickCancelSell = ()=> {}}) => {
+const CardNFT = ({objNFT, sell = false, onClickSell = ()=>{}, onClickCancelSell = ()=> {}}) => {
   return(
       <div className="w-full rounded overflow-hidden shadow-md hover:shadow-xl cursor-pointer bg-[#292929] relative group">
         {/* { sell && (
@@ -14,14 +14,14 @@ const CardNFT = ({objData, sell = false, onClickSell = ()=>{}, onClickCancelSell
             </button>
           </div>
         ) } */}
-        <Link to={`/profile/collection/${objData?.edition}`}>
-          <img className="w-full" src={objData?.image && ipfsUriToHttps(objData?.image)} alt={objData?.name} />
+        <Link to={`/profile/collection/${objNFT?.edition}`}>
+          <img className="w-full" src={objNFT?.image && ipfsUriToHttps(objNFT?.image)} alt={objNFT?.name} />
           <div className="px-6 py-4">
             <div className="grid grid-cols-2">
-              <p><span className="bg-slate-100 text-slate-800 text-xs font-semibold px-1.5 py-0.5 rounded">🔗{objData?.china.charAt(0).toUpperCase() + objData?.china.slice(1)}</span></p>
-              <p className="text-right"><span className="bg-yellow-100 text-yellow-800 text-xs font-semibold px-2.5 py-0.5 rounded">Legend #{objData?.edition}</span></p>
+              <p><span className="bg-slate-100 text-slate-800 text-xs font-semibold px-1.5 py-0.5 rounded">🔗{objNFT?.chain.charAt(0).toUpperCase() + objNFT?.chain.slice(1)}</span></p>
+              <p className="text-right"><span className="bg-yellow-100 text-yellow-800 text-xs font-semibold px-2.5 py-0.5 rounded">Legend #{objNFT?.edition}</span></p>
             </div>
-            <div className="font-bold text-white text-xl mb-2">{objData?.name}</div>
+            <div className="font-bold text-white text-xl mb-2">{objNFT?.name}</div>
             { sell && (<div className="font-bold text-white text-right text-xl">🪙: 0.01 WETH</div>) }
             {/* <div className="grid grid-cols-2">
               <p>a</p>
@@ -41,9 +41,9 @@ const CardNFT = ({objData, sell = false, onClickSell = ()=>{}, onClickCancelSell
           ): (
             <button 
               className={`w-full font-bold py-3 px-12 rounded bg-gradient-to-r from-green-500 to-blue-600 text-white hover:from-pink-500 hover:to-yellow-500 z-50`}
-              onClick={()=> onClickSell(objData)}
+              onClick={()=> onClickSell(objNFT)}
             >
-              Sell {objData?.name}
+              Sell {objNFT?.name}
             </button>
           ) }
         </div>

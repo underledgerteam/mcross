@@ -7,7 +7,7 @@ const ModelCancelSell = ({ onConfirm, onClose }) => {
         <div className="absolute bg-black opacity-70 inset-0 z-0" />
         <div className="w-full max-w-lg p-5 relative mx-auto my-auto rounded-xl shadow-lg  bg-white ">
           <div className="text-gray-500 ">
-            <div class="text-center p-5 flex-auto justify-center">
+            <div className="text-center p-5 flex-auto justify-center">
               <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 -m-1 flex items-center text-red-500 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>

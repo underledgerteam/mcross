@@ -1,13 +1,27 @@
 import React, { useState, useEffect } from "react";
 import Web3 from "web3";
+import { useNotification } from "web3uikit";
 import { nftContractABI, nftContractAddress } from "../utils/constants";
 
 export const Web3Provider = React.createContext();
 
 export const WalletProvider = ({ children }) => {
+  const dispatch = useNotification();
+
   const [account, setAccount] = useState("");
   const [balance, setBalance] = useState(0);
   const [nftContract, setNftContract] = useState();
+  const [mintProcessing, setMintProcessing] = useState(false);
+
+  const handleNewNotification = (type, icon, position) => {
+    dispatch({
+      type,
+      title: 'New Notification',
+      message: 'test message',
+      icon,
+      position: position || 'topR',
+    });
+  };
 
   const detectCurrentProvider = () => {
     let provider;
@@ -79,20 +93,35 @@ export const WalletProvider = ({ children }) => {
     console.log({ result });
   };
 
-  const mintNft = async (mintAmount) => {
+  const mintNft = async (mintAmount = 0) => {
     try {
-      const wei = Web3.utils.toWei((0.02 * mintAmount).toString(), 'ether');
-      const hex = Web3.utils.numberToHex(wei);
+      setMintProcessing(true);
+      const valueWei = Web3.utils.toWei((0.02 * mintAmount).toString(), 'ether');
+      const valueHex = Web3.utils.numberToHex(valueWei);
+
+      // console.log("valueHex", valueHex);
+      // console.log("value", Web3.utils.numberToHex((20000000000000000 * mintAmount).toString()));
+
+      // const gas = await nftContract.methods.mint(mintAmount).estimateGas({ from: account, value: valueHex });
+      // console.log({ gas });
+
       const tx = {
         from: account,
-        gasPrice: Web3.utils.numberToHex(1000),
-        gas: Web3.utils.numberToHex(21000),
-        value: hex
+        gas: (285000 * mintAmount).toString(),
+        value: valueHex,
       };
-      const result = await nftContract.methods.mint(1).send(tx);
-      console.log({ result });
+
+      const mintResult = await nftContract.methods.mint(mintAmount).send(tx);
+      console.log({ mintResult });
+      handleNewNotification('success');
+      return mintResult;
     } catch (error) {
       console.log({ error });
+      // manage show error on notification
+      handleNewNotification('error');
+      return error;
+    } finally {
+      setMintProcessing(false);
     }
   };
 
@@ -107,7 +136,8 @@ export const WalletProvider = ({ children }) => {
         ConnectedWallet,
         balance,
         account,
-        mintNft
+        mintNft,
+        mintProcessing
       }}
     >
       {children}

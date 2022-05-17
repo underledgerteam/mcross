@@ -1,12 +1,37 @@
 import React, { useState, useContext } from "react";
 import { Web3Provider } from "../../contexts/connect.context";
+import NewNftModal from "../../components/mint/NewNftModal";
 
 const Mint = () => {
-  const { account, ConnectedWallet, mintNft, mintProcessing } = useContext(Web3Provider);
-  const [mintAmount, setMintAmount] = useState();
+  const { account, ConnectedWallet, mintNft, mintProcessing, mintCost } = useContext(Web3Provider);
+  const { token, valueEth } = mintCost;
+  const [mintAmount, setMintAmount] = useState(1);
+  const [newNft, setNewNft] = useState([]);
   const [nftModalVisible, setNFtModalVisible] = useState(false);
 
   const nftQty = "1,000";
+  // func
+  const mint = async () => {
+    const { success, newNft } = await mintNft(mintAmount);
+    if (success) {
+      setNewNft(newNft);
+      setNFtModalVisible(true);
+    }
+  };
+  const handleCloseModal = () => {
+    setMintAmount(1);
+    setNewNft([]);
+    setNFtModalVisible(false);
+  };
+  // component
+  const createSelectOptions = () => {
+    let options = [];
+    for (let i = 1; i <= 5; i++) {
+      options.push(<option key={i} value={i}>{`${i} nft`}</option>);
+    }
+    return options;
+  };
+
   return (
     <div className="w-full flex flex-col">
       <div className="mx-auto font-bold text-4xl text-white uppercase pb-4 lg:pb-8">Mint NFT</div>
@@ -44,13 +69,23 @@ const Mint = () => {
               Mint Collection
             </h1>
             <div className="flex flex-col">
-              <input name="qty" type="number" placeholder="Mint qty" className="text-black" disabled={mintProcessing} onChange={(e) => setMintAmount(e.target.value)} />
-              <p>mint cost:</p>
-              <button type="button" className="w-96 px-10 py-4 btn-home" disabled={mintProcessing} onClick={() => mintNft(mintAmount)}>
+              <select name="qty" className="text-black" value={mintAmount} onChange={(e) => setMintAmount(e.target.value)} disabled={mintProcessing}>
+                {createSelectOptions()}
+              </select>
+              <p>Mint fee: {`${valueEth} ${token} / Mint`}</p>
+              <p>Total fee: {`${valueEth * mintAmount} ${token}`}</p>
+              <button type="button" className="w-96 px-10 py-4 btn-home" disabled={mintProcessing} onClick={() => mint()}>
                 Mint
               </button>
             </div>
           </div>
+        )}
+
+        {nftModalVisible && (
+          <NewNftModal
+            nftArr={newNft}
+            onClose={handleCloseModal}
+          />
         )}
 
       </div>

@@ -1,6 +1,6 @@
 import { useState, useMemo, Fragment, useRef, useContext, useEffect } from "react";
 
-import { Table, CryptoLogos, Loading, useNotification } from "web3uikit";
+import { Table, CryptoLogos, Loading } from "web3uikit";
 
 import { Web3Provider } from "../../contexts/connect.context";
 
@@ -31,7 +31,7 @@ const data = [...Array(32)].map((v, key)=>{
 });
 
 const ProfilePage = () => {
-  const { chain, account, myCollection, ChangeChain, GetCollection, CreateSellCollection, CancelSellCollection } = useContext(Web3Provider);
+  const { chain, initChainList, account, isReload, myCollection, ChangeChain, GetCollection, CreateSellCollection, CancelSellCollection } = useContext(Web3Provider);
 
   const refSelectChain = useRef();
   
@@ -40,8 +40,8 @@ const ProfilePage = () => {
   const [ myCollectionSell, setMyCollectionSell ] = useState({});
   const [ openModelCancelSell, setOpenModelCancelSell ] = useState(false);
 
-  const onChangeChain = () => {
-    ChangeChain(refSelectChain.current.value.toLowerCase());
+  const onChangeChain = async() => {
+    ChangeChain(Number.parseInt(refSelectChain.current.value));
   };
   const onClickTab = (tab) => {
     setTab(tab);
@@ -90,8 +90,9 @@ const ProfilePage = () => {
   useEffect(()=>{
     if(account){
       GetCollection();
+      console.log("GetCollection");
     }
-  },[account]);
+  },[account, isReload]);
   return (
     <Fragment>
       <div className="h-screen w-screen">
@@ -103,7 +104,7 @@ const ProfilePage = () => {
               <div className="py-8 px-8 shadow-lg rounded-lg my-20 backdrop-blur-lg bg-[#323652]/50">
                 <div className="flex justify-center -mt-16">
                   <CryptoLogos
-                    chain={chain}
+                    chain={initChainList[chain]?.toLowerCase()}
                     size="7.5rem"
                   />
                 </div>
@@ -117,9 +118,9 @@ const ProfilePage = () => {
                         ref={refSelectChain}
                         onChange={()=> onChangeChain()}
                       >
-                        <option selected={chain === "ethereum"}>Ethereum</option>
-                        <option selected={chain === "polygon"}>Polygon</option>
-                        <option selected={chain === "avalanche"}>Avalanche</option>
+                        { Object.keys(initChainList).map((key, index)=>{
+                          return(<option selected={chain === Number.parseInt(key)} key={index} value={key}>{initChainList[key]}</option>)
+                        }) } 
                       </select>
                       <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
                         <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
@@ -162,7 +163,7 @@ const ProfilePage = () => {
                         key={key}
                         objNFT={{
                           ...item,
-                          chain: chain
+                          chain: initChainList[chain]
                         }}
                         onClickSell={(objNFT)=> onOpenModelSell(objNFT)}
                       />
@@ -184,7 +185,7 @@ const ProfilePage = () => {
                       key={key}
                       objNFT={{
                         id: key,
-                        chain: chain
+                        chain: initChainList[chain]
                       }}
                       sell={true}
                       onClickCancelSell={onOpenModelCancelSell}

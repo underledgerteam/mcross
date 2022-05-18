@@ -2,12 +2,23 @@ import React, { useState, useEffect } from "react";
 import Web3 from "web3";
 import { ipfsUriToHttps } from "../utils/ipfsUriToHttps.util";
 import { useNotification } from "web3uikit";
-import { nftContractABI, nftContractAddress } from "../utils/constants";
+import { nftContracts } from "../utils/constants";
 
 export const Web3Provider = React.createContext();
 
 export const WalletProvider = ({ children }) => {
   const dispatch = useNotification();
+
+  const initChainList = {
+    3: "Ethereum",
+    80001: "Polygon",
+    43113: "Avalanche"
+  }
+  const initCurrencyList = {
+    3: "ETH",
+    80001: "WETH",
+    43113: "AVAX"
+  }
 
   const [account, setAccount] = useState("");
   const [owner, setOwner] = useState("");
@@ -16,7 +27,12 @@ export const WalletProvider = ({ children }) => {
   const [myCollectionById, setMyCollectionById] = useState({data: [], loading: false});
   const [nftContract, setNftContract] = useState();
   const [mintProcessing, setMintProcessing] = useState(false);
-  const [ chain, setChain ] = useState("ethereum");
+  const [nftConverse, setNftConverse] = useState({data: [], loading: false});
+  const [chain, setChain] = useState(3);
+  const [isReload, setIsReload] = useState(false);
+  /* onEventListenReload use swap true/false isReload in function eventListener
+  on function eventListener cant get state current of isReload */
+  let onEventListenReload = false;
 
   const handleNewNotification = ({type, icon, title, message, position}) => {
     dispatch({
@@ -27,9 +43,56 @@ export const WalletProvider = ({ children }) => {
       position: position || 'topR',
     });
   };
-  const ChangeChain = (chain) => {
-    setChain(chain);
-  }
+  const onSetIsReload = (isReload) => {
+    setIsReload(!isReload);
+    onEventListenReload = !isReload;
+  };
+  
+  const getNetworkId = async () => {
+    const web3 = new Web3(window.ethereum);
+    const currentChainId = await web3.eth.net.getId();
+    return currentChainId;
+  };
+
+  const eventListener = (web3, currentProvider) => {
+    currentProvider.on('accountsChanged', (accounts) => {
+      if(!accounts){
+        setAccount(accounts[0]);
+      }else{
+        setAccount("");
+      }
+    });
+    currentProvider.on('chainChanged', (chainId) => {
+      setChain(web3.utils.hexToNumber(chainId));
+      onSetIsReload(onEventListenReload);
+    });
+    currentProvider.on('message', (message)=>{
+      console.log("message=>", message);
+    });
+  };
+
+  const ChangeChain = async(chainId) => {
+    const web3 = new Web3(window.ethereum);
+    const currentChainId = await getNetworkId();
+    
+    if (currentChainId !== chainId) {
+      try {
+        setChain(chainId);
+        await web3.currentProvider.request({
+          method: 'wallet_switchEthereumChain', 
+          params: [{ chainId: Web3.utils.toHex(chainId) }],
+        });
+        onSetIsReload(isReload);
+      } catch (switchError) {
+        // This error code indicates that the chain has not been added to MetaMask.
+        setChain(currentChainId);
+        if (switchError.code === 4902) {
+          alert('add this chain id')
+        }
+      }
+    }
+  };
+
   const detectCurrentProvider = () => {
     let provider;
     if (window.ethereum) {
@@ -51,7 +114,7 @@ export const WalletProvider = ({ children }) => {
       const web3 = new Web3(currentProvider);
       const userAccount = await web3.eth.getAccounts();
       const ethBalance = await web3.eth.getBalance(userAccount[0]);
-
+      eventListener(web3, currentProvider);
       setAccount(userAccount[0]);
       setBalance(ethBalance);
 
@@ -61,19 +124,18 @@ export const WalletProvider = ({ children }) => {
       throw new Error("No ethereum object");
     }
   };
-  
+
+
   const checkWalletIsConnect = async () => {
     try {
       const currentProvider = detectCurrentProvider();
       if (currentProvider) {
-
         await currentProvider.request({ method: 'eth_accounts' });
 
         const web3 = new Web3(currentProvider);
         const userAccount = await web3.eth.getAccounts();
         const ethBalance = await web3.eth.getBalance(userAccount[0]);
-        
-
+        eventListener(web3, currentProvider);
         setAccount(userAccount[0]);
         setBalance(ethBalance);
       } else {
@@ -142,6 +204,7 @@ export const WalletProvider = ({ children }) => {
       setMyCollectionById({ ...myCollectionById, data: {...objNFT, owner: owner}, loading: false});
     } catch (error) {
       console.log(error);
+      setMyCollectionById({ data: {}, loading: false});
       throw new Error("Get By Id Collection Error");
     }
   };
@@ -163,13 +226,40 @@ export const WalletProvider = ({ children }) => {
       setMyCollection({ ...myCollection, list: objNFTs, loading: false});
     } catch (error) {
       console.log(error);
-      throw new Error("Get Collection Error");
+      setMyCollection({ list: [], loading: false});
+      // throw new Error("Get Collection Error");
     }
   };
   
+  const ConverseNFT = async (objConverse, handleSuccess = ()=>{}, handleError = ()=>{}) => {
+    try {
+      setNftConverse({...nftConverse, loading: true});
+      setTimeout(() => {
+        setNftConverse({...nftConverse, loading: false});
+        handleNewNotification({
+          type: "success",
+          title: 'Success',
+          message: `You Success Transfer NFT From ${objConverse?.from} To ${objConverse?.to}`,
+        });
+        handleSuccess();
+      }, 3000);
+    } catch (error) {
+      console.log(error);
+      setNftConverse({...nftConverse, loading: false});
+      handleError();
+      handleNewNotification({
+        type: "error",
+        title: 'Rejected',
+        message: `MetaMask Signature. User denied transaction signature`,
+      });
+      throw new Error("Object");
+    }
+  };
+
   const createNftContract = async() => {
     const web3 = new Web3(Web3.givenProvider || detectCurrentProvider());
-    const contract = new web3.eth.Contract(nftContractABI, nftContractAddress);
+    const currentChainId = await getNetworkId();
+    const contract = new web3.eth.Contract(nftContracts[currentChainId]?.ABI, nftContracts[currentChainId]?.Address || {});
     const owner = await contract.methods.owner().call();
     setOwner(owner);
     setNftContract(contract);
@@ -215,8 +305,13 @@ export const WalletProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    checkWalletIsConnect();
-    createNftContract();
+    async function initFunction() {
+      setChain(await getNetworkId());
+      checkWalletIsConnect();
+      createNftContract();
+      console.log("run initFunction");
+    }
+    initFunction();
   }, []);
 
   return (
@@ -228,7 +323,11 @@ export const WalletProvider = ({ children }) => {
         ConnectedWallet,
         CreateSellCollection,
         CancelSellCollection,
+        ConverseNFT,
+        initChainList,
+        isReload,
         chain,
+        nftConverse,
         myCollection,
         myCollectionById,
         owner,

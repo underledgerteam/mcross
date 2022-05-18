@@ -1,7 +1,7 @@
 import React from "react";
 
 
-const CardDetail = ({ name, price, image, rarity, chain, onClick, onClickAction }) => {
+const CardDetail = ({ name, textAction, price, image, rarity, chain, onClick, onClickAction }) => {
 
   return (
     <div className="w-full rounded overflow-hidden shadow-md hover:shadow-xl bg-[#292929] relative group">
@@ -20,7 +20,7 @@ const CardDetail = ({ name, price, image, rarity, chain, onClick, onClickAction 
             className={`w-full font-bold py-3 px-12 rounded bg-gradient-to-r from-green-500 to-blue-600 text-white hover:from-pink-500 hover:to-yellow-500 z-50`}
             onClick={onClickAction}
           >
-            Buy
+            {textAction}
           </button>
         </div>
 

@@ -45,6 +45,7 @@ const Market = () => {
                         image={item.imgUrl}
                         rarity={'Common'}
                         chain={'Ethereum'}
+                        textAction={'Buy'}
                         onClick={() => handleClickName(item.id)}
                         onClickAction={() => handleClickAction(item.id)}
                       />

@@ -2,7 +2,17 @@ import React, { useState, useEffect } from "react";
 import Web3 from "web3";
 import { ipfsUriToHttps } from "../utils/ipfsUriToHttps.util";
 import { useNotification } from "web3uikit";
-import { nftContractAddress, nftContractABI } from "../utils/constants";
+// import { nftContractAddress, nftContractABI } from "../utils/constants";
+import {
+  ropstenChain,
+  avalanchFujiChain,
+  polygonMumbiChain,
+  nftContractABI,
+  nftContractAddress,
+  nftCrossContractABI,
+  nftContractAvalanhceAddress,
+  nftContractMumbaiAddress,
+} from "../utils/constants";
 
 export const Web3Provider = React.createContext();
 
@@ -12,8 +22,14 @@ export const WalletProvider = ({ children }) => {
   const [account, setAccount] = useState("");
   const [owner, setOwner] = useState("");
   const [balance, setBalance] = useState(0);
-  const [myCollection, setMyCollection] = useState({ list: [], loading: false });
-  const [myCollectionById, setMyCollectionById] = useState({ data: [], loading: false });
+  const [myCollection, setMyCollection] = useState({
+    list: [],
+    loading: false,
+  });
+  const [myCollectionById, setMyCollectionById] = useState({
+    data: [],
+    loading: false,
+  });
   const [nftContract, setNftContract] = useState();
   const [mintProcessing, setMintProcessing] = useState(false);
   const [nftConverse, setNftConverse] = useState({data: [], loading: false});
@@ -23,15 +39,21 @@ export const WalletProvider = ({ children }) => {
   on function eventListener cant get state current of isReload */
   let onEventListenReload = false;
   // const [mintResult, setMintResult] = useState({ data: [], loading: false });
-  const [mintCost, setMintCost] = useState({ token: '', valueEth: '', value: '' });
+  const [mintCost, setMintCost] = useState({
+    token: "",
+    valueEth: "",
+    value: "",
+    feeEth: "",
+    fee: "",
+  });
 
   const handleNewNotification = ({ type, icon, title, message, position }) => {
     dispatch({
       type,
-      title: title || 'New Notification',
-      message: message || 'test message',
+      title: title || "New Notification",
+      message: message || "test message",
       icon,
-      position: position || 'topR',
+      position: position || "topR",
     });
   };
   const onSetIsReload = (isReload) => {
@@ -55,6 +77,7 @@ export const WalletProvider = ({ children }) => {
     });
     currentProvider.on('chainChanged', (chainId) => {
       setChain(web3.utils.hexToNumber(chainId));
+      createNftContract();
       onSetIsReload(onEventListenReload);
     });
     currentProvider.on('message', (message)=>{
@@ -73,6 +96,7 @@ export const WalletProvider = ({ children }) => {
           method: 'wallet_switchEthereumChain', 
           params: [{ chainId: Web3.utils.toHex(chainId) }],
         });
+        createNftContract();
         onSetIsReload(isReload);
       } catch (switchError) {
         // This error code indicates that the chain has not been added to MetaMask.
@@ -100,7 +124,7 @@ export const WalletProvider = ({ children }) => {
     try {
       const currentProvider = detectCurrentProvider();
 
-      await currentProvider.request({ method: 'eth_requestAccounts' });
+      await currentProvider.request({ method: "eth_requestAccounts" });
 
       const web3 = new Web3(currentProvider);
       const userAccount = await web3.eth.getAccounts();
@@ -108,7 +132,6 @@ export const WalletProvider = ({ children }) => {
       eventListener(web3, currentProvider);
       setAccount(userAccount[0]);
       setBalance(ethBalance);
-
     } catch (error) {
       console.log(error);
 
@@ -120,7 +143,7 @@ export const WalletProvider = ({ children }) => {
     try {
       const currentProvider = detectCurrentProvider();
       if (currentProvider) {
-        await currentProvider.request({ method: 'eth_accounts' });
+        await currentProvider.request({ method: "eth_accounts" });
 
         const web3 = new Web3(currentProvider);
         const userAccount = await web3.eth.getAccounts();
@@ -134,7 +157,6 @@ export const WalletProvider = ({ children }) => {
         setAccount("");
         setBalance(0);
       }
-
     } catch (error) {
       console.log(error);
 
@@ -142,13 +164,17 @@ export const WalletProvider = ({ children }) => {
     }
   };
 
-  const CreateSellCollection = async (objNFT, handleSuccess = () => { }, handleError = () => { }) => {
+  const CreateSellCollection = async (
+    objNFT,
+    handleSuccess = () => {},
+    handleError = () => {}
+  ) => {
     try {
       console.log("objNFT=>", objNFT);
       console.log("owner=>", owner);
       handleNewNotification({
         type: "success",
-        title: 'Success',
+        title: "Success",
         message: `You Success Sell NFT ${objNFT?.name} with 100 WETH`,
       });
       handleSuccess();
@@ -157,20 +183,24 @@ export const WalletProvider = ({ children }) => {
       handleError();
       handleNewNotification({
         type: "error",
-        title: 'Rejected',
+        title: "Rejected",
         message: `MetaMask Signature. User denied transaction signature`,
       });
       throw new Error("Object");
     }
   };
 
-  const CancelSellCollection = async (objNFT, handleSuccess = () => { }, handleError = () => { }) => {
+  const CancelSellCollection = async (
+    objNFT,
+    handleSuccess = () => {},
+    handleError = () => {}
+  ) => {
     try {
       console.log("objNFT=>", objNFT);
       console.log("owner=>", owner);
       handleNewNotification({
         type: "success",
-        title: 'Success',
+        title: "Success",
         message: `You Cancel Sell NFT ${objNFT?.name}`,
       });
       handleSuccess();
@@ -179,7 +209,7 @@ export const WalletProvider = ({ children }) => {
       handleError();
       handleNewNotification({
         type: "error",
-        title: 'Rejected',
+        title: "Rejected",
         message: `MetaMask Signature. User denied transaction signature`,
       });
       throw new Error("Object");
@@ -189,12 +219,15 @@ export const WalletProvider = ({ children }) => {
   const GetByIdCollection = async (id) => {
     try {
       setMyCollectionById({ ...myCollectionById, data: {}, loading: true });
-      const existNFTContract = nftContract || await createNftContract();
-      const uri = await existNFTContract.methods.tokenURI(id).call();
-      const owner = await existNFTContract.methods.ownerOf(id).call();
+      const uri = await nftContract.methods.tokenURI(id).call();
+      const owner = await nftContract.methods.ownerOf(id).call();
       const responseUri = await fetch(ipfsUriToHttps(uri));
       const objNFT = await responseUri.json();
-      setMyCollectionById({ ...myCollectionById, data: { ...objNFT, owner: owner }, loading: false });
+      setMyCollectionById({
+        ...myCollectionById,
+        data: { ...objNFT, owner: owner },
+        loading: false,
+      });
     } catch (error) {
       console.log(error);
       setMyCollectionById({ data: {}, loading: false});
@@ -205,17 +238,20 @@ export const WalletProvider = ({ children }) => {
   const GetCollection = async () => {
     try {
       setMyCollection({ ...myCollection, loading: true });
-      const existNFTContract = nftContract || await createNftContract();
-      const walletOfOwner = await existNFTContract.methods.walletOfOwner(account).call();
+      const walletOfOwner = await nftContract.methods.walletOfOwner(account).call();
       let objNFTs = [];
       for (var i = 0; i < walletOfOwner.length; i++) {
-        const uri = await existNFTContract.methods.tokenURI(walletOfOwner[i]).call();
+        const uri = await nftContract.methods.tokenURI(walletOfOwner[i]).call();
         const responseUri = await fetch(ipfsUriToHttps(uri));
         let objNFT = await responseUri.json();
 
-        objNFTs = [...objNFTs, {
-          ...objNFT, jsonUri: uri
-        }];
+        objNFTs = [
+          ...objNFTs,
+          {
+            ...objNFT,
+            jsonUri: uri,
+          },
+        ];
       }
       setMyCollection({ ...myCollection, list: objNFTs, loading: false });
     } catch (error) {
@@ -251,20 +287,71 @@ export const WalletProvider = ({ children }) => {
   };
 
   const createNftContract = async () => {
+    // init provider
     const web3 = new Web3(Web3.givenProvider || detectCurrentProvider());
-    // to do
     // check current network
-    // then set contract same network
-    const currentChainId = await getNetworkId();
-    const contract = new web3.eth.Contract(nftContractABI, nftContractAddress[currentChainId]?.Address || {});
-    const owner = await contract.methods.owner().call();
-    const mintCost = await contract.methods.cost().call();
-    setOwner(owner);
+    const chainId = await getNetworkId();
+    console.log("chainId", chainId);
+    let contract, owner, token, extraFee;
+    // const coreContract = new web3.eth.Contract(
+    //   nftContractABI,
+    //   nftContractAddress
+    // );
+    // const mintCost = await coreContract.methods.cost().call();
+
+    // 
+    // contract = new web3.eth.Contract(nftContractAddress[chainId].ABI, nftContractAddress[chainId].Address);
+    // owner = await contract.methods.owner().call();
+    // extraFee = nftContractAddress[chainId].CrossChain? await contract.methods.costNFT().call(): "0";
+    // token = nftContractAddress[chainId].Token;
+    // console.log(extraFee, owner);
+
+
+    switch (chainId) {
+      case ropstenChain:
+        contract = new web3.eth.Contract(nftContractABI, nftContractAddress);
+        owner = await contract.methods.owner().call();
+        extraFee = "0";
+        token = "ETH";
+        break;
+      case avalanchFujiChain:
+        console.log("avalanchFujiChain");
+        contract = new web3.eth.Contract(
+          nftCrossContractABI,
+          nftContractAvalanhceAddress
+        );
+        owner = await contract.methods.owner().call();
+        extraFee = await contract.methods.costNFT().call();
+        console.log(extraFee, owner);
+        token = "WETH";
+        break;
+      case polygonMumbiChain:
+        console.log("polygonMumbiChain");
+        contract = new web3.eth.Contract(
+          nftCrossContractABI,
+          nftContractMumbaiAddress
+        );
+        // owner = await contract.methods.owner().call();
+        extraFee = await contract.methods.costNFT().call();
+        console.log(extraFee);
+
+        token = "WETH";
+        break;
+      default:
+        console.log("not supported chain");
+        break;
+    }
     setNftContract(contract);
-    // if ropsten chain
-    setMintCost({ token: 'ETH', valueEth: web3.utils.fromWei(mintCost, 'ether'), value: mintCost });
-    return contract;
-    // if other chain will have + tx fee
+    setOwner(owner);
+    setMintCost({
+      token,
+      // valueEth: web3.utils.fromWei(mintCost, "ether"),
+      // value: mintCost,
+      valueEth: web3.utils.fromWei("0", "ether"),
+      value: "0",
+      feeEth: web3.utils.fromWei(extraFee, "ether"),
+      fee: extraFee,
+    });
   };
 
   const getAllTransaction = async () => {
@@ -296,12 +383,12 @@ export const WalletProvider = ({ children }) => {
       };
       await nftContract.methods.mint(mintAmount).send(tx);
       const newNft = await getNewMintNft(mintAmount);
-      handleNewNotification('success');
+      handleNewNotification({ type: "success" });
       return { success: true, newNft };
     } catch (error) {
       console.log({ error });
       // manage show error on notification
-      handleNewNotification('error');
+      handleNewNotification({ type: "error" });
       return { success: false, error };
     } finally {
       setMintProcessing(false);
@@ -311,7 +398,9 @@ export const WalletProvider = ({ children }) => {
   const getNewMintNft = async (mintAmount) => {
     try {
       // get all of my nft
-      const walletOfOwner = await nftContract.methods.walletOfOwner(account).call();
+      const walletOfOwner = await nftContract.methods
+        .walletOfOwner(account)
+        .call();
       // get latest uri by mint amount
       const newNft = walletOfOwner.slice(-mintAmount);
       // transform data
@@ -325,13 +414,13 @@ export const WalletProvider = ({ children }) => {
           {
             ...nft,
             image: ipfsUriToHttps(nft.image),
-            jsonUri: uri
-          }
+            jsonUri: uri,
+          },
         ];
       }
       return nftArr;
     } catch (error) {
-      console.log('error getNewMintNft', error);
+      console.log("error getNewMintNft", error);
     }
   };
 
@@ -355,6 +444,7 @@ export const WalletProvider = ({ children }) => {
         CancelSellCollection,
         ConverseNFT,
         isReload,
+        nftContract,
         chain,
         nftConverse,
         myCollection,
@@ -364,7 +454,7 @@ export const WalletProvider = ({ children }) => {
         account,
         mintNft,
         mintProcessing,
-        mintCost
+        mintCost,
       }}
     >
       {children}

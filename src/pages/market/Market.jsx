@@ -2,7 +2,7 @@ import React, { useContext } from "react";
 import { Web3Provider } from "../../contexts/connect.context";
 
 import { NFT_DATA } from "../../assets/data/mockUpData";
-import CardDetail from "../../components/shared/card/CardDetail";
+import CardListTemplate from "../../components/shared/card/CardListTemplate";
 
 const Market = () => {
 
@@ -38,13 +38,14 @@ const Market = () => {
                 <div className="grid lg:grid-cols-4 grid-cols-1 gap-4">
                   {data?.map((item) => (
                     <div className="w-full rounded overflow-hidden shadow-md hover:shadow-xl bg-[#292929] relative group" key={item.id} >
-                      <CardDetail
+                      <CardListTemplate
                         id={item.id}
                         name={item.title}
                         price={item.currentBid}
                         image={item.imgUrl}
                         rarity={'Common'}
                         chain={'Ethereum'}
+                        textAction={'Buy'}
                         onClick={() => handleClickName(item.id)}
                         onClickAction={() => handleClickAction(item.id)}
                       />

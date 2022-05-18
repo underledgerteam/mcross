@@ -2,7 +2,16 @@ import React, { useState, useEffect } from "react";
 import Web3 from "web3";
 import { ipfsUriToHttps } from "../utils/ipfsUriToHttps.util";
 import { useNotification } from "web3uikit";
-import { nftContractABI, nftContractAddress } from "../utils/constants";
+import {
+  ropstenChain,
+  avalanchFujiChain,
+  polygonMumbiChain,
+  nftContractABI,
+  nftContractAddress,
+  nftCrossContractABI,
+  nftContractAvalanhceAddress,
+  nftContractMumbaiAddress,
+} from "../utils/constants";
 
 export const Web3Provider = React.createContext();
 
@@ -17,7 +26,7 @@ export const WalletProvider = ({ children }) => {
   const [nftContract, setNftContract] = useState();
   const [mintProcessing, setMintProcessing] = useState(false);
   // const [mintResult, setMintResult] = useState({ data: [], loading: false });
-  const [mintCost, setMintCost] = useState({ token: '', valueEth: '', value: '' });
+  const [mintCost, setMintCost] = useState({ token: '', valueEth: '', value: '', feeEth: '', fee: '' });
   const [chain, setChain] = useState("ethereum");
 
   const handleNewNotification = ({ type, icon, title, message, position }) => {
@@ -170,18 +179,52 @@ export const WalletProvider = ({ children }) => {
   };
 
   const createNftContract = async () => {
+    // init provider 
     const web3 = new Web3(Web3.givenProvider || detectCurrentProvider());
-    // to do
     // check current network
-    // then set contract same network
-    const contract = new web3.eth.Contract(nftContractABI, nftContractAddress);
-    const owner = await contract.methods.owner().call();
-    const mintCost = await contract.methods.cost().call();
-    setOwner(owner);
+    const chainId = await web3.eth.net.getId();
+    console.log('chainId', chainId);
+    let contract, owner, token, extraFee;
+    const coreContract = new web3.eth.Contract(nftContractABI, nftContractAddress);
+    const mintCost = await coreContract.methods.cost().call();
+    console.log(mintCost);
+    switch (chainId) {
+      case ropstenChain:
+        contract = new web3.eth.Contract(nftContractABI, nftContractAddress);
+        owner = await contract.methods.owner().call();
+        extraFee = '0';
+        token = 'ETH';
+        break;
+      case avalanchFujiChain:
+        console.log('avalanchFujiChain');
+        contract = new web3.eth.Contract(nftCrossContractABI, nftContractAvalanhceAddress);
+        // owner = await contract.methods.owner().call();
+        extraFee = await contract.methods.costNFT().call();
+        console.log(extraFee);
+        token = 'WETH';
+        break;
+      case polygonMumbiChain:
+        console.log('polygonMumbiChain');
+        contract = new web3.eth.Contract(nftCrossContractABI, nftContractMumbaiAddress);
+        // owner = await contract.methods.owner().call();
+        extraFee = await contract.methods.costNFT().call();
+        console.log(extraFee);
+
+        token = 'WETH';
+        break;
+      default:
+        console.log('not supported chain');
+        break;
+    }
     setNftContract(contract);
-    // if ropsten chain
-    setMintCost({ token: 'ETH', valueEth: web3.utils.fromWei(mintCost, 'ether'), value: mintCost });
-    // if other chain will have + tx fee
+    setOwner(owner);
+    setMintCost({
+      token,
+      valueEth: web3.utils.fromWei(mintCost, 'ether'),
+      value: mintCost,
+      feeEth: web3.utils.fromWei(extraFee, 'ether'),
+      fee: extraFee
+    });
   };
 
   const getAllTransaction = async () => {
@@ -213,12 +256,12 @@ export const WalletProvider = ({ children }) => {
       };
       await nftContract.methods.mint(mintAmount).send(tx);
       const newNft = await getNewMintNft(mintAmount);
-      handleNewNotification('success');
+      handleNewNotification({ type: 'success' });
       return { success: true, newNft };
     } catch (error) {
       console.log({ error });
       // manage show error on notification
-      handleNewNotification('error');
+      handleNewNotification({ type: 'error' });
       return { success: false, error };
     } finally {
       setMintProcessing(false);

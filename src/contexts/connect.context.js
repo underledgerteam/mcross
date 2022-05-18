@@ -9,17 +9,6 @@ export const Web3Provider = React.createContext();
 export const WalletProvider = ({ children }) => {
   const dispatch = useNotification();
 
-  const initChainList = {
-    3: "Ethereum",
-    80001: "Polygon",
-    43113: "Avalanche"
-  }
-  const initCurrencyList = {
-    3: "ETH",
-    80001: "WETH",
-    43113: "AVAX"
-  }
-
   const [account, setAccount] = useState("");
   const [owner, setOwner] = useState("");
   const [balance, setBalance] = useState(0);
@@ -200,8 +189,9 @@ export const WalletProvider = ({ children }) => {
   const GetByIdCollection = async (id) => {
     try {
       setMyCollectionById({ ...myCollectionById, data: {}, loading: true });
-      const uri = await nftContract.methods.tokenURI(id).call();
-      const owner = await nftContract.methods.ownerOf(id).call();
+      const existNFTContract = nftContract || await createNftContract();
+      const uri = await existNFTContract.methods.tokenURI(id).call();
+      const owner = await existNFTContract.methods.ownerOf(id).call();
       const responseUri = await fetch(ipfsUriToHttps(uri));
       const objNFT = await responseUri.json();
       setMyCollectionById({ ...myCollectionById, data: { ...objNFT, owner: owner }, loading: false });
@@ -364,7 +354,6 @@ export const WalletProvider = ({ children }) => {
         CreateSellCollection,
         CancelSellCollection,
         ConverseNFT,
-        initChainList,
         isReload,
         chain,
         nftConverse,

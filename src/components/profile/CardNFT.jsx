@@ -18,7 +18,7 @@ const CardNFT = ({objNFT, sell = false, onClickSell = ()=>{}, onClickCancelSell 
           <img className="w-full" src={objNFT?.image && ipfsUriToHttps(objNFT?.image)} alt={objNFT?.name} />
           <div className="px-6 py-4">
             <div className="grid grid-cols-2">
-              <p><span className="bg-slate-100 text-slate-800 text-xs font-semibold px-1.5 py-0.5 rounded">🔗{objNFT?.chain.charAt(0).toUpperCase() + objNFT?.chain.slice(1)}</span></p>
+              <p><span className="bg-slate-100 text-slate-800 text-xs font-semibold px-1.5 py-0.5 rounded">🔗{objNFT?.chain}</span></p>
               <p className="text-right"><span className="bg-yellow-100 text-yellow-800 text-xs font-semibold px-2.5 py-0.5 rounded">Legend #{objNFT?.edition}</span></p>
             </div>
             <div className="font-bold text-white text-xl mb-2">{objNFT?.name}</div>

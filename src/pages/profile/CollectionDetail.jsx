@@ -9,11 +9,13 @@ import ModelSell from "../../components/profile/ModelSell";
 import { shortenAddress } from "../../utils/shortenAddress.util";
 import { ipfsUriToHttps } from "../../utils/ipfsUriToHttps.util";
 
+import { nftContract as nftContractAddress } from "../../utils/constants";
+
 const CollectionDetail = () => {
   const params = useParams();
   const navigate = useNavigate();
   const [ openModel, setOpenModel ] = useState(false);
-  const { chain, owner, account, myCollectionById, GetByIdCollection, CreateSellCollection } = useContext(Web3Provider);
+  const { chain, initChainList, owner, account, myCollectionById, GetByIdCollection, CreateSellCollection } = useContext(Web3Provider);
  
   const onHistoryBack = () => {
     navigate("/profile");
@@ -67,7 +69,7 @@ const CollectionDetail = () => {
                     </div>
                     <div className="grid justify-items-center">
                       <h2 className="text-2xl font-semibold mt-4">Rarity : <span className="py-2 px-3 bg-yellow-400 text-yellow-900 text-base rounded-lg">Legend</span> </h2>
-                      <h2 className="text-2xl font-semibold mt-2">Chain : {chain.charAt(0).toUpperCase() + chain.slice(1)}</h2>
+                      <h2 className="text-2xl font-semibold mt-2">Chain : {nftContractAddress[chain]?.Label}</h2>
                     </div>
                   </Fragment>
                 ) }

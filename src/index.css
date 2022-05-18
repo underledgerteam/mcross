@@ -40,16 +40,28 @@ code {
 .btn-home:disabled {
   @apply disabled:bg-gray-100 cursor-not-allowed;
 }
-.btn-connect {
+.btn-converse, .btn-connect {
   @apply font-bold text-xl text-white bg-gradient-to-r from-custom-purple1 to-custom-blue1 rounded;
 }
-.btn-connect:hover {
+.btn-converse:not([disabled]):hover, .btn-connect:not([disabled]):hover {
   @apply hover:from-custom-purple1/80 hover:to-custom-blue1/80;
 }
-.btn-connect:active {
+.btn-converse:not([disabled]):active, .btn-connect:not([disabled]):active {
   @apply active:from-custom-purple2 active:to-custom-blue2;
 }
 
 .lgkmjB > span {
   margin-top: 2rem!important;
+}
+.btn-connect > .dOeptj {
+  margin-left: auto;
+  margin-right: auto;
+}
+.btn-connect > .dOeptj > span {
+  margin-left: 0.5rem!important;
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+  font-weight: 700;
+  margin: 0px;
+  text-align: center;
 }

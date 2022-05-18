@@ -3,7 +3,7 @@ import { useState, useMemo, Fragment, useRef, useContext, useEffect } from "reac
 import { Table, CryptoLogos, Loading } from "web3uikit";
 
 import { Web3Provider } from "../../contexts/connect.context";
-
+import { nftContract as nftContractAddress } from "../../utils/constants";
 import CardNFT from "../../components/profile/CardNFT";
 import TabCardProfile from "../../components/profile/TabCardProfile";
 import ModelSell from "../../components/profile/ModelSell";
@@ -31,7 +31,7 @@ const data = [...Array(32)].map((v, key) => {
 });
 
 const ProfilePage = () => {
-  const { chain, initChainList, account, isReload, myCollection, ChangeChain, GetCollection, CreateSellCollection, CancelSellCollection, ConnectedWallet } = useContext(Web3Provider);
+  const { chain, account, isReload, myCollection, ChangeChain, GetCollection, CreateSellCollection, CancelSellCollection, ConnectedWallet, nftContract } = useContext(Web3Provider);
 
   const refSelectChain = useRef();
 
@@ -88,10 +88,10 @@ const ProfilePage = () => {
   ], []);
 
   useEffect(() => {
-    if (account) {
+    if (account && nftContract) {
       GetCollection();
     }
-  },[account, isReload]);
+  },[account, isReload, nftContract]);
 
   return (
     <Fragment>
@@ -113,7 +113,7 @@ const ProfilePage = () => {
                 <div className="py-8 px-8 shadow-lg rounded-lg my-20 backdrop-blur-lg bg-[#323652]/50">
                   <div className="flex justify-center -mt-16">
                     <CryptoLogos
-                      chain={initChainList[chain]?.toLowerCase()}
+                      chain={nftContractAddress[chain]?.Icon}
                       size="7.5rem"
                     />
                   </div>
@@ -127,8 +127,8 @@ const ProfilePage = () => {
                           ref={refSelectChain}
                           onChange={()=> onChangeChain()}
                         >
-                          { Object.keys(initChainList).map((key, index)=>{
-                            return(<option selected={chain === Number.parseInt(key)} key={index} value={key}>{initChainList[key]}</option>)
+                          { Object.keys(nftContractAddress).map((key, index)=>{
+                            return(<option selected={chain === Number.parseInt(key)} key={index} value={key}>{nftContractAddress[key]?.Label}</option>)
                           }) } 
                         </select>
                         <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
@@ -172,7 +172,7 @@ const ProfilePage = () => {
                             key={key}
                             objNFT={{
                               ...item,
-                              chain: chain
+                              chain: nftContractAddress[chain]?.Label
                             }}
                             onClickSell={(objNFT) => onOpenModelSell(objNFT)}
                           />
@@ -194,7 +194,7 @@ const ProfilePage = () => {
                           key={key}
                           objNFT={{
                             id: key,
-                            chain: chain
+                            chain: nftContractAddress[chain]?.Label
                           }}
                           sell={true}
                           onClickCancelSell={onOpenModelCancelSell}

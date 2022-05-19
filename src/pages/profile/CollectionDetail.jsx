@@ -15,7 +15,7 @@ const CollectionDetail = () => {
   const params = useParams();
   const navigate = useNavigate();
   const [ openModel, setOpenModel ] = useState(false);
-  const { chain, initChainList, owner, account, myCollectionById, GetByIdCollection, CreateSellCollection } = useContext(Web3Provider);
+  const { chain, owner, account, myCollectionById, nftContractCollection, GetByIdCollection, CreateSellCollection } = useContext(Web3Provider);
  
   const onHistoryBack = () => {
     navigate("/profile");
@@ -41,10 +41,10 @@ const CollectionDetail = () => {
   };
 
   useEffect(()=>{
-    if(account){
+    if(account && nftContractCollection){
       GetByIdCollection(params.id);
     }
-  },[account]);
+  },[account, nftContractCollection]);
 
   return (
     <Fragment>

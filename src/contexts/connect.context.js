@@ -9,12 +9,19 @@ import {
   polygonMumbiChain,
   nftContractABI,
   nftContractAddress,
+  nftContract as nftContracts,
   nftCrossContractABI,
   nftContractAvalanhceAddress,
   nftContractMumbaiAddress,
 } from "../utils/constants";
 
 export const Web3Provider = React.createContext();
+
+
+const initiSelectNFT = {
+  selected: false,
+  image: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAOEAAADhCAMAAAAJbSJIAAAANlBMVEX///+/v7+8vLzKysr8/Pzg4ODFxcXb29vT09Pj4+P4+PjBwcH6+vry8vLY2NjIyMjs7Ozo6Oia8u11AAAEdUlEQVR4nO2d65bqIAxGp/Smrb34/i971KqlEC7FGuJZ3/7dKewJBgK4/PsDAAAAAAAAAAAAAAAA4KUam5+i3m94UsUPoVoYwlA6MIShfGAIQ/nAEIbyOcBQSeNww9NZGOXBhuq8+w1fxugfDG1gmB0YBoFhdmAYBIbZgWEQGGYHhkFgmB0YBoFhdmAYBIbZyWB4qVI6mgyv4WUeH7u007lL7vFeWA3n8rUFrZqWK5KchnWvPapOTGFkNDQPOJrhk45Hw2d4Ns+oVPlRz2NhMxyawkTtv2OWAJvhSBwzfjBO2+g/5TLs7BDeSF4eDP0Y+yiX4UydFKtT4pRxa3SKTcVchtQgLYrobhq0Kj7+XIb0aX+fZtipHfH/ScPlZZG5Jq9hk2RYP96lTnFPcxnWpGF52d2eNrPGPc5lOJC5NDrl65Sv1fs16nEuw8v20sdCP+9uTh8NZVSuYVvTnKlBmjAdaqu/uH8Qm2FVWuNUJYSwOu3tLV9tcelNw5SF9yZjRaVixvpwbrZRTKnyuyKysRXOGn/QBqpK25QzptVm9598eyfqXDaPnah+GlNmwr/aGOcqYl3DvJtYzXU7jvU1bbVmVdExE+pP7Qjb6TiiOBFmOPuyD7XyC+djWYadGt2KxE5PzMpWluHtXc6KQZ/rNYK5RpThfWXnrGzp6iRcQ0ky7KbHK+iBup3rtQZD6wZJhq+9HDIsri89BBsUZPguIal0Y871K6ECRY6hXkFaimQeXQjVUHIMNwWkuVax5/q1xcC6Rozh0G+7vYmidaqzCaJ/whBjaEZJr608Y7QIHvBIMbR3/dfB55jr3/hrKCGGxMHN+vmi53rtSW+uEWLYUj1/dsY1169tetc1MgwHaw9HU3TN9Svec0huw4os6CZHcO7dcc/163O+XMNteC0JRfdk0Aby6BNfDcW9i1EquzedI4R36vAYLfy5htnwtnBRvaHo/SZxjN8Nz7UO5ltf97WnMgbqHCfhRbmHKa/hdXl2qxjzQQsaunMNr+FzUlD62W8bORD9TM4gshpe3xVg+Z7BonJlmN55mMhpWGkV4GughtacsbgvLnAa6hXga6B666I9OGsoRsPtMbCa7l2q6OVaAs6uMxpejXDdd+SPSTMP+vyGdri6+bAQui8u8BmaIbwxUdcXkg0dNRTjOf6BNiSOGirrXYxjcXQ+632ag6EPE7kMiU/h4dA1FJfhgUnTzZTRkCOEt8apYcpj+P1E6u4+j+H3E+kCdUmKxZAjkS4QrbMY8nwKC7qGYjFkSaQL9rqGw5AthORhIoMhUyJ9ksPwsDI+Brv97xtWY8mJNUwZYtixYu0qyjhd+yYwDALD7MAwCAyzA8MgMMwODIPAMDtHGxZ1JYvjDRvWajCC7SYRfhsBhvKBIQzlA0MYygeGMJQPDGEoHxjCUD4whKF8YAhD+cAQhvKBIQzlA0MYygeGMJQPDGEoHxjCUD4whKF8YAhD+cAQhvJJM/wpEgyv9U+R8iNaAAAAAAAAAAAAAAAAAP4r/gEYCYE2Xwz6DQAAAABJRU5ErkJggg=="
+};
 
 export const WalletProvider = ({ children }) => {
   const dispatch = useNotification();
@@ -30,7 +37,10 @@ export const WalletProvider = ({ children }) => {
     data: [],
     loading: false,
   });
+  const [selectConverseNFT, setSelectConverseNFT] = useState(initiSelectNFT);
   const [nftContract, setNftContract] = useState();
+  const [nftContractCollection, setNftContractCollection] = useState();
+  const [nftContractConverse, setNftContractConverse] = useState();
   const [mintProcessing, setMintProcessing] = useState(false);
   const [nftConverse, setNftConverse] = useState({data: [], loading: false});
   const [chain, setChain] = useState(3);
@@ -219,8 +229,8 @@ export const WalletProvider = ({ children }) => {
   const GetByIdCollection = async (id) => {
     try {
       setMyCollectionById({ ...myCollectionById, data: {}, loading: true });
-      const uri = await nftContract.methods.tokenURI(id).call();
-      const owner = await nftContract.methods.ownerOf(id).call();
+      const uri = await nftContractCollection.methods.tokenURI(id).call();
+      const owner = await nftContractCollection.methods.ownerOf(id).call();
       const responseUri = await fetch(ipfsUriToHttps(uri));
       const objNFT = await responseUri.json();
       setMyCollectionById({
@@ -238,10 +248,10 @@ export const WalletProvider = ({ children }) => {
   const GetCollection = async () => {
     try {
       setMyCollection({ ...myCollection, loading: true });
-      const walletOfOwner = await nftContract.methods.walletOfOwner(account).call();
+      const walletOfOwner = await nftContractCollection.methods.walletOfOwner(account).call();
       let objNFTs = [];
       for (var i = 0; i < walletOfOwner.length; i++) {
-        const uri = await nftContract.methods.tokenURI(walletOfOwner[i]).call();
+        const uri = await nftContractCollection.methods.tokenURI(walletOfOwner[i]).call();
         const responseUri = await fetch(ipfsUriToHttps(uri));
         let objNFT = await responseUri.json();
 
@@ -261,18 +271,74 @@ export const WalletProvider = ({ children }) => {
     }
   };
   
+  const ChangeConverseNFT = async(objNFT) => {
+    if(objNFT){
+      objNFT = {
+        ...objNFT,
+        approve: true,
+        approveLoading: false,
+        selected: true
+      };
+      if(!nftContracts[chain].CrossChain){
+        const isApprove = await nftContractCollection.methods.getApproved(objNFT.edition).call();
+        objNFT = {
+          ...objNFT,
+          approve: (isApprove!=="0x0000000000000000000000000000000000000000")? true: false,
+        };
+      }
+      setSelectConverseNFT(objNFT);
+    }else{
+      setSelectConverseNFT(initiSelectNFT);
+    }
+    
+  };
+
+  const ConverseApproveNFT = async(objNFT, handleSuccess = ()=>{}, handleError = ()=>{}) =>{
+    try {
+      setSelectConverseNFT({...selectConverseNFT, approveLoading: true});
+      await nftContractCollection.methods.approve(nftContracts[3].AddressConverse, objNFT.edition).send({ from: account });
+      setSelectConverseNFT({...selectConverseNFT,approve: true, approveLoading: false});
+      handleNewNotification({
+        type: "success",
+        title: 'Success',
+        message: `You Success Approve NFT`,
+      });
+      handleSuccess();
+    } catch (error) {
+      console.log(error);
+      setSelectConverseNFT({...selectConverseNFT, approveLoading: false});
+      handleError();
+      handleNewNotification({
+        type: "error",
+        title: 'Rejected',
+        message: `MetaMask Signature. User denied transaction signature`,
+      });
+      throw new Error("Object");
+    }
+  };
+
   const ConverseNFT = async (objConverse, handleSuccess = ()=>{}, handleError = ()=>{}) => {
     try {
+      const web3 = new Web3(window.ethereum);
       setNftConverse({...nftConverse, loading: true});
-      setTimeout(() => {
-        setNftConverse({...nftConverse, loading: false});
-        handleNewNotification({
-          type: "success",
-          title: 'Success',
-          message: `You Success Transfer NFT From ${objConverse?.from} To ${objConverse?.to}`,
-        });
-        handleSuccess();
-      }, 3000);
+      let arr = [objConverse.edition, nftContracts[objConverse.to].Icon, account];
+      if(!nftContracts[chain].CrossChain){
+        arr = [nftContractAddress, ...arr];
+      }
+      let fixGas = "10000000000000000";
+      if(nftContracts[chain].CrossChain){
+        fixGas = "2000000000000000";
+      }
+      await nftContractConverse.methods.sendNFT(...arr).send({ from: account, value: fixGas });
+      setNftConverse({...nftConverse, loading: false});
+      handleNewNotification({
+        type: "success",
+        title: 'Success',
+        message: `You Success Transfer NFT From ${nftContracts[chain].Lable} To ${nftContracts[objConverse.to].Lable}`,
+      });
+      onSetIsReload(onEventListenReload);
+      // setSelectConverseNFT(initiSelectNFT);
+      handleSuccess();
     } catch (error) {
       console.log(error);
       setNftConverse({...nftConverse, loading: false});
@@ -292,7 +358,7 @@ export const WalletProvider = ({ children }) => {
     // check current network
     const chainId = await getNetworkId();
     console.log("chainId", chainId);
-    let contract, owner, token, extraFee;
+    let contract, contractConverse, contractCollection, owner, token, extraFee;
     // const coreContract = new web3.eth.Contract(
     //   nftContractABI,
     //   nftContractAddress
@@ -309,8 +375,9 @@ export const WalletProvider = ({ children }) => {
 
     switch (chainId) {
       case ropstenChain:
-        contract = new web3.eth.Contract(nftContractABI, nftContractAddress);
-        owner = await contract.methods.owner().call();
+        contractCollection = new web3.eth.Contract(nftContractABI, nftContractAddress);
+        contractConverse = new web3.eth.Contract(nftContracts[chainId].ABIConverse, nftContracts[chainId].AddressConverse);
+        owner = await contractCollection.methods.owner().call();
         extraFee = "0";
         token = "ETH";
         break;
@@ -320,6 +387,8 @@ export const WalletProvider = ({ children }) => {
           nftCrossContractABI,
           nftContractAvalanhceAddress
         );
+        contractCollection = new web3.eth.Contract(nftContracts[chainId].ABI, nftContracts[chainId].Address);
+        contractConverse = new web3.eth.Contract(nftContracts[chainId].ABIConverse, nftContracts[chainId].Address);
         owner = await contract.methods.owner().call();
         extraFee = await contract.methods.costNFT().call();
         console.log(extraFee, owner);
@@ -342,6 +411,8 @@ export const WalletProvider = ({ children }) => {
         break;
     }
     setNftContract(contract);
+    setNftContractConverse(contractConverse);
+    setNftContractCollection(contractCollection);
     setOwner(owner);
     setMintCost({
       token,
@@ -442,11 +513,14 @@ export const WalletProvider = ({ children }) => {
         ConnectedWallet,
         CreateSellCollection,
         CancelSellCollection,
+        ConverseApproveNFT,
+        ChangeConverseNFT,
         ConverseNFT,
         isReload,
-        nftContract,
+        nftContractCollection,
         chain,
         nftConverse,
+        selectConverseNFT,
         myCollection,
         myCollectionById,
         owner,

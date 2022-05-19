@@ -31,7 +31,7 @@ const data = [...Array(32)].map((v, key) => {
 });
 
 const ProfilePage = () => {
-  const { chain, account, isReload, myCollection, ChangeChain, GetCollection, CreateSellCollection, CancelSellCollection, ConnectedWallet, nftContract } = useContext(Web3Provider);
+  const { chain, account, isReload, myCollection, ChangeChain, GetCollection, CreateSellCollection, CancelSellCollection, ConnectedWallet, nftContractCollection } = useContext(Web3Provider);
 
   const refSelectChain = useRef();
 
@@ -88,10 +88,10 @@ const ProfilePage = () => {
   ], []);
 
   useEffect(() => {
-    if (account && nftContract) {
+    if (account && nftContractCollection) {
       GetCollection();
     }
-  },[account, isReload, nftContract]);
+  },[account, isReload, nftContractCollection]);
 
   return (
     <Fragment>
@@ -113,7 +113,7 @@ const ProfilePage = () => {
                 <div className="py-8 px-8 shadow-lg rounded-lg my-20 backdrop-blur-lg bg-[#323652]/50">
                   <div className="flex justify-center -mt-16">
                     <CryptoLogos
-                      chain={nftContractAddress[chain]?.Icon}
+                      chain={nftContractAddress[chain]?.Icon.toLowerCase()}
                       size="7.5rem"
                     />
                   </div>
@@ -166,7 +166,7 @@ const ProfilePage = () => {
                         spinnerColor="#fff"
                         text="Loading...."
                       /></div>) :
-                      (myCollection?.list.length > 1) ? myCollection.list.map((item, key) => {
+                      (myCollection?.list.length > 0) ? myCollection.list.map((item, key) => {
                         return (
                           <CardNFT
                             key={key}

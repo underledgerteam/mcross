@@ -295,6 +295,7 @@ export const WalletProvider = ({ children }) => {
     // init current provider
     const web3 = new Web3(Web3.givenProvider || detectCurrentProvider());
     // get contract by network id
+    const chain = await getNetworkId();
     const nftContract = new web3.eth.Contract(NFT_CONTRACTS[chain].ABI, NFT_CONTRACTS[chain].Address);
     let cost;
     switch (chain) {

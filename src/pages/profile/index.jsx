@@ -3,7 +3,7 @@ import { useState, useMemo, Fragment, useRef, useContext, useEffect } from "reac
 import { Table, CryptoLogos, Loading } from "web3uikit";
 
 import { Web3Provider } from "../../contexts/connect.context";
-import { nftContract as nftContractAddress } from "../../utils/constants";
+import { NFT_CONTRACTS as nftContractAddress } from "../../utils/constants";
 import CardNFT from "../../components/profile/CardNFT";
 import TabCardProfile from "../../components/profile/TabCardProfile";
 import ModelSell from "../../components/profile/ModelSell";
@@ -40,7 +40,7 @@ const ProfilePage = () => {
   const [myCollectionSell, setMyCollectionSell] = useState({});
   const [openModelCancelSell, setOpenModelCancelSell] = useState(false);
 
-  const onChangeChain = async() => {
+  const onChangeChain = async () => {
     ChangeChain(Number.parseInt(refSelectChain.current.value));
   };
   const onClickTab = (tab) => {
@@ -91,7 +91,7 @@ const ProfilePage = () => {
     if (account && nftContract) {
       GetCollection();
     }
-  },[account, isReload, nftContract]);
+  }, [account, isReload, nftContract]);
 
   return (
     <Fragment>
@@ -122,33 +122,33 @@ const ProfilePage = () => {
                     <div className="flex items-end mt-3 mx-auto">
                       <div className="text-white text-xl lg:text-3xl font-bold mr-4">Chain: </div>
                       <div className="inline-block relative w-full text-gray-700 mt-4">
-                        <select 
+                        <select
                           className="block appearance-none w-full bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none focus:shadow-outline"
                           ref={refSelectChain}
-                          onChange={()=> onChangeChain()}
+                          onChange={() => onChangeChain()}
                         >
-                          { Object.keys(nftContractAddress).map((key, index)=>{
-                            return(<option selected={chain === Number.parseInt(key)} key={index} value={key}>{nftContractAddress[key]?.Label}</option>)
-                          }) } 
+                          {Object.keys(nftContractAddress).map((key, index) => {
+                            return (<option selected={chain === Number.parseInt(key)} key={index} value={key}>{nftContractAddress[key]?.Label}</option>);
+                          })}
                         </select>
                         <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-                          <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+                          <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" /></svg>
                         </div>
                       </div>
                     </div>
-                    { menuProfile.map((item, key)=>{
-                      return(
-                        <button 
-                          type="button" 
-                          className={`btn-menu-profile ${tab===item.text && ("active")}`}
-                          onClick={()=> onClickTab(item.text)}
+                    {menuProfile.map((item, key) => {
+                      return (
+                        <button
+                          type="button"
+                          className={`btn-menu-profile ${tab === item.text && ("active")}`}
+                          onClick={() => onClickTab(item.text)}
                           key={key}
                         >
                           {item.text}
                         </button>
-                      )
-                    }) }
-      
+                      );
+                    })}
+
                   </div>
                 </div>
               </div>
@@ -221,7 +221,7 @@ const ProfilePage = () => {
               )}
 
             </div>
-          )} 
+          )}
 
           {openModelSell && (
             <ModelSell

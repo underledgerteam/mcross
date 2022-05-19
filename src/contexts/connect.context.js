@@ -2,16 +2,15 @@ import React, { useState, useEffect } from "react";
 import Web3 from "web3";
 import { ipfsUriToHttps } from "../utils/ipfsUriToHttps.util";
 import { useNotification } from "web3uikit";
-// import { nftContractAddress, nftContractABI } from "../utils/constants";
 import {
-  ropstenChain,
-  avalanchFujiChain,
-  polygonMumbiChain,
-  nftContractABI,
-  nftContractAddress,
-  nftCrossContractABI,
-  nftContractAvalanhceAddress,
-  nftContractMumbaiAddress,
+  ROPSTEN_CHAIN,
+  AVALANCHE_FUJI_CHAIN,
+  POLYGON_MUMBAI_CHAIN,
+  NFT_CONTRACTS,
+  NFT_CONTRACT_ABI,
+  WETH_CONTRACT_ABI,
+  NFT_ROPSTEN_ADDRESS,
+  WETH_CONTRACT_ADDRESS,
 } from "../utils/constants";
 
 export const Web3Provider = React.createContext();
@@ -46,6 +45,8 @@ export const WalletProvider = ({ children }) => {
     feeEth: "",
     fee: "",
   });
+  const [wethContract, setWethContract] = useState();
+  const [coreContract, setCoreContract] = useState();
 
   const handleNewNotification = ({ type, icon, title, message, position }) => {
     dispatch({
@@ -289,55 +290,36 @@ export const WalletProvider = ({ children }) => {
   const createNftContract = async () => {
     // init ropsten provider for get data
     const ropstenProvider = new Web3(new Web3.providers.WebsocketProvider('wss://ropsten.infura.io/ws/v3/1e94515fc5874c4291a6491caeaff8f1'));// https://ropsten.infura.io/v3/1e94515fc5874c4291a6491caeaff8f1
-    const coreContract = new ropstenProvider.eth.Contract(
-      nftContractABI,
-      nftContractAddress
-    );
+    const coreContract = new ropstenProvider.eth.Contract(NFT_CONTRACT_ABI, NFT_ROPSTEN_ADDRESS);
     const owner = await coreContract.methods.owner().call();
-    const mintCost = await coreContract.methods.cost().call();
-    // init provider
+    // init current provider
     const web3 = new Web3(Web3.givenProvider || detectCurrentProvider());
-    // check current network
-    const chainId = await getNetworkId();
     // get contract by network id
-    let contract, token, extraFee;
-    switch (chainId) {
-      case ropstenChain:
-        contract = new web3.eth.Contract(
-          nftContractABI,
-          nftContractAddress
-        );
-        extraFee = "0";
-        token = "ETH";
+    const nftContract = new web3.eth.Contract(NFT_CONTRACTS[chain].ABI, NFT_CONTRACTS[chain].Address);
+    let cost;
+    switch (chain) {
+      case ROPSTEN_CHAIN:
+        cost = await nftContract.methods.cost().call();
         break;
-      case avalanchFujiChain:
-        contract = new web3.eth.Contract(
-          nftCrossContractABI,
-          nftContractAvalanhceAddress
-        );
-        extraFee = await contract.methods.costNFT().call();
-        token = "WETH";
+      case AVALANCHE_FUJI_CHAIN:
+        cost = await nftContract.methods.costNFT().call();
         break;
-      case polygonMumbiChain:
-        contract = new web3.eth.Contract(
-          nftCrossContractABI,
-          nftContractMumbaiAddress
-        );
-        extraFee = await contract.methods.costNFT().call();
-        token = "WETH";
+      case POLYGON_MUMBAI_CHAIN:
+        cost = await nftContract.methods.costNFT().call();
         break;
       default:
         console.log("not supported chain");
         break;
     }
-    setNftContract(contract);
+
+    setCoreContract(coreContract); // ropsten chain
+    setNftContract(nftContract);
+    setWethContract(new web3.eth.Contract(WETH_CONTRACT_ABI, WETH_CONTRACT_ADDRESS[chain]));
     setOwner(owner);
     setMintCost({
-      token,
-      valueEth: web3.utils.fromWei(mintCost, "ether"),
-      value: mintCost,
-      feeEth: web3.utils.fromWei(extraFee, "ether"),
-      fee: extraFee,
+      token: NFT_CONTRACTS[chain].Token,
+      valueEth: web3.utils.fromWei(cost, "ether"),
+      value: Number(cost)
     });
   };
 
@@ -352,27 +334,28 @@ export const WalletProvider = ({ children }) => {
     //   });
   };
 
-  // test
-  const getMaxSupply = async () => {
-    // get values for each page
-    const result = await nftContract.methods.maxSupply().call();
-    console.log({ result });
-  };
-
   const mintNft = async (mintAmount = 0) => {
     try {
       setMintProcessing(true);
-      const valueHex = Web3.utils.numberToHex((mintCost.value * mintAmount) + (mintCost.fee * mintAmount));
+      // case cross chain mint
+      if (chain === AVALANCHE_FUJI_CHAIN || chain === POLYGON_MUMBAI_CHAIN) {
+        // call approve WETH abi
+        const allowance = await wethContract.methods.allowance(account, NFT_CONTRACTS[chain].Address).call();
+        if (allowance <= 0) {
+          // if no rules then user can mint all nft
+          const maxSupply = await coreContract.methods.maxSupply().call();
+          await wethContract.methods.approve(NFT_CONTRACTS[chain].Address, mintCost.fee * maxSupply).send({ from: account });
+        }
+      }
+      // calculate mint cost
+      const valueHex = Web3.utils.numberToHex(mintCost.value * mintAmount);
       const tx = {
         from: account,
         gas: (285000 * mintAmount).toString(),
         value: valueHex,
       };
-      // case cross mint
-      if (1) {
-        // call approve WETH abi
-      }
       await nftContract.methods.mint(mintAmount).send(tx);
+      // display new nft
       const newNft = await getNewMintNft(mintAmount);
       handleNewNotification({ type: "success" });
       return { success: true, newNft };
@@ -389,15 +372,13 @@ export const WalletProvider = ({ children }) => {
   const getNewMintNft = async (mintAmount) => {
     try {
       // get all of my nft
-      const walletOfOwner = await nftContract.methods
-        .walletOfOwner(account)
-        .call();
+      const walletOfOwner = await coreContract.methods.walletOfOwner(account).call();
       // get latest uri by mint amount
       const newNft = walletOfOwner.slice(-mintAmount);
       // transform data
       let nftArr = [];
       for (let tokenIndex of newNft) {
-        const uri = await nftContract.methods.tokenURI(tokenIndex).call();
+        const uri = await coreContract.methods.tokenURI(tokenIndex).call();
         const responseUri = await fetch(ipfsUriToHttps(uri));
         let nft = await responseUri.json();
         nftArr = [

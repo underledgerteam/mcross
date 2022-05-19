@@ -288,8 +288,8 @@ export const WalletProvider = ({ children }) => {
 
   const createNftContract = async () => {
     // init ropsten provider for get data
-    const ropstenChain = new Web3(new Web3.providers.WebsocketProvider('wss://ropsten.infura.io/ws/v3/1e94515fc5874c4291a6491caeaff8f1'));// https://ropsten.infura.io/v3/1e94515fc5874c4291a6491caeaff8f1
-    const coreContract = new ropstenChain.eth.Contract(
+    const ropstenProvider = new Web3(new Web3.providers.WebsocketProvider('wss://ropsten.infura.io/ws/v3/1e94515fc5874c4291a6491caeaff8f1'));// https://ropsten.infura.io/v3/1e94515fc5874c4291a6491caeaff8f1
+    const coreContract = new ropstenProvider.eth.Contract(
       nftContractABI,
       nftContractAddress
     );

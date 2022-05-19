@@ -35,7 +35,7 @@ const Mint = () => {
   return (
     <div className="w-full flex flex-col">
       <div className="mx-auto font-bold text-4xl text-white uppercase pb-4 lg:pb-8">Mint NFT</div>
-      <div className="h-full flex gap-x-4 lg:gap-x-8">
+      <div className="h-full flex flex-col lg:flex-row gap-4 lg:gap-x-8">
 
         <div className="w-full lg:w-1/2 flex-auto">
           <h1 className="text-gray-100 font-semibold text-3xl md:text-6xl py-8">
@@ -68,15 +68,25 @@ const Mint = () => {
             <h1 className="text-gray-100 font-semibold text-3xl md:text-6xl mb-8">
               Mint Collection
             </h1>
-            <div className="flex flex-col">
-              <select name="qty" className="text-black" value={mintAmount} onChange={(e) => setMintAmount(e.target.value)} disabled={mintProcessing}>
+            <div className="flex flex-col p-0 lg:px-12">
+              <select name="qty" className="text-black mb-4" value={mintAmount} onChange={(e) => setMintAmount(e.target.value)} disabled={mintProcessing}>
                 {createSelectOptions()}
               </select>
-              <p>Mint fee: {`${valueEth} ${token} / Mint`}</p>
-              <p>Total fee: {`${valueEth * mintAmount} ${token}`}</p>
-              <button type="button" className="w-96 px-10 py-4 btn-home" disabled={mintProcessing} onClick={() => mint()}>
-                Mint
-              </button>
+              <div className="flex justify-between mb-4">
+                <div>{`Mint fee: ${valueEth}`}</div>
+                <div>{`${token} / Mint`}</div>
+              </div>
+              <div className="flex justify-between mb-4">
+                <div>{`Total fee: ${valueEth * mintAmount}`}</div>
+                <div>{`${token}`}</div>
+              </div>
+              <div className="m-auto">
+                <div>
+                  <button type="button" className="w-full lg:w-96 px-10 py-4 btn-home " disabled={mintProcessing} onClick={() => mint()}>
+                    Mint
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         )}

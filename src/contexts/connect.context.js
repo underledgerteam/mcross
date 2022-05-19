@@ -2,17 +2,15 @@ import React, { useState, useEffect } from "react";
 import Web3 from "web3";
 import { ipfsUriToHttps } from "../utils/ipfsUriToHttps.util";
 import { useNotification } from "web3uikit";
-// import { nftContractAddress, nftContractABI } from "../utils/constants";
 import {
-  ropstenChain,
-  avalanchFujiChain,
-  polygonMumbiChain,
-  nftContractABI,
-  nftContractAddress,
-  nftContract as nftContracts,
-  nftCrossContractABI,
-  nftContractAvalanhceAddress,
-  nftContractMumbaiAddress,
+  ROPSTEN_CHAIN,
+  AVALANCHE_FUJI_CHAIN,
+  POLYGON_MUMBAI_CHAIN,
+  NFT_CONTRACTS,
+  NFT_CONTRACT_ABI,
+  WETH_CONTRACT_ABI,
+  NFT_ROPSTEN_ADDRESS,
+  WETH_CONTRACT_ADDRESS,
 } from "../utils/constants";
 
 export const Web3Provider = React.createContext();
@@ -42,7 +40,7 @@ export const WalletProvider = ({ children }) => {
   const [nftContractCollection, setNftContractCollection] = useState();
   const [nftContractConverse, setNftContractConverse] = useState();
   const [mintProcessing, setMintProcessing] = useState(false);
-  const [nftConverse, setNftConverse] = useState({data: [], loading: false});
+  const [nftConverse, setNftConverse] = useState({ data: [], loading: false });
   const [chain, setChain] = useState(3);
   const [isReload, setIsReload] = useState(false);
   /* onEventListenReload use swap true/false isReload in function eventListener
@@ -56,6 +54,8 @@ export const WalletProvider = ({ children }) => {
     feeEth: "",
     fee: "",
   });
+  const [wethContract, setWethContract] = useState();
+  const [coreContract, setCoreContract] = useState();
 
   const handleNewNotification = ({ type, icon, title, message, position }) => {
     dispatch({
@@ -70,7 +70,7 @@ export const WalletProvider = ({ children }) => {
     setIsReload(!isReload);
     onEventListenReload = !isReload;
   };
-  
+
   const getNetworkId = async () => {
     const web3 = new Web3(window.ethereum);
     const currentChainId = await web3.eth.net.getId();
@@ -79,9 +79,9 @@ export const WalletProvider = ({ children }) => {
 
   const eventListener = (web3, currentProvider) => {
     currentProvider.on('accountsChanged', (accounts) => {
-      if(!accounts){
+      if (!accounts) {
         setAccount(accounts[0]);
-      }else{
+      } else {
         setAccount("");
       }
     });
@@ -90,20 +90,20 @@ export const WalletProvider = ({ children }) => {
       createNftContract();
       onSetIsReload(onEventListenReload);
     });
-    currentProvider.on('message', (message)=>{
+    currentProvider.on('message', (message) => {
       console.log("message=>", message);
     });
   };
 
-  const ChangeChain = async(chainId) => {
+  const ChangeChain = async (chainId) => {
     const web3 = new Web3(window.ethereum);
     const currentChainId = await getNetworkId();
-    
+
     if (currentChainId !== chainId) {
       try {
         setChain(chainId);
         await web3.currentProvider.request({
-          method: 'wallet_switchEthereumChain', 
+          method: 'wallet_switchEthereumChain',
           params: [{ chainId: Web3.utils.toHex(chainId) }],
         });
         createNftContract();
@@ -112,7 +112,7 @@ export const WalletProvider = ({ children }) => {
         // This error code indicates that the chain has not been added to MetaMask.
         setChain(currentChainId);
         if (switchError.code === 4902) {
-          alert('add this chain id')
+          alert('add this chain id');
         }
       }
     }
@@ -176,8 +176,8 @@ export const WalletProvider = ({ children }) => {
 
   const CreateSellCollection = async (
     objNFT,
-    handleSuccess = () => {},
-    handleError = () => {}
+    handleSuccess = () => { },
+    handleError = () => { }
   ) => {
     try {
       console.log("objNFT=>", objNFT);
@@ -202,8 +202,8 @@ export const WalletProvider = ({ children }) => {
 
   const CancelSellCollection = async (
     objNFT,
-    handleSuccess = () => {},
-    handleError = () => {}
+    handleSuccess = () => { },
+    handleError = () => { }
   ) => {
     try {
       console.log("objNFT=>", objNFT);
@@ -240,7 +240,7 @@ export const WalletProvider = ({ children }) => {
       });
     } catch (error) {
       console.log(error);
-      setMyCollectionById({ data: {}, loading: false});
+      setMyCollectionById({ data: {}, loading: false });
       throw new Error("Get By Id Collection Error");
     }
   };
@@ -266,7 +266,7 @@ export const WalletProvider = ({ children }) => {
       setMyCollection({ ...myCollection, list: objNFTs, loading: false });
     } catch (error) {
       console.log(error);
-      setMyCollection({ list: [], loading: false});
+      setMyCollection({ list: [], loading: false });
       // throw new Error("Get Collection Error");
     }
   };
@@ -279,7 +279,7 @@ export const WalletProvider = ({ children }) => {
         approveLoading: false,
         selected: true
       };
-      if(!nftContracts[chain].CrossChain){
+      if(!NFT_CONTRACTS[chain].CrossChain){
         const isApprove = await nftContractCollection.methods.getApproved(objNFT.edition).call();
         objNFT = {
           ...objNFT,
@@ -296,7 +296,7 @@ export const WalletProvider = ({ children }) => {
   const ConverseApproveNFT = async(objNFT, handleSuccess = ()=>{}, handleError = ()=>{}) =>{
     try {
       setSelectConverseNFT({...selectConverseNFT, approveLoading: true});
-      await nftContractCollection.methods.approve(nftContracts[3].AddressConverse, objNFT.edition).send({ from: account });
+      await nftContractCollection.methods.approve(NFT_CONTRACTS[3].AddressConverse, objNFT.edition).send({ from: account });
       setSelectConverseNFT({...selectConverseNFT,approve: true, approveLoading: false});
       handleNewNotification({
         type: "success",
@@ -321,12 +321,12 @@ export const WalletProvider = ({ children }) => {
     try {
       const web3 = new Web3(window.ethereum);
       setNftConverse({...nftConverse, loading: true});
-      let arr = [objConverse.edition, nftContracts[objConverse.to].Icon, account];
-      if(!nftContracts[chain].CrossChain){
-        arr = [nftContractAddress, ...arr];
+      let arr = [objConverse.edition, NFT_CONTRACTS[objConverse.to].Icon, account];
+      if(!NFT_CONTRACTS[chain].CrossChain){
+        arr = [NFT_ROPSTEN_ADDRESS, ...arr];
       }
       let fixGas = "10000000000000000";
-      if(nftContracts[chain].CrossChain){
+      if(NFT_CONTRACTS[chain].CrossChain){
         fixGas = "2000000000000000";
       }
       await nftContractConverse.methods.sendNFT(...arr).send({ from: account, value: fixGas });
@@ -334,14 +334,14 @@ export const WalletProvider = ({ children }) => {
       handleNewNotification({
         type: "success",
         title: 'Success',
-        message: `You Success Transfer NFT From ${nftContracts[chain].Lable} To ${nftContracts[objConverse.to].Lable}`,
+        message: `You Success Transfer NFT From ${NFT_CONTRACTS[chain].Lable} To ${NFT_CONTRACTS[objConverse.to].Lable}`,
       });
       onSetIsReload(onEventListenReload);
       // setSelectConverseNFT(initiSelectNFT);
       handleSuccess();
     } catch (error) {
       console.log(error);
-      setNftConverse({...nftConverse, loading: false});
+      setNftConverse({ ...nftConverse, loading: false });
       handleError();
       handleNewNotification({
         type: "error",
@@ -353,75 +353,45 @@ export const WalletProvider = ({ children }) => {
   };
 
   const createNftContract = async () => {
-    // init provider
+    // init ropsten provider for get data
+    const ropstenProvider = new Web3(new Web3.providers.WebsocketProvider('wss://ropsten.infura.io/ws/v3/1e94515fc5874c4291a6491caeaff8f1'));// https://ropsten.infura.io/v3/1e94515fc5874c4291a6491caeaff8f1
+    const coreContract = new ropstenProvider.eth.Contract(NFT_CONTRACT_ABI, NFT_ROPSTEN_ADDRESS);
+    const owner = await coreContract.methods.owner().call();
+    // init current provider
     const web3 = new Web3(Web3.givenProvider || detectCurrentProvider());
-    // check current network
-    const chainId = await getNetworkId();
-    console.log("chainId", chainId);
-    let contract, contractConverse, contractCollection, owner, token, extraFee;
-    // const coreContract = new web3.eth.Contract(
-    //   nftContractABI,
-    //   nftContractAddress
-    // );
-    // const mintCost = await coreContract.methods.cost().call();
 
-    // 
-    // contract = new web3.eth.Contract(nftContractAddress[chainId].ABI, nftContractAddress[chainId].Address);
-    // owner = await contract.methods.owner().call();
-    // extraFee = nftContractAddress[chainId].CrossChain? await contract.methods.costNFT().call(): "0";
-    // token = nftContractAddress[chainId].Token;
-    // console.log(extraFee, owner);
-
-
-    switch (chainId) {
-      case ropstenChain:
-        contractCollection = new web3.eth.Contract(nftContractABI, nftContractAddress);
-        contractConverse = new web3.eth.Contract(nftContracts[chainId].ABIConverse, nftContracts[chainId].AddressConverse);
-        owner = await contractCollection.methods.owner().call();
-        extraFee = "0";
-        token = "ETH";
+    // get contract by network id
+    const chain = await getNetworkId();
+    const nftContract = new web3.eth.Contract(NFT_CONTRACTS[chain].ABI, NFT_CONTRACTS[chain].Address);
+    let contractCollection;
+    let contractConverse =  new web3.eth.Contract(NFT_CONTRACTS[chain].ABIConverse, NFT_CONTRACTS[chain].AddressConverse);
+    let cost;
+    switch (chain) {
+      case ROPSTEN_CHAIN:
+        cost = await nftContract.methods.cost().call();
+        contractCollection = new web3.eth.Contract(NFT_CONTRACTS[chain].ABI, NFT_CONTRACTS[chain].Address);
         break;
-      case avalanchFujiChain:
-        console.log("avalanchFujiChain");
-        contract = new web3.eth.Contract(
-          nftCrossContractABI,
-          nftContractAvalanhceAddress
-        );
-        contractCollection = new web3.eth.Contract(nftContracts[chainId].ABI, nftContracts[chainId].Address);
-        contractConverse = new web3.eth.Contract(nftContracts[chainId].ABIConverse, nftContracts[chainId].Address);
-        owner = await contract.methods.owner().call();
-        extraFee = await contract.methods.costNFT().call();
-        console.log(extraFee, owner);
-        token = "WETH";
+      case AVALANCHE_FUJI_CHAIN:
+        cost = await nftContract.methods.costNFT().call();
+        contractCollection = new web3.eth.Contract(NFT_CONTRACTS[chain].ABIConverse, NFT_CONTRACTS[chain].AddressConverse);
         break;
-      case polygonMumbiChain:
-        console.log("polygonMumbiChain");
-        contract = new web3.eth.Contract(
-          nftCrossContractABI,
-          nftContractMumbaiAddress
-        );
-        // owner = await contract.methods.owner().call();
-        extraFee = await contract.methods.costNFT().call();
-        console.log(extraFee);
-
-        token = "WETH";
+      case POLYGON_MUMBAI_CHAIN:
+        cost = await nftContract.methods.costNFT().call();
         break;
       default:
         console.log("not supported chain");
         break;
     }
-    setNftContract(contract);
+    setCoreContract(coreContract); // ropsten chain
+    setNftContract(nftContract);
+    setWethContract(new web3.eth.Contract(WETH_CONTRACT_ABI, WETH_CONTRACT_ADDRESS[chain]));
     setNftContractConverse(contractConverse);
     setNftContractCollection(contractCollection);
     setOwner(owner);
     setMintCost({
-      token,
-      // valueEth: web3.utils.fromWei(mintCost, "ether"),
-      // value: mintCost,
-      valueEth: web3.utils.fromWei("0", "ether"),
-      value: "0",
-      feeEth: web3.utils.fromWei(extraFee, "ether"),
-      fee: extraFee,
+      token: NFT_CONTRACTS[chain].Token,
+      valueEth: web3.utils.fromWei(cost, "ether"),
+      value: Number(cost)
     });
   };
 
@@ -436,16 +406,20 @@ export const WalletProvider = ({ children }) => {
     //   });
   };
 
-  // test
-  const getMaxSupply = async () => {
-    // get values for each page
-    const result = await nftContract.methods.maxSupply().call();
-    console.log({ result });
-  };
-
   const mintNft = async (mintAmount = 0) => {
     try {
       setMintProcessing(true);
+      // case cross chain mint
+      if (chain === AVALANCHE_FUJI_CHAIN || chain === POLYGON_MUMBAI_CHAIN) {
+        // call approve WETH abi
+        const allowance = await wethContract.methods.allowance(account, NFT_CONTRACTS[chain].Address).call();
+        if (allowance <= 0) {
+          // if no rules then user can mint all nft
+          const maxSupply = await coreContract.methods.maxSupply().call();
+          await wethContract.methods.approve(NFT_CONTRACTS[chain].Address, mintCost.fee * maxSupply).send({ from: account });
+        }
+      }
+      // calculate mint cost
       const valueHex = Web3.utils.numberToHex(mintCost.value * mintAmount);
       const tx = {
         from: account,
@@ -453,6 +427,7 @@ export const WalletProvider = ({ children }) => {
         value: valueHex,
       };
       await nftContract.methods.mint(mintAmount).send(tx);
+      // display new nft
       const newNft = await getNewMintNft(mintAmount);
       handleNewNotification({ type: "success" });
       return { success: true, newNft };
@@ -469,15 +444,13 @@ export const WalletProvider = ({ children }) => {
   const getNewMintNft = async (mintAmount) => {
     try {
       // get all of my nft
-      const walletOfOwner = await nftContract.methods
-        .walletOfOwner(account)
-        .call();
+      const walletOfOwner = await coreContract.methods.walletOfOwner(account).call();
       // get latest uri by mint amount
       const newNft = walletOfOwner.slice(-mintAmount);
       // transform data
       let nftArr = [];
       for (let tokenIndex of newNft) {
-        const uri = await nftContract.methods.tokenURI(tokenIndex).call();
+        const uri = await coreContract.methods.tokenURI(tokenIndex).call();
         const responseUri = await fetch(ipfsUriToHttps(uri));
         let nft = await responseUri.json();
         nftArr = [
@@ -497,8 +470,8 @@ export const WalletProvider = ({ children }) => {
 
   useEffect(() => {
     // async function initFunction() {
-      checkWalletIsConnect();
-      createNftContract();
+    checkWalletIsConnect();
+    createNftContract();
     // }
     // initFunction();
     // getTransaction();

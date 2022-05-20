@@ -13,7 +13,7 @@ const HomePage = () => {
         <div className="container flex flex-col md:flex-row items-center justify-between px-5 text-gray-700">
           <div className="w-full lg:w-1/2 mx-8">
 
-            <div className="text-7xl text-gray-100 font-dark font-extrabold mb-8"> First Cross-Chain</div>
+            <div className="pt-28 md:pt-0 text-7xl text-gray-100 font-dark font-extrabold mb-8"> First Cross-Chain</div>
             {/* <h1 className="text-3xl md:text-3xl font-light mb-8">
               First Cross-Chain
             </h1> */}
@@ -28,7 +28,7 @@ const HomePage = () => {
             {!account ? (
               <button
                 type="button"
-                className="w-96 py-4 px-10 btn-home"
+                className="md:w-96 w-72 py-4 px-10 btn-home"
                 onClick={ConnectedWallet}
               >
                 Connect Wallet

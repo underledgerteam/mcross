@@ -1,27 +1,18 @@
 import React, { useState, useContext } from "react";
 import { Web3Provider } from "../../contexts/connect.context";
-import NewNftModal from "../../components/mint/NewNftModal";
 
 const Mint = () => {
-  const { account, ConnectedWallet, mintNft, mintProcessing, mintCost } = useContext(Web3Provider);
-  const { token, valueEth } = mintCost;
+  const { account, ConnectedWallet, mintNft, mintProcessing, mintCost, calculateMintCost } = useContext(Web3Provider);
+  const { token, valueEth, value } = mintCost;
   const [mintAmount, setMintAmount] = useState(1);
-  const [newNft, setNewNft] = useState([]);
-  const [nftModalVisible, setNFtModalVisible] = useState(false);
 
   const nftQty = "1,000";
   // func
   const mint = async () => {
-    const { success, newNft } = await mintNft(mintAmount);
+    const { success } = await mintNft(mintAmount);
     if (success) {
-      setNewNft(newNft);
-      setNFtModalVisible(true);
+      setMintAmount(1);
     }
-  };
-  const handleCloseModal = () => {
-    setMintAmount(1);
-    setNewNft([]);
-    setNFtModalVisible(false);
   };
   // component
   const createSelectOptions = () => {
@@ -77,7 +68,7 @@ const Mint = () => {
                 <div>{`${token} / Mint`}</div>
               </div>
               <div className="flex justify-between mb-4">
-                <div>{`Total fee: ${valueEth * mintAmount}`}</div>
+                <div>{`Total fee: ${calculateMintCost(value, mintAmount)}`}</div>
                 <div>{`${token}`}</div>
               </div>
               <div className="m-auto">
@@ -90,14 +81,6 @@ const Mint = () => {
             </div>
           </div>
         )}
-
-        {nftModalVisible && (
-          <NewNftModal
-            nftArr={newNft}
-            onClose={handleCloseModal}
-          />
-        )}
-
       </div>
     </div>
   );

@@ -303,34 +303,34 @@ export const WalletProvider = ({ children }) => {
       // throw new Error("Get Collection Error");
     }
   };
-  
-  const ChangeConverseNFT = async(objNFT) => {
-    if(objNFT){
+
+  const ChangeConverseNFT = async (objNFT) => {
+    if (objNFT) {
       objNFT = {
         ...objNFT,
         approve: true,
         approveLoading: false,
         selected: true
       };
-      if(!NFT_CONTRACTS[chain].CrossChain){
+      if (!NFT_CONTRACTS[chain].CrossChain) {
         const isApprove = await nftContractCollection.methods.getApproved(objNFT.edition).call();
         objNFT = {
           ...objNFT,
-          approve: (isApprove!=="0x0000000000000000000000000000000000000000")? true: false,
+          approve: (isApprove !== "0x0000000000000000000000000000000000000000") ? true : false,
         };
       }
       setSelectConverseNFT(objNFT);
-    }else{
+    } else {
       setSelectConverseNFT(initiSelectNFT);
     }
-    
+
   };
 
-  const ConverseApproveNFT = async(objNFT, handleSuccess = ()=>{}, handleError = ()=>{}) =>{
+  const ConverseApproveNFT = async (objNFT, handleSuccess = () => { }, handleError = () => { }) => {
     try {
-      setSelectConverseNFT({...selectConverseNFT, approveLoading: true});
+      setSelectConverseNFT({ ...selectConverseNFT, approveLoading: true });
       await nftContractCollection.methods.approve(NFT_CONTRACTS[3].AddressConverse, objNFT.edition).send({ from: account });
-      setSelectConverseNFT({...selectConverseNFT,approve: true, approveLoading: false});
+      setSelectConverseNFT({ ...selectConverseNFT, approve: true, approveLoading: false });
       handleNewNotification({
         type: "success",
         title: 'Success',
@@ -339,7 +339,7 @@ export const WalletProvider = ({ children }) => {
       handleSuccess();
     } catch (error) {
       console.log(error);
-      setSelectConverseNFT({...selectConverseNFT, approveLoading: false});
+      setSelectConverseNFT({ ...selectConverseNFT, approveLoading: false });
       handleError();
       handleNewNotification({
         type: "error",
@@ -350,19 +350,19 @@ export const WalletProvider = ({ children }) => {
     }
   };
 
-  const ConverseNFT = async (objConverse, handleSuccess = ()=>{}, handleError = ()=>{}) => {
+  const ConverseNFT = async (objConverse, handleSuccess = () => { }, handleError = () => { }) => {
     try {
       setNftConverse({...nftConverse, loading: true});
       let arr = [objConverse.edition, NFT_CONTRACTS[objConverse.to].Icon, account];
-      if(!NFT_CONTRACTS[chain].CrossChain){
+      if (!NFT_CONTRACTS[chain].CrossChain) {
         arr = [NFT_ROPSTEN_ADDRESS, ...arr];
       }
       let fixGas = "10000000000000000";
-      if(NFT_CONTRACTS[chain].CrossChain){
+      if (NFT_CONTRACTS[chain].CrossChain) {
         fixGas = "2000000000000000";
       }
       await nftContractConverse.methods.sendNFT(...arr).send({ from: account, value: fixGas });
-      setNftConverse({...nftConverse, loading: false});
+      setNftConverse({ ...nftConverse, loading: false });
       handleNewNotification({
         type: "success",
         title: 'Success',
@@ -414,6 +414,7 @@ export const WalletProvider = ({ children }) => {
         break;
       default:
         console.log("not supported chain");
+        handleNewNotification({ type: "error", message: "Not supported chain" });
         break;
     }
     setCoreContract(coreContract); // ropsten chain
@@ -451,26 +452,22 @@ export const WalletProvider = ({ children }) => {
         if (allowance <= 0) {
           // if no rules then user can mint all nft
           const maxSupply = await coreContract.methods.maxSupply().call();
-          await wethContract.methods.approve(NFT_CONTRACTS[chain].Address, mintCost.fee * maxSupply).send({ from: account });
+          await wethContract.methods.approve(NFT_CONTRACTS[chain].Address, mintCost.value * maxSupply).send({ from: account });
         }
       }
       // calculate mint cost
-      const valueHex = Web3.utils.numberToHex(mintCost.value * mintAmount);
       const tx = {
         from: account,
         gas: (285000 * mintAmount).toString(),
-        value: valueHex,
+        value: mintCost.value * mintAmount,
       };
       await nftContract.methods.mint(mintAmount).send(tx);
-      // display new nft
-      const newNft = await getNewMintNft(mintAmount);
-      handleNewNotification({ type: "success" });
-      return { success: true, newNft };
+      handleNewNotification({ type: "success", title: "Mint success", message: "Please wait a few minutes for minting precess." });
+      return { success: true };
     } catch (error) {
       console.log({ error });
-      // manage show error on notification
-      handleNewNotification({ type: "error" });
-      return { success: false, error };
+      handleNewNotification({ type: "error", title: "Mint fail", message: error.message });
+      return { success: false };
     } finally {
       setMintProcessing(false);
     }
@@ -501,6 +498,10 @@ export const WalletProvider = ({ children }) => {
     } catch (error) {
       console.log("error getNewMintNft", error);
     }
+  };
+
+  const calculateMintCost = (mintCost, mintAmount) => {
+    return Web3.utils.fromWei(Web3.utils.toBN(mintCost).mul(Web3.utils.toBN(mintAmount)), "ether");
   };
 
   useEffect(() => {
@@ -540,6 +541,7 @@ export const WalletProvider = ({ children }) => {
         mintNft,
         mintProcessing,
         mintCost,
+        calculateMintCost
       }}
     >
       {children}

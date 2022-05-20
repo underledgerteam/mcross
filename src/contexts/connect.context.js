@@ -11,6 +11,8 @@ import {
   WETH_CONTRACT_ABI,
   NFT_ROPSTEN_ADDRESS,
   WETH_CONTRACT_ADDRESS,
+  NFT_CROSS_CONTRACT_ABI,
+  NFT_AVALANHCE_FUJI_ADDRESS,
 } from "../utils/constants";
 
 export const Web3Provider = React.createContext();
@@ -58,6 +60,10 @@ export const WalletProvider = ({ children }) => {
     value: "",
     feeEth: "",
     fee: "",
+  });
+  const [cost, setCost] = useState({
+    mintCost: "",
+    feeCost: ""
   });
   const [wethContract, setWethContract] = useState();
   const [coreContract, setCoreContract] = useState();
@@ -435,8 +441,14 @@ export const WalletProvider = ({ children }) => {
 
   const createNftContract = async () => {
     // init ropsten provider for get data
-    const ropstenProvider = new Web3(new Web3.providers.WebsocketProvider('wss://ropsten.infura.io/ws/v3/1e94515fc5874c4291a6491caeaff8f1'));// https://ropsten.infura.io/v3/1e94515fc5874c4291a6491caeaff8f1
+    const ropstenProvider = new Web3(new Web3.providers.WebsocketProvider('wss://ropsten.infura.io/ws/v3/1e94515fc5874c4291a6491caeaff8f1'));
     const coreContract = new ropstenProvider.eth.Contract(NFT_CONTRACT_ABI, NFT_ROPSTEN_ADDRESS);
+    const mintCost = await coreContract.methods.cost().call();
+
+    const avalancheProvider = new Web3(new Web3.providers.HttpProvider('https://api.avax-test.network/ext/bc/C/rpc'));
+    const crossContract = new avalancheProvider.eth.Contract(NFT_CROSS_CONTRACT_ABI, NFT_AVALANHCE_FUJI_ADDRESS);
+    const feeCost = await crossContract.methods.costNFT().call();
+
     const owner = await coreContract.methods.owner().call();
     // init current provider
     const web3 = new Web3(Web3.givenProvider || detectCurrentProvider());
@@ -445,7 +457,7 @@ export const WalletProvider = ({ children }) => {
     const chain = await getNetworkId();
     const nftContract = new web3.eth.Contract(NFT_CONTRACTS[chain].ABI, NFT_CONTRACTS[chain].Address);
     let contractCollection, contractMarketplace;
-    let contractConverse =  new web3.eth.Contract(NFT_CONTRACTS[chain].ABIConverse, NFT_CONTRACTS[chain].AddressConverse);
+    let contractConverse = new web3.eth.Contract(NFT_CONTRACTS[chain].ABIConverse, NFT_CONTRACTS[chain].AddressConverse);
     let cost;
     switch (chain) {
       case ROPSTEN_CHAIN:
@@ -477,6 +489,10 @@ export const WalletProvider = ({ children }) => {
       token: NFT_CONTRACTS[chain].Token,
       valueEth: web3.utils.fromWei(cost, "ether"),
       value: Number(cost)
+    });
+    setCost({
+      mintCost: web3.utils.fromWei(mintCost, "ether"),
+      feeCost: Web3.utils.fromWei(Web3.utils.toBN(feeCost).sub(Web3.utils.toBN(mintCost)), "ether")
     });
   };
 
@@ -590,7 +606,8 @@ export const WalletProvider = ({ children }) => {
         mintNft,
         mintProcessing,
         mintCost,
-        calculateMintCost
+        calculateMintCost,
+        cost
       }}
     >
       {children}

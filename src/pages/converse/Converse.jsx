@@ -1,4 +1,4 @@
-import { useState, Fragment, useRef, useContext, useEffect } from "react";
+import { Fragment, useRef, useContext, useEffect } from "react";
 
 import { CryptoLogos, Loading } from "web3uikit";
 
@@ -22,7 +22,8 @@ const Converse = () => {
     ConverseNFT, 
     ConverseApproveNFT,
     ChangeConverseNFT,
-    nftContractCollection 
+    nftContractCollection,
+    ConnectedWallet
   } = useContext(Web3Provider);
 
   const refSelectFromChain = useRef();
@@ -70,6 +71,15 @@ const Converse = () => {
           <div className="text-7xl font-dark font-extrabold mb-8 text-center">NFT Converse</div>
 
           <div className="flex">
+          {!account ? (
+            <div className="w-full flex-auto py-8 px-8 text-center">
+              <div className="">
+                <button type="button" className="w-96 px-10 py-4 btn-home" onClick={ConnectedWallet}>
+                  Connect Wallet
+                </button>
+              </div>
+            </div>
+          ) : (
             <div className="lg:w-1/3 md:w-2/3 w-3/3 mx-auto">
               <div className="py-4 px-8 shadow-lg rounded-lg my-10 backdrop-blur-lg bg-[#323652]/50">
                 <div className="flex justify-center -mt-16">
@@ -113,7 +123,7 @@ const Converse = () => {
                         onChange={() => onChangeNFT()}
                       >
                         <option>{myCollection.loading ? "Loading..." : (myCollection?.list.length > 0) ? "Please Select NFT" : "NFT No Record!"}</option>
-                        {myCollection?.list.map((data, key) => {
+                        {!myCollection.loading && myCollection?.list.map((data, key) => {
                           return (<option key={key} value={data.edition}>{data.name}</option>);
                         })}
                       </select>
@@ -153,15 +163,15 @@ const Converse = () => {
                   </div>
                   { selectConverseNFT?.selected && (
                     <div className="bg-slate-400/20 p-5 mt-8 mb-3 rounded-3xl">
-                      <div className="flex">
+                      {/* <div className="flex mb-1">
                         <div className="w-1/2">
                           Fee
                         </div>
                         <div className="w-1/2 text-right">
                           0.00005 ETH
                         </div>
-                      </div>
-                      <div className="flex mt-1">
+                      </div> */}
+                      <div className="flex">
                         <div className="w-1/2">
                           Estimated Time
                         </div>
@@ -187,6 +197,7 @@ const Converse = () => {
 
               </div>
             </div>
+            )}
           </div>
         </div>
       </div>

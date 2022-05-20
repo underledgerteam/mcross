@@ -27,6 +27,10 @@ export const WalletProvider = ({ children }) => {
   const [account, setAccount] = useState("");
   const [owner, setOwner] = useState("");
   const [balance, setBalance] = useState(0);
+  const [myMarketplace, setMyMarketplace] = useState({
+    list: [],
+    loading: false,
+  });
   const [myCollection, setMyCollection] = useState({
     list: [],
     loading: false,
@@ -39,6 +43,7 @@ export const WalletProvider = ({ children }) => {
   const [nftContract, setNftContract] = useState();
   const [nftContractCollection, setNftContractCollection] = useState();
   const [nftContractConverse, setNftContractConverse] = useState();
+  const [nftContractMarketplace, setNftContractMarketplace] = useState();
   const [mintProcessing, setMintProcessing] = useState(false);
   const [nftConverse, setNftConverse] = useState({ data: [], loading: false });
   const [chain, setChain] = useState(3);
@@ -79,8 +84,9 @@ export const WalletProvider = ({ children }) => {
 
   const eventListener = (web3, currentProvider) => {
     currentProvider.on('accountsChanged', (accounts) => {
-      if (!accounts) {
+      if (accounts) {
         setAccount(accounts[0]);
+        onSetIsReload(onEventListenReload);
       } else {
         setAccount("");
       }
@@ -225,7 +231,35 @@ export const WalletProvider = ({ children }) => {
       throw new Error("Object");
     }
   };
-
+  const GetMyMarketplace = async() => {
+    try {
+      // setMyMarketplace({ ...myMarketplace, loading: true });
+      // console.log(await nftContractMarketplace.methods)
+      // getAllMarketItems, getMyMarketplace(assress)
+      const getAllMarketItems = await nftContractMarketplace.methods.getAllMarketItems().call();
+      console.log("getAllMarketItems=>", getAllMarketItems)
+      const getMyMarketplace = await nftContractMarketplace.methods.getMyMarketplace(account).call();
+      console.log("getMyMarketplace=>", getMyMarketplace)
+      // let objMarkets = [];
+      // for (var i = 0; i < walletOfOwner.length; i++) {
+      //   const uri = await nftContractMarketplace.methods.tokenURI(walletOfOwner[i]).call();
+      //   const responseUri = await fetch(ipfsUriToHttps(uri));
+      //   let objNFT = await responseUri.json();
+      //   objMarkets = [
+      //     ...objMarkets,
+      //     {
+      //       ...objNFT,
+      //       jsonUri: uri,
+      //     },
+      //   ];
+      // }
+      // setMyMarketplace({ ...myMarketplace, list: objMarkets, loading: false });
+    } catch (error) {
+      console.log(error);
+      // setMyMarketplace({ list: [], loading: false });
+      // throw new Error("Get Collection Error");
+    }
+  };
   const GetByIdCollection = async (id) => {
     try {
       setMyCollectionById({ ...myCollectionById, data: {}, loading: true });
@@ -254,7 +288,6 @@ export const WalletProvider = ({ children }) => {
         const uri = await nftContractCollection.methods.tokenURI(walletOfOwner[i]).call();
         const responseUri = await fetch(ipfsUriToHttps(uri));
         let objNFT = await responseUri.json();
-
         objNFTs = [
           ...objNFTs,
           {
@@ -319,7 +352,6 @@ export const WalletProvider = ({ children }) => {
 
   const ConverseNFT = async (objConverse, handleSuccess = ()=>{}, handleError = ()=>{}) => {
     try {
-      const web3 = new Web3(window.ethereum);
       setNftConverse({...nftConverse, loading: true});
       let arr = [objConverse.edition, NFT_CONTRACTS[objConverse.to].Icon, account];
       if(!NFT_CONTRACTS[chain].CrossChain){
@@ -334,10 +366,10 @@ export const WalletProvider = ({ children }) => {
       handleNewNotification({
         type: "success",
         title: 'Success',
-        message: `You Success Transfer NFT From ${NFT_CONTRACTS[chain].Lable} To ${NFT_CONTRACTS[objConverse.to].Lable}`,
+        message: `You Success Transfer NFT From ${NFT_CONTRACTS[chain].Label} To ${NFT_CONTRACTS[objConverse.to].Label}`,
       });
-      onSetIsReload(onEventListenReload);
-      // setSelectConverseNFT(initiSelectNFT);
+      setSelectConverseNFT(initiSelectNFT);
+      setIsReload(!isReload);
       handleSuccess();
     } catch (error) {
       console.log(error);
@@ -363,13 +395,14 @@ export const WalletProvider = ({ children }) => {
     // get contract by network id
     const chain = await getNetworkId();
     const nftContract = new web3.eth.Contract(NFT_CONTRACTS[chain].ABI, NFT_CONTRACTS[chain].Address);
-    let contractCollection;
+    let contractCollection, contractMarketplace;
     let contractConverse =  new web3.eth.Contract(NFT_CONTRACTS[chain].ABIConverse, NFT_CONTRACTS[chain].AddressConverse);
     let cost;
     switch (chain) {
       case ROPSTEN_CHAIN:
         cost = await nftContract.methods.cost().call();
         contractCollection = new web3.eth.Contract(NFT_CONTRACTS[chain].ABI, NFT_CONTRACTS[chain].Address);
+        contractMarketplace = new web3.eth.Contract(NFT_CONTRACTS[chain].ABIMarketplace, NFT_CONTRACTS[chain].AddressMarketplace);
         break;
       case AVALANCHE_FUJI_CHAIN:
         cost = await nftContract.methods.costNFT().call();
@@ -377,6 +410,7 @@ export const WalletProvider = ({ children }) => {
         break;
       case POLYGON_MUMBAI_CHAIN:
         cost = await nftContract.methods.costNFT().call();
+        contractCollection = new web3.eth.Contract(NFT_CONTRACTS[chain].ABIConverse, NFT_CONTRACTS[chain].AddressConverse);
         break;
       default:
         console.log("not supported chain");
@@ -385,6 +419,7 @@ export const WalletProvider = ({ children }) => {
     setCoreContract(coreContract); // ropsten chain
     setNftContract(nftContract);
     setWethContract(new web3.eth.Contract(WETH_CONTRACT_ABI, WETH_CONTRACT_ADDRESS[chain]));
+    setNftContractMarketplace(contractMarketplace);
     setNftContractConverse(contractConverse);
     setNftContractCollection(contractCollection);
     setOwner(owner);
@@ -481,6 +516,7 @@ export const WalletProvider = ({ children }) => {
     <Web3Provider.Provider
       value={{
         ChangeChain,
+        GetMyMarketplace,
         GetByIdCollection,
         GetCollection,
         ConnectedWallet,
@@ -491,9 +527,11 @@ export const WalletProvider = ({ children }) => {
         ConverseNFT,
         isReload,
         nftContractCollection,
+        nftContractMarketplace,
         chain,
         nftConverse,
         selectConverseNFT,
+        myMarketplace,
         myCollection,
         myCollectionById,
         owner,

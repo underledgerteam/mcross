@@ -67,7 +67,7 @@ const ModelSell = ({ objNFT, onConfirm, onClose }) => {
                 <div className="flex border-b-4 border-warmGray-300 rounded-lg my-5"></div>
                 
                 <div className="ml-8 text-2xl text-warmGray-200 text-left">
-                  You Recieve : {(Number(refPrice.current.value) - Number(refPrice.current.value)*serviceFee/100)} Weth
+                  You Recieve : {(Number(refPrice?.current?.value) - Number(refPrice?.current?.value)*serviceFee/100)} Weth
                   {/* <div className="text-sm mt-3">
                     <p className="text-lg">Example</p>
                     <p>1. Amount = Price - (Service Fee + Axelar Fee)(%)</p>

@@ -15,31 +15,45 @@ const CollectionDetail = () => {
   const params = useParams();
   const navigate = useNavigate();
   const [ openModel, setOpenModel ] = useState(false);
-  const { chain, owner, account, myCollectionById, nftContractCollection, GetByIdCollection, CreateSellCollection } = useContext(Web3Provider);
+  const { 
+    chain, 
+    owner, 
+    account, 
+    selectConverseNFT,
+    myCollectionById, 
+    nftContractCollection, 
+    ChangeConverseNFT,
+    GetByIdCollection, 
+    ConverseApproveNFT,
+    CreateSellCollection } = useContext(Web3Provider);
  
   const onHistoryBack = () => {
     navigate("/profile");
   };
   const onOpenModel = () => {
     setOpenModel(true);
+    ChangeConverseNFT("Marketplace", myCollectionById.data);
   };
-  const onConfirmSellNFT = () => {
-    // alert("Process MetaMask Sell NFT");
-    CreateSellCollection(
-      myCollectionById,
-      () => {
-        setOpenModel(false);
-        setTimeout(() => {
-          navigate('/profile');
-        }, 2000);
-        localStorage.setItem("myTab", "My Marketplace");
-      }
-    );
+  const onConfirmSellNFT = (isApprove, nftPrice) => {
+    if(isApprove){
+      CreateSellCollection(
+        selectConverseNFT,
+        nftPrice,
+        () => {
+          setOpenModel(false);
+          setTimeout(() => {
+            navigate('/profile');
+          }, 2000);
+          localStorage.setItem("myTab", "My Marketplace");
+        }
+      );
+    }else{
+      ConverseApproveNFT("Marketplace", selectConverseNFT);
+    }
   };
   const onCloseModel = () => {
     setOpenModel(false);
   };
-
   useEffect(()=>{
     if(account && nftContractCollection){
       GetByIdCollection(params.id);
@@ -138,7 +152,7 @@ const CollectionDetail = () => {
         </div>
         {openModel && (
           <ModelSell
-            objNFT={myCollectionById.data}
+            objNFT={selectConverseNFT}
             onConfirm={onConfirmSellNFT}
             onClose={onCloseModel}
           />

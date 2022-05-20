@@ -1,10 +1,12 @@
 import React, { useState, useContext } from "react";
 import { Web3Provider } from "../../contexts/connect.context";
+import { AVALANCHE_FUJI_CHAIN, POLYGON_MUMBAI_CHAIN } from "../../utils/constants";
 
 const Mint = () => {
-  const { account, ConnectedWallet, mintNft, mintProcessing, mintCost, calculateMintCost } = useContext(Web3Provider);
-  const { token, valueEth, value } = mintCost;
+  const { account, ConnectedWallet, mintNft, mintProcessing, mintCost, calculateMintCost, cost, chain } = useContext(Web3Provider);
+  const { token, value } = mintCost;
   const [mintAmount, setMintAmount] = useState(1);
+  const { mintCost: valueEth, feeCost } = cost;
 
   const nftQty = "1,000";
   // func
@@ -36,10 +38,13 @@ const Mint = () => {
             Mint simplifies the experience for brands to sell NFTs, launch branded marketplaces, and provide seamless transactions, interactions, and utility for collectors.
           </p>
           <p className="text-gray-100 font-semibold text-sm md:text-md lg:text-lg mb-4">
-            Mint offers all the tools your brand will need to get up and running quickly
+            If you Mint NFT with Ropsten Chain, You can pay Ethereum cost {valueEth} ETH per Mint.
+          </p>
+          <p className="text-gray-100 font-semibold text-sm md:text-md lg:text-lg mb-4">
+            but You Mint NFT with Other Chain, You can pay WETH cost {valueEth} WETH and extra charged fee {feeCost} WETH per Mint.
           </p>
           <p className="text-gray-100 font-bold text-sm md:text-md lg:text-lg">
-            Limited {nftQty} NFT
+            Limited {nftQty} NFT only.
           </p>
         </div>
 
@@ -64,12 +69,21 @@ const Mint = () => {
                 {createSelectOptions()}
               </select>
               <div className="flex justify-between mb-4">
-                <div>{`Mint fee: ${valueEth}`}</div>
-                <div>{`${token} / Mint`}</div>
+                <div>{`Mint fee:`}</div>
+                <div>{`${valueEth} ${token} / Mint`}</div>
               </div>
+              {chain === AVALANCHE_FUJI_CHAIN || chain === POLYGON_MUMBAI_CHAIN ?
+                (
+                  <div className="flex justify-between mb-4">
+                    <div>{`Other Chain fee:`}</div>
+                    <div>{`${feeCost} ${token} / Mint`}</div>
+                  </div>
+                ) :
+                (null)
+              }
               <div className="flex justify-between mb-4">
-                <div>{`Total fee: ${calculateMintCost(value, mintAmount)}`}</div>
-                <div>{`${token}`}</div>
+                <div className="underline">{`Total fee:`}</div>
+                <div>{`${calculateMintCost(value, mintAmount)} ${token}`}</div>
               </div>
               <div className="m-auto">
                 <div>

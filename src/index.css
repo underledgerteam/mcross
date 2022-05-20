@@ -49,7 +49,24 @@ code {
 .btn-converse:not([disabled]):active, .btn-connect:not([disabled]):active {
   @apply active:from-custom-purple2 active:to-custom-blue2;
 }
-
+.btn-confirm-sell {
+  @apply text-white md:mb-0 bg-custom-purple2/90 border border-custom-purple1 px-5 py-2 text-sm shadow-sm font-medium tracking-wider rounded-full;
+}
+.btn-confirm-sell:disabled {
+  @apply disabled:opacity-50 disabled:cursor-not-allowed;
+}
+.btn-confirm-sell:not([disabled]):hover {
+  @apply hover:shadow-lg hover:bg-custom-purple2
+}
+.btn-cancel-sell {
+  @apply bg-red-500 border border-red-500 px-5 py-2 text-sm shadow-sm font-medium tracking-wider text-white rounded-full;
+}
+.btn-cancel-sell:disabled {
+  @apply disabled:opacity-50 disabled:cursor-not-allowed;
+}
+.btn-cancel-sell:not([disabled]):hover {
+  @apply hover:shadow-lg hover:bg-red-600;
+}
 .lgkmjB > span {
   margin-top: 2rem!important;
 }

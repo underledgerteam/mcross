@@ -41,11 +41,18 @@ export const WalletProvider = ({ children }) => {
     data: [],
     loading: false,
   });
+  const [listMarketplace, setListMarketplace] = useState({
+    list: [],
+    loading: false,
+  });
+
+
   const [selectConverseNFT, setSelectConverseNFT] = useState(initiSelectNFT);
   const [nftContract, setNftContract] = useState();
   const [nftContractCollection, setNftContractCollection] = useState();
   const [nftContractConverse, setNftContractConverse] = useState();
   const [nftContractMarketplace, setNftContractMarketplace] = useState();
+  const [nftContractMarketplaceList, setNftContractMarketplaceList] = useState();
   const [mintProcessing, setMintProcessing] = useState(false);
   const [nftConverse, setNftConverse] = useState({ data: [], loading: false });
   const [chain, setChain] = useState(3);
@@ -107,13 +114,13 @@ export const WalletProvider = ({ children }) => {
     });
   };
 
-  const getPriceCryptoCurrency = async() => {
+  const getPriceCryptoCurrency = async () => {
     return 0.0005;
     let res = await fetch('http://rest.coinapi.io/v1/exchangerate/usd?apikey=AB5A6633-A858-4156-AE68-9F4AE466B308&filter_asset_id=ETH,AVAX,MATIC');
     res = await res.json();
     let getPrice = 0;
     for (let i = 0; i < res.rates.length; i++) {
-      if(res.rates[i].asset_id_quote === NFT_CONTRACTS[chain].Token){
+      if (res.rates[i].asset_id_quote === NFT_CONTRACTS[chain].Token) {
         getPrice = res.rates[i].rate;
         return getPrice;
       }
@@ -260,13 +267,48 @@ export const WalletProvider = ({ children }) => {
     }
   };
 
-  const GetMyMarketplace = async() => {
+  const getMarketplaceList = async () => {
+    try {
+      const web3 = new Web3(window.ethereum);
+      setListMarketplace({ ...listMarketplace, loading: true });
+      const getMyMarketplace = await nftContractMarketplaceList.methods.getAllMarketItems().call();
+      let objMarkets = [];
+      for (var i = 0; i < getMyMarketplace.length; i++) {
+
+        const uri = await nftContractCollection.methods.tokenURI(getMyMarketplace[i].tokenId).call();
+
+        const responseUri = await fetch(ipfsUriToHttps(uri));
+
+        let objNFT = await responseUri.json();
+        objMarkets = [
+          ...objMarkets,
+          {
+            ...objNFT,
+            price: web3.utils.fromWei(getMyMarketplace[i].price, "ether"),
+            owner: getMyMarketplace[i].owner,
+            nftContract: getMyMarketplace[i].nftContract,
+            status: getMyMarketplace[i].status,
+            jsonUri: uri,
+          },
+        ];
+      }
+      setListMarketplace({ ...listMarketplace, list: objMarkets, loading: false });
+
+    } catch (error) {
+      console.log(error);
+      setListMarketplace({ list: [], loading: false });
+    }
+
+
+  };
+
+  const GetMyMarketplace = async () => {
     try {
       const web3 = new Web3(window.ethereum);
       setMyMarketplace({ ...myMarketplace, loading: true });
       // const getAllMarketItems = await nftContractMarketplace.methods.getAllMarketItems().call();
       const getMyMarketplace = await nftContractMarketplace.methods.getMyMarketplace(account).call();
-      const mewObjMarketplace = getMyMarketplace.filter((x)=>x.tokenId !== "0");
+      const mewObjMarketplace = getMyMarketplace.filter((x) => x.tokenId !== "0");
       let objMarkets = [];
       for (var i = 0; i < mewObjMarketplace.length; i++) {
         const uri = await nftContractCollection.methods.tokenURI(mewObjMarketplace[i].tokenId).call();
@@ -336,16 +378,16 @@ export const WalletProvider = ({ children }) => {
     }
   };
 
-  const checkApproved = async(type, nftId) => {
+  const checkApproved = async (type, nftId) => {
     const isApprove = await nftContractCollection.methods.getApproved(nftId).call();
     let isApproveAssress;
-    if(type === "Converse"){
-      isApproveAssress = NFT_CONTRACTS[chain].AddressConverse
+    if (type === "Converse") {
+      isApproveAssress = NFT_CONTRACTS[chain].AddressConverse;
     }
-    if(type === "Marketplace"){
-      isApproveAssress = NFT_CONTRACTS[chain].AddressMarketplace
+    if (type === "Marketplace") {
+      isApproveAssress = NFT_CONTRACTS[chain].AddressMarketplace;
     }
-    return (isApprove === isApproveAssress) ? true : false
+    return (isApprove === isApproveAssress) ? true : false;
   };
 
   const ChangeConverseNFT = async (type, objNFT) => {
@@ -374,11 +416,11 @@ export const WalletProvider = ({ children }) => {
     try {
       setSelectConverseNFT({ ...selectConverseNFT, approveLoading: true });
       let approveAssress;
-      if(type === "Converse"){
-        approveAssress = NFT_CONTRACTS[chain].AddressConverse
+      if (type === "Converse") {
+        approveAssress = NFT_CONTRACTS[chain].AddressConverse;
       }
-      if(type === "Marketplace"){
-        approveAssress = NFT_CONTRACTS[chain].AddressMarketplace
+      if (type === "Marketplace") {
+        approveAssress = NFT_CONTRACTS[chain].AddressMarketplace;
       }
       await nftContractCollection.methods.approve(approveAssress, objNFT.edition).send({ from: account });
       setSelectConverseNFT({ ...selectConverseNFT, approve: true, approveLoading: false });
@@ -404,7 +446,7 @@ export const WalletProvider = ({ children }) => {
   const ConverseNFT = async (objConverse, handleSuccess = () => { }, handleError = () => { }) => {
     try {
       const web3 = new Web3(window.ethereum);
-      setNftConverse({...nftConverse, loading: true});
+      setNftConverse({ ...nftConverse, loading: true });
       let arr = [objConverse.edition, NFT_CONTRACTS[objConverse.to].Icon, account];
       if (!NFT_CONTRACTS[chain].CrossChain) {
         arr = [NFT_ROPSTEN_ADDRESS, ...arr];
@@ -456,7 +498,7 @@ export const WalletProvider = ({ children }) => {
     // get contract by network id
     const chain = await getNetworkId();
     const nftContract = new web3.eth.Contract(NFT_CONTRACTS[chain].ABI, NFT_CONTRACTS[chain].Address);
-    let contractCollection, contractMarketplace;
+    let contractCollection, contractMarketplace, contractMarketplaceList;
     let contractConverse = new web3.eth.Contract(NFT_CONTRACTS[chain].ABIConverse, NFT_CONTRACTS[chain].AddressConverse);
     let cost;
     switch (chain) {
@@ -464,6 +506,7 @@ export const WalletProvider = ({ children }) => {
         cost = await nftContract.methods.cost().call();
         contractCollection = new web3.eth.Contract(NFT_CONTRACTS[chain].ABI, NFT_CONTRACTS[chain].Address);
         contractMarketplace = new web3.eth.Contract(NFT_CONTRACTS[chain].ABIMarketplace, NFT_CONTRACTS[chain].AddressMarketplace);
+        contractMarketplaceList = new web3.eth.Contract(NFT_CONTRACTS[chain].ABIMarketplace, NFT_CONTRACTS[chain].AddressMarketplace);
         break;
       case AVALANCHE_FUJI_CHAIN:
         cost = await nftContract.methods.costNFT().call();
@@ -484,6 +527,7 @@ export const WalletProvider = ({ children }) => {
     setNftContractMarketplace(contractMarketplace);
     setNftContractConverse(contractConverse);
     setNftContractCollection(contractCollection);
+    setNftContractMarketplaceList(contractMarketplaceList);
     setOwner(owner);
     setMintCost({
       token: NFT_CONTRACTS[chain].Token,
@@ -583,6 +627,7 @@ export const WalletProvider = ({ children }) => {
       value={{
         ChangeChain,
         GetMyMarketplace,
+        getMarketplaceList,
         GetByIdCollection,
         GetCollection,
         ConnectedWallet,
@@ -594,10 +639,12 @@ export const WalletProvider = ({ children }) => {
         isReload,
         nftContractCollection,
         nftContractMarketplace,
+        nftContractMarketplaceList,
         chain,
         nftConverse,
         selectConverseNFT,
         myMarketplace,
+        listMarketplace,
         myCollection,
         myCollectionById,
         owner,

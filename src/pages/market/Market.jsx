@@ -2,8 +2,6 @@ import React, { useContext, useEffect } from "react";
 import { Loading } from "web3uikit";
 import { Web3Provider } from "../../contexts/connect.context";
 import { NFT_CONTRACTS as nftContractAddress } from "../../utils/constants";
-
-import { NFT_DATA } from "../../assets/data/mockUpData";
 import CardListTemplate from "../../components/shared/card/CardListTemplate";
 
 const Market = () => {
@@ -15,8 +13,6 @@ const Market = () => {
       getMarketplaceList();
     }
   }, [account, isReload, nftContractMarketplace]);
-
-  const data = NFT_DATA;
 
   const handleClickName = (id) => {
     console.log(id);

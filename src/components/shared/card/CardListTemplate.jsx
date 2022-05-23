@@ -1,21 +1,50 @@
 import React from "react";
+import { Icon, CryptoLogos } from "web3uikit";
 import { ipfsUriToHttps } from "../../../utils/ipfsUriToHttps.util";
+import { shortenAddress } from "../../../utils/shortenAddress.util";
+import { NFT_CONTRACTS as nftContractAddress } from "../../../utils/constants";
 
 
-const CardListTemplate = ({ id, name, textAction, price, image, rarity, chain, onClick, onClickAction }) => {
+const CardListTemplate = ({ id, name, owner, textAction, price, image, rarity, chain, onClick, onClickAction }) => {
 
   return (
     <div className="w-full rounded overflow-hidden shadow-md hover:shadow-xl bg-[#292929] relative group">
       <img className="w-full cursor-pointer" src={image && ipfsUriToHttps(image)} alt={name} onClick={onClick} />
+      {owner && (
+        <div className="flex justify-center px-3 py-3 bg-[#C0C9F6]/30">
+          <Icon
+            fill="#ffffff"
+            svg="user"
+            size="20px"
+          />&nbsp;Owner By : {owner && shortenAddress(owner)}
+        </div>
+      )}
       <div className="px-6 py-4">
         <div className="grid grid-cols-2">
           <p><span className="bg-slate-100 text-slate-800 text-xs font-semibold px-1.5 py-0.5 rounded">🔗{chain}</span></p>
           <p className="text-right"><span className="bg-yellow-100 text-yellow-800 text-xs font-semibold px-2.5 py-0.5 rounded">{rarity} #{id}</span></p>
         </div>
-        <div className="grid grid-cols-2">
-          <div className="font-bold text-white text-xl mb-2 mt-3 cursor-pointer" onClick={onClick}>{name}</div>
-          {price && (<div className="font-bold text-white text-right justify-right text-xl mb-2 mt-3">🪙: {price} WETH</div>)}
+        <div className="grid-cols-2 flex mt-3 mb-3">
+          <div className="font-bold text-white text-xl px-3 py-3 cursor-pointer" onClick={onClick}>{name}</div>
         </div>
+        {price && (
+          <div className="grid mt-3">
+            <hr />
+            <div className="mr-4 ml-4">
+              <div className="text-xl text-gray-500 font-bold mb-2 mt-3 font-">
+
+              </div>
+              <div className="flex text-xl font-bold text-white mb-2">
+                Price :&nbsp;
+                <CryptoLogos
+                  chain={nftContractAddress[chain]?.Icon.toLowerCase()}
+                  size="28px"
+                /> {price} WETH
+              </div>
+            </div>
+          </div>
+        )}
+
         <div className="mt-5">
           <button
             className={`w-full font-bold py-3 px-12 rounded bg-gradient-to-r from-green-500 to-blue-600 text-white hover:from-pink-500 hover:to-yellow-500 z-50`}

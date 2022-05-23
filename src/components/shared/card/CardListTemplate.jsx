@@ -5,8 +5,11 @@ import { shortenAddress } from "../../../utils/shortenAddress.util";
 import { NFT_CONTRACTS as nftContractAddress } from "../../../utils/constants";
 
 
-const CardListTemplate = ({ id, name, owner, textAction, price, image, rarity, chain, onClick, onClickAction }) => {
-
+const CardListTemplate = ({ id, name, owner, textAction, price, image, rarity, chain, sell = false, onClick, onClickAction }) => {
+  const colorButton = {
+    "buy": "from-green-500 to-blue-600 text-white hover:from-pink-500 hover:to-yellow-500",
+    "sell": "from-red-500 to-pink-600 text-white hover:from-red-600 hover:to-pink-700"
+  }
   return (
     <div className="w-full rounded overflow-hidden shadow-md hover:shadow-xl bg-[#292929] relative group">
       <img className="w-full cursor-pointer" src={image && ipfsUriToHttps(image)} alt={name} onClick={onClick} />
@@ -46,16 +49,14 @@ const CardListTemplate = ({ id, name, owner, textAction, price, image, rarity, c
         )}
 
         <div className="mt-5">
-          <button
-            className={`w-full font-bold py-3 px-12 rounded bg-gradient-to-r from-green-500 to-blue-600 text-white hover:from-pink-500 hover:to-yellow-500 z-50`}
+          <button 
+            className={`w-full font-bold py-3 px-12 rounded bg-gradient-to-r ${colorButton[(sell)?"sell" :"buy"]} z-50`}
             onClick={onClickAction}
           >
             {textAction}
           </button>
         </div>
-
       </div>
-
     </div >
   );
 };

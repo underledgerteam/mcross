@@ -163,14 +163,14 @@ const Converse = () => {
                       </div>
                       { selectConverseNFT?.selected && (
                         <div className="bg-slate-400/20 p-5 mt-8 mb-3 rounded-3xl">
-                          <div className="flex mb-1">
+                          {/* <div className="flex mb-1">
                             <div className="w-1/2">
                               Fee
                             </div>
                             <div className="w-1/2 text-right">
                               { `${selectConverseNFT?.fee / 2} ${nftContractAddress[chain].Token}` }
                             </div>
-                          </div>
+                          </div> */}
                           <div className="flex">
                             <div className="w-1/2">
                               Estimated Time

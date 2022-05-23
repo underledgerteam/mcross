@@ -59,7 +59,7 @@ const Market = () => {
                           price={item.price}
                           image={item.image}
                           rarity={'Common'}
-                          chain={nftContractAddress[chain]?.Label}
+                          chain={nftContractAddress[chain]?.ShortLabel}
                           owner={item.owner}
                           textAction={'Buy'}
                           onClick={() => handleClickName(item.edition)}

@@ -25,7 +25,7 @@ const Market = () => {
 
   return (
     <div className="w-full flex flex-col">
-      <div className="mx-auto font-bold text-4xl text-white uppercase">Marketplace</div>
+      <div className="text-7xl font-dark font-extrabold mb-8 text-center uppercase">Marketplace</div>
       <div className="h-full flex gap-x-4 lg:gap-x-8 justify-center">
 
         {!account ? (

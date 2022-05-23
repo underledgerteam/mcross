@@ -1,4 +1,5 @@
 import { useState, useRef, Fragment, useContext } from "react";
+import { Loading } from "web3uikit";
 
 const currencyList = [{
   text: "WETH"
@@ -30,6 +31,7 @@ const ModelSell = ({ objNFT, onConfirm, onClose }) => {
                   <h5 className="text-warmGray-200 text-2xl">Price: </h5>
                   <input 
                     type="number" 
+                    disabled={objNFT?.approveLoading}
                     className="mx-3 shadow appearance-none w-full border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
                     ref={refPrice} 
                     onChange={onChangePrice}
@@ -55,22 +57,22 @@ const ModelSell = ({ objNFT, onConfirm, onClose }) => {
                   <div className="grid grid-cols-2 text-xl">
                     <p>Service Fee : </p>
                     <p className="text-right">{serviceFee}%</p>
-                    <p>Axelar Fee : </p>
+                    {/* <p>Axelar Fee : </p>
                     <p className="text-right">{axelarFee}%</p>
                     <p>Creator Fee : </p>
-                    <p className="text-right">{creatorFee}%</p>
+                    <p className="text-right">{creatorFee}%</p> */}
                   </div>
                 </div>
                 
                 <div className="flex border-b-4 border-warmGray-300 rounded-lg my-5"></div>
                 
                 <div className="ml-8 text-2xl text-warmGray-200 text-left">
-                  You Recieve : {price} Weth
-                  <div className="text-sm mt-3">
+                  You Recieve : {(Number(refPrice?.current?.value) - Number(refPrice?.current?.value)*serviceFee/100)} Weth
+                  {/* <div className="text-sm mt-3">
                     <p className="text-lg">Example</p>
                     <p>1. Amount = Price - (Service Fee + Axelar Fee)(%)</p>
                     <p>2. Total = Amount - Creator Fee(%)</p>
-                  </div>
+                  </div> */}
                 </div>
               </div>    
             </div>
@@ -82,10 +84,19 @@ const ModelSell = ({ objNFT, onConfirm, onClose }) => {
                 Close
               </button>
               <button 
-                className="mb-2 text-white md:mb-0 bg-custom-purple2/90 border border-custom-purple1 px-5 py-2 text-sm shadow-sm font-medium tracking-wider rounded-full hover:shadow-lg hover:bg-custom-purple2"
-                onClick={()=> onConfirm()}
+                disabled={Number(refPrice?.current?.value) <= 0 || objNFT?.approveLoading}
+                className="mb-2 btn-confirm-sell"
+                onClick={()=> {
+                  if(Number(refPrice?.current?.value) <= 0){
+                    refPrice.current.focus();
+                  }else{
+                    onConfirm(objNFT?.approve, Number(refPrice.current.value));
+                  }
+                }}
               >
-                Confirm
+                { objNFT?.approveLoading?(
+                  <Loading fontSize={14} size={14} text={objNFT?.approve?"Confirm": "Approve"} direction="right" />
+                ): objNFT?.approve?"Confirm": "Approve" }
               </button>
             </div>
           </div>

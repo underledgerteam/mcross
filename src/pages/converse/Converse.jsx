@@ -1,4 +1,4 @@
-import { Fragment, useRef, useContext, useEffect } from "react";
+import { Fragment, useRef, useContext, useEffect, useState } from "react";
 
 import { CryptoLogos, Loading } from "web3uikit";
 
@@ -36,12 +36,7 @@ const Converse = () => {
 
   const onChangeNFT = () => {
     const getNFT = myCollection.list.find((x)=>x.edition === Number.parseInt(refSelectNFT.current.value));
-    ChangeConverseNFT(getNFT);
-    // if(getNFT){
-    //   setSelectNFT({selected: true, image: ipfsUriToHttps(getNFT.image)});
-    // }else{
-    //   setSelectNFT(initiSelectNFT);
-    // }
+    ChangeConverseNFT("Converse", getNFT);
   };
 
   const onChangeToChain = () => {
@@ -55,7 +50,7 @@ const Converse = () => {
         to: Number.parseInt(refSelectToChain.current.value)
       });
     }else{
-      ConverseApproveNFT(selectConverseNFT);
+      ConverseApproveNFT("Converse", selectConverseNFT);
     }
   };
   useEffect(()=>{
@@ -163,14 +158,14 @@ const Converse = () => {
                   </div>
                   { selectConverseNFT?.selected && (
                     <div className="bg-slate-400/20 p-5 mt-8 mb-3 rounded-3xl">
-                      {/* <div className="flex mb-1">
+                      <div className="flex mb-1">
                         <div className="w-1/2">
                           Fee
                         </div>
                         <div className="w-1/2 text-right">
-                          0.00005 ETH
+                          { `${selectConverseNFT?.fee / 2} ${nftContractAddress[chain].Token}` }
                         </div>
-                      </div> */}
+                      </div>
                       <div className="flex">
                         <div className="w-1/2">
                           Estimated Time

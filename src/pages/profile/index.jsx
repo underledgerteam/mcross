@@ -1,5 +1,4 @@
 import { useState, useMemo, Fragment, useRef, useContext, useEffect } from "react";
-
 import { Table, CryptoLogos, Loading } from "web3uikit";
 
 import { Web3Provider } from "../../contexts/connect.context";
@@ -31,13 +30,29 @@ const data = [...Array(32)].map((v, key) => {
 });
 
 const ProfilePage = () => {
-  const { chain, account, isReload, myCollection, ChangeChain, GetCollection, CreateSellCollection, CancelSellCollection, ConnectedWallet, nftContractCollection } = useContext(Web3Provider);
+  const { 
+    chain, 
+    account, 
+    isReload, 
+    myCollection,
+    nftContractMarketplace,
+    selectConverseNFT,
+    ChangeChain, 
+    GetMyMarketplace,
+    myMarketplace,
+    ConverseApproveNFT,
+    GetCollection, 
+    ChangeConverseNFT,
+    CreateSellCollection, 
+    CancelSellCollection, 
+    ConnectedWallet, 
+    nftContractCollection 
+  } = useContext(Web3Provider);
 
   const refSelectChain = useRef();
 
   const [tab, setTab] = useState(localStorage.getItem("myTab") || "My Collection");
   const [openModelSell, setOpenModelSell] = useState(false);
-  const [myCollectionSell, setMyCollectionSell] = useState({});
   const [openModelCancelSell, setOpenModelCancelSell] = useState(false);
 
   const onChangeChain = async () => {
@@ -50,29 +65,36 @@ const ProfilePage = () => {
   // for open Model Sell
   const onOpenModelSell = (objNFT) => {
     setOpenModelSell(true);
-    setMyCollectionSell(objNFT);
+    ChangeConverseNFT("Marketplace", objNFT);
   };
-  const onConfirmSellNFT = () => {
-    // alert("Process MetaMask Sell NFT");
-    CreateSellCollection(
-      myCollectionSell,
-      () => {
-        setOpenModelSell(false);
-        setTab("My Marketplace");
-      }
-    );
+  const onConfirmSellNFT = (isApprove, nftPrice) => {
+    if(isApprove){
+      CreateSellCollection(
+        selectConverseNFT,
+        nftPrice,
+        () => {
+          setOpenModelSell(false);
+          setTab("My Marketplace");
+        }
+      );
+    }else{
+      ConverseApproveNFT("Marketplace", selectConverseNFT);
+    }
   };
   const onCloseModelSell = () => {
     setOpenModelSell(false);
   };
   // for open Model Cancel Sell
-  const onOpenModelCancelSell = () => {
+  const onOpenModelCancelSell = (objNFT) => {
+    ChangeConverseNFT("CancelSell", objNFT);
     setOpenModelCancelSell(true);
   };
-  const onConfirmCancelSell = () => {
+  const onConfirmCancelSell = (objNFT) => {
     // alert("Process MetaMask Sell NFT");
-    setOpenModelCancelSell(false);
-    CancelSellCollection();
+    CancelSellCollection(objNFT, ()=> {
+      setOpenModelCancelSell(false);
+      setTab("My Collection");
+    });
   };
   const onCloseModelCancelSell = () => {
     setOpenModelCancelSell(false);
@@ -88,10 +110,11 @@ const ProfilePage = () => {
   ], []);
 
   useEffect(() => {
-    if (account && nftContractCollection) {
+    if (account && nftContractCollection && nftContractMarketplace) {
       GetCollection();
+      GetMyMarketplace();
     }
-  },[account, isReload, nftContractCollection]);
+  },[account, isReload, nftContractCollection, nftContractMarketplace]);
 
   return (
     <Fragment>
@@ -188,19 +211,27 @@ const ProfilePage = () => {
                   title="My Marketplace"
                 >
                   <div className="grid lg:grid-cols-3 grid-cols-1 gap-4">
-                    {[...Array(10)].length > 0 ? [...Array(10)].map((v, key) => {
-                      return (
-                        <CardNFT
-                          key={key}
-                          objNFT={{
-                            id: key,
-                            chain: nftContractAddress[chain]?.Label
-                          }}
-                          sell={true}
-                          onClickCancelSell={onOpenModelCancelSell}
-                        />
-                      );
-                    }) : (<h5 className="text-center text-2xl col-span-3 text-gray-200">Marketplace No Result...</h5>)}
+                    {myMarketplace.loading ? (<div className="col-span-3 mx-auto">
+                      <Loading
+                        fontSize={20}
+                        size={100}
+                        spinnerColor="#fff"
+                        text="Loading...."
+                      /></div>) :
+                      (myMarketplace?.list.length > 0) ? myMarketplace.list.map((item, key) => {
+                        return (
+                          <CardNFT
+                            key={key}
+                            objNFT={{
+                              ...item,
+                              chain: nftContractAddress[chain]?.Label
+                            }}
+                            sell={true}
+                            onClickCancelSell={onOpenModelCancelSell}
+                          />
+                        );
+                      }) : (<h5 className="text-center text-2xl col-span-3 text-gray-200">My Collection No Result...</h5>)
+                    }
                   </div>
                 </TabCardProfile>
               )}
@@ -225,7 +256,7 @@ const ProfilePage = () => {
 
           {openModelSell && (
             <ModelSell
-              objNFT={myCollectionSell}
+              objNFT={selectConverseNFT}
               onConfirm={onConfirmSellNFT}
               onClose={onCloseModelSell}
             />
@@ -233,13 +264,11 @@ const ProfilePage = () => {
 
           {openModelCancelSell && (
             <ModelCancelSell
+              objNFT={selectConverseNFT}
               onConfirm={onConfirmCancelSell}
               onClose={onCloseModelCancelSell}
             />
           )}
-
-
-
 
         </div>
       </div>

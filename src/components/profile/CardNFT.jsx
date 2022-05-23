@@ -22,7 +22,7 @@ const CardNFT = ({objNFT, sell = false, onClickSell = ()=>{}, onClickCancelSell 
               <p className="text-right"><span className="bg-yellow-100 text-yellow-800 text-xs font-semibold px-2.5 py-0.5 rounded">Legend #{objNFT?.edition}</span></p>
             </div>
             <div className="font-bold text-white text-xl mb-2">{objNFT?.name}</div>
-            { sell && (<div className="font-bold text-white text-right text-xl">🪙: 0.01 WETH</div>) }
+            { sell && (<div className="font-bold text-white text-right text-xl">🪙: {objNFT?.price} WETH</div>) }
             {/* <div className="grid grid-cols-2">
               <p>a</p>
               <p className="text-right">b</p>
@@ -34,7 +34,7 @@ const CardNFT = ({objNFT, sell = false, onClickSell = ()=>{}, onClickCancelSell 
           { sell ? (
             <button 
               className={`w-full font-bold py-3 px-12 rounded bg-gradient-to-r from-red-500 to-pink-600 text-white hover:from-red-600 hover:to-pink-700 z-50`}
-              onClick={onClickCancelSell}
+              onClick={()=> onClickCancelSell(objNFT)}
             >
               Cancel Sell
             </button>

@@ -1,14 +1,18 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
+import { Loading } from "web3uikit";
 import { Web3Provider } from "../../contexts/connect.context";
-
-import { NFT_DATA } from "../../assets/data/mockUpData";
+import { NFT_CONTRACTS as nftContractAddress } from "../../utils/constants";
 import CardListTemplate from "../../components/shared/card/CardListTemplate";
 
 const Market = () => {
 
-  const { account, ConnectedWallet } = useContext(Web3Provider);
+  const { chain, account, ConnectedWallet, nftContractMarketplace, isReload, getMarketplaceList, listMarketplace } = useContext(Web3Provider);
 
-  const data = NFT_DATA;
+  useEffect(() => {
+    if (account && nftContractMarketplace) {
+      getMarketplaceList();
+    }
+  }, [account, isReload, nftContractMarketplace]);
 
   const handleClickName = (id) => {
     console.log(id);
@@ -36,21 +40,31 @@ const Market = () => {
             <div className="py-8 px-8 shadow-lg rounded-lg my-20 backdrop-blur-lg bg-[#323652]/50">
               <div className="flex flex-col">
                 <div className="grid lg:grid-cols-4 grid-cols-1 gap-4">
-                  {data?.map((item) => (
-                    <div className="w-full rounded overflow-hidden shadow-md hover:shadow-xl bg-[#292929] relative group" key={item.id} >
-                      <CardListTemplate
-                        id={item.id}
-                        name={item.title}
-                        price={item.currentBid}
-                        image={item.imgUrl}
-                        rarity={'Common'}
-                        chain={'Ethereum'}
-                        textAction={'Buy'}
-                        onClick={() => handleClickName(item.id)}
-                        onClickAction={() => handleClickAction(item.id)}
-                      />
-                    </div>
-                  ))}
+                  {listMarketplace.loading ? (<div className="col-span-4 mx-auto">
+                    <Loading
+                      fontSize={20}
+                      size={100}
+                      spinnerColor="#fff"
+                      text="Loading...."
+                    /></div>) :
+                    (listMarketplace?.list.length > 0) ? listMarketplace.list.map((item, key) => {
+                      return (<div className="w-full rounded overflow-hidden shadow-md hover:shadow-xl bg-[#292929] relative group" key={key} >
+                        <CardListTemplate
+                          id={item.edition}
+                          name={item.name}
+                          price={item.price}
+                          image={item.image}
+                          rarity={'Common'}
+                          chain={nftContractAddress[chain]?.Label}
+                          owner={item.owner}
+                          textAction={'Buy'}
+                          onClick={() => handleClickName(item.edition)}
+                          onClickAction={() => handleClickAction(item.edition)}
+                        />
+                      </div>
+                      );
+                    }) : (<h5 className="text-center text-2xl col-span-4 text-gray-200">Marketplace List No Result...</h5>)
+                  }
                 </div>
               </div>
             </div>

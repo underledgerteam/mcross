@@ -116,7 +116,12 @@ const ProfilePage = () => {
   ], []);
 
   useEffect(() => {
-    console.log(account, nftContractCollection , nftContractMarketplace)
+    if(refSelectChain?.current?.value){
+      refSelectChain.current.value = chain;
+    }
+  },[chain]);
+  
+  useEffect(() => {
     if (account && nftContractCollection && nftContractMarketplace) {
       ChangeConverseNFT("Marketplace", null);
       GetCollection();
@@ -161,9 +166,10 @@ const ProfilePage = () => {
                             className="block appearance-none w-full bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none focus:shadow-outline"
                             ref={refSelectChain}
                             onChange={() => onChangeChain()}
+                            defaultValue={chain}
                           >
                             {Object.keys(nftContractAddress).map((key, index) => {
-                              return (<option selected={chain === Number.parseInt(key)} key={index} value={key}>{nftContractAddress[key]?.Label}</option>);
+                              return (<option key={index} value={key}>{nftContractAddress[key]?.Label}</option>);
                             })}
                           </select>
                           <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">

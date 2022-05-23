@@ -53,6 +53,13 @@ const Converse = () => {
       ConverseApproveNFT("Converse", selectConverseNFT);
     }
   };
+
+  useEffect(() => {
+    if(refSelectFromChain?.current?.value){
+      refSelectFromChain.current.value = chain;
+    }
+  },[chain]);
+
   useEffect(()=>{
     if(account && nftContractCollection){
       ChangeConverseNFT("Converse", null);
@@ -101,9 +108,10 @@ const Converse = () => {
                             className="block appearance-none w-full bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none focus:shadow-outline"
                             ref={refSelectFromChain}
                             onChange={() => onChangeFromChain()}
+                            defaultValue={chain}
                           >
                             {Object.keys(nftContractAddress).map((key, index) => {
-                              return (<option selected={chain === Number.parseInt(key)} key={index} value={key}>{nftContractAddress[key]?.Label}</option>);
+                              return (<option key={index} value={key}>{nftContractAddress[key]?.Label}</option>);
                             })}
                           </select>
 

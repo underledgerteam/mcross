@@ -561,14 +561,17 @@ export const WalletProvider = ({ children }) => {
         if (allowance <= 0) {
           // if no rules then user can mint all nft
           const maxSupply = await coreContract.methods.maxSupply().call();
-          await wethContract.methods.approve(NFT_CONTRACTS[chain].Address, mintCost.value * maxSupply).send({ from: account });
+          await wethContract.methods.approve(
+            NFT_CONTRACTS[chain].Address,
+            Web3.utils.numberToHex(mintCost.value * maxSupply)
+          ).send({ from: account });
         }
       }
       // calculate mint cost
       const tx = {
         from: account,
         gas: (285000 * mintAmount).toString(),
-        value: mintCost.value * mintAmount,
+        value: Web3.utils.numberToHex(mintCost.value * mintAmount),
       };
       await nftContract.methods.mint(mintAmount).send(tx);
       handleNewNotification({ type: "success", title: "Mint success", message: "Please wait a few minutes for minting precess." });

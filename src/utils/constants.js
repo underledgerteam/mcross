@@ -19,11 +19,11 @@ export const NFT_ROPSTEN_MARKETPLACE_ADDRESS = "0xB7f3bcBB70664491D42aaE295F74ec
 
 export const NFT_AVALANHCE_FUJI_ADDRESS = "0x87D00f9223ebAC32fd1fbdc526D9927774267617";
 export const NFT_AVALANHCE_CONVERSE_ADDRESS = "0xc16b3e4b56dbf62f312f9ec857ac3df36d7a6fef";
-export const NFT_AVALANHCE_MARKETPLACE_ADDRESS = null;
+export const NFT_AVALANHCE_MARKETPLACE_ADDRESS = "0x575bec1c6072f1a5102472ac642db17df60f2b6c";
 
 export const NFT_POLYGON_MUMBAI_ADDRESS = "0xE8bA59F8F566A3F5D3320095dA6CAABC5751ea0C";
 export const NFT_POLYGON_CONVERSE_ADDRESS = "0x8866b90De258e40A91B9a39E2dEF1f0C40e6Ab5a";
-export const NFT_POLYGON_MARKETPLACE_ADDRESS = null;
+export const NFT_POLYGON_MARKETPLACE_ADDRESS = "0x938d9ce22e4f76499b3382d6182e232d16bb410c";
 
 export const WETH_AVALANCHE_FUJI_ADDRESS = "0x3613C187b3eF813619A25322595bA5E297E4C08a";
 export const WETH_POLYGON_MUMBAI_ADDRESS = "0xfba15fFF35558fE2A469B96A90AeD7727FE38fAE";
@@ -35,6 +35,7 @@ export const POLYGON_MUMBAI_CHAIN = 80001;
 export const NFT_CONTRACTS = {
   3: {
     Label: "Ropsten Testnet Network",
+    ShortLabel: "Ropsten",
     Icon: "Ethereum",
     Token: "ETH",
 
@@ -51,6 +52,7 @@ export const NFT_CONTRACTS = {
   },
   43113: {
     Label: "AVAX Testnet Network",
+    ShortLabel: "Avalanche",
     Icon: "Avalanche",
     Token: "AVAX",
 
@@ -67,6 +69,7 @@ export const NFT_CONTRACTS = {
   },
   80001: {
     Label: "Polygon Testnet Network",
+    ShortLabel: "Polygon",
     Icon: "Polygon",
     Token: "MATIC",
 

@@ -27,7 +27,9 @@ const Mint = () => {
 
   return (
     <div className="w-full flex flex-col">
-      <div className="mx-auto font-bold text-4xl text-white uppercase pb-4 lg:pb-8">Mint NFT</div>
+      <div className="text-7xl font-dark font-extrabold mb-8 text-center">
+        Mint NFT
+      </div>
       <div className="h-full flex flex-col lg:flex-row gap-4 lg:gap-x-8">
 
         <div className="w-full lg:w-1/2 flex-auto">

@@ -1,5 +1,7 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, Fragment } from "react";
 import { Web3Provider } from "../../contexts/connect.context";
+
+import CardContainerTemplate from "../../components/shared/card/CardContainerTemplate";
 import { AVALANCHE_FUJI_CHAIN, POLYGON_MUMBAI_CHAIN } from "../../utils/constants";
 
 const Mint = () => {
@@ -60,40 +62,46 @@ const Mint = () => {
             </div>
           </div>
         ) : (
-          <div className="w-full lg:w-1/2 flex-auto py-8 px-8 shadow-lg rounded-lg backdrop-blur-lg bg-[#323652]/50 text-center">
-            <h1 className="text-gray-100 font-semibold text-3xl md:text-6xl mb-8">
-              Mint Collection
-            </h1>
-            <div className="flex flex-col p-0 lg:px-12">
-              <select name="qty" className="text-black mb-4" value={mintAmount} onChange={(e) => setMintAmount(e.target.value)} disabled={mintProcessing}>
-                {createSelectOptions()}
-              </select>
-              <div className="flex justify-between mb-4">
-                <div>{`Mint fee:`}</div>
-                <div>{`${valueEth} ${token} / Mint`}</div>
-              </div>
-              {chain === AVALANCHE_FUJI_CHAIN || chain === POLYGON_MUMBAI_CHAIN ?
-                (
-                  <div className="flex justify-between mb-4">
-                    <div>{`Other Chain fee:`}</div>
-                    <div>{`${feeCost} ${token} / Mint`}</div>
+          <CardContainerTemplate
+            text="text-center"
+            size="w-full lg:w-1/2 flex-auto"
+            padding="py-8 px-8"
+          >
+            <Fragment>
+              <h1 className="text-gray-100 font-semibold text-3xl md:text-6xl mb-8">
+                Mint Collection
+              </h1>
+              <div className="flex flex-col p-0 lg:px-12">
+                <select name="qty" className="text-black mb-4" value={mintAmount} onChange={(e) => setMintAmount(e.target.value)} disabled={mintProcessing}>
+                  {createSelectOptions()}
+                </select>
+                <div className="flex justify-between mb-4">
+                  <div>{`Mint fee:`}</div>
+                  <div>{`${valueEth} ${token} / Mint`}</div>
+                </div>
+                {chain === AVALANCHE_FUJI_CHAIN || chain === POLYGON_MUMBAI_CHAIN ?
+                  (
+                    <div className="flex justify-between mb-4">
+                      <div>{`Other Chain fee:`}</div>
+                      <div>{`${feeCost} ${token} / Mint`}</div>
+                    </div>
+                  ) :
+                  (null)
+                }
+                <div className="flex justify-between mb-4">
+                  <div className="underline">{`Total fee:`}</div>
+                  <div>{`${calculateMintCost(value, mintAmount)} ${token}`}</div>
+                </div>
+                <div className="m-auto">
+                  <div>
+                    <button type="button" className="w-full lg:w-96 px-10 py-4 btn-home " disabled={mintProcessing} onClick={() => mint()}>
+                      Mint
+                    </button>
                   </div>
-                ) :
-                (null)
-              }
-              <div className="flex justify-between mb-4">
-                <div className="underline">{`Total fee:`}</div>
-                <div>{`${calculateMintCost(value, mintAmount)} ${token}`}</div>
-              </div>
-              <div className="m-auto">
-                <div>
-                  <button type="button" className="w-full lg:w-96 px-10 py-4 btn-home " disabled={mintProcessing} onClick={() => mint()}>
-                    Mint
-                  </button>
                 </div>
               </div>
-            </div>
-          </div>
+            </Fragment>
+          </CardContainerTemplate>
         )}
       </div>
     </div>

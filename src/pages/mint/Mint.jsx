@@ -34,7 +34,7 @@ const Mint = () => {
       <div className="h-full flex flex-col lg:flex-row gap-4 lg:gap-x-8">
 
         <div className="w-full lg:w-1/2 flex-auto">
-          <h1 className="text-white font-bold text-3xl md:text-6xl mb-4 lg:my-8">
+          <h1 className="text-white font-bold text-3xl md:text-5xl mb-4 lg:my-8">
             Condition Mint NFT
           </h1>
           <p className="text-white font-semibold text-sm md:text-md lg:text-lg mb-4">
@@ -54,7 +54,7 @@ const Mint = () => {
         {!account ? (
           <div className="w-full lg:w-1/2 flex-auto py-8 px-8 text-center">
             <div className="">
-              <h1 className="text-white font-bold text-3xl md:text-6xl mb-8">
+              <h1 className="text-white font-bold text-3xl md:text-5xl mb-8">
                 Mint Collection
               </h1>
               <button type="button" className="w-96 px-10 py-4 btn-home" onClick={ConnectedWallet}>
@@ -64,7 +64,7 @@ const Mint = () => {
           </div>
         ) : (
           <div className="w-full lg:w-1/2 flex-auto py-8 px-8 shadow-lg rounded-lg backdrop-blur-lg bg-[#323652]/50 text-center">
-            <h1 className="text-white font-bold text-3xl md:text-6xl mb-8">
+            <h1 className="text-white font-bold text-3xl md:text-5xl mb-8">
               Mint Collection
             </h1>
             <div className="flex flex-col p-0 lg:px-12">

@@ -26,12 +26,13 @@ const ModelCancelSell = ({ objNFT, onConfirm, onClose }) => {
             </button>
             <button 
               disabled={!objNFT?.name || objNFT?.approveLoading}
-              className={`mb-2 md:mb-0 ${objNFT?.approveLoading && "w-36"} btn-cancel-sell`}
+              className={`md:mb-0 btn-cancel-sell`}
               onClick={()=> onConfirm(objNFT)}
             >
-              { objNFT?.approveLoading?(
-                <Loading fontSize={14} size={14} text="Cancel Sell" direction="right" />
-              ):"Cancel Sell" }
+              <div className="flex justify-center gap-2">
+                { objNFT?.approveLoading &&(<Loading fontSize={14} direction="right" />) } 
+                Cancel Sell
+              </div>
             </button>
             
           </div>

@@ -188,9 +188,10 @@ const Converse = () => {
                           className="w-48 px-4 py-2 btn-connect btn-converse disabled:opacity-50 disabled:cursor-not-allowed"
                           onClick={()=> onApprove(selectConverseNFT?.approve)}
                         >
-                          { selectConverseNFT?.approveLoading || nftConverse?.loading?(
-                            <Loading fontSize={20} size={20} text={selectConverseNFT?.approve?"Transfer": "Approve"} direction="right" />
-                          ): selectConverseNFT?.approve?"Transfer": "Approve" }
+                          <div className="flex justify-center gap-2">
+                            { selectConverseNFT?.approveLoading || nftConverse?.loading && <Loading fontSize={20} direction="right" /> }
+                            { selectConverseNFT?.approve?"Transfer": "Approve" }
+                          </div>
                         </button>
                       </div>
                     </div>

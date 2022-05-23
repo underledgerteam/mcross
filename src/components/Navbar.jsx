@@ -32,7 +32,7 @@ const dropdownMenu = (toggleMenu, pathname) => {
     return (null);
   }
   return (
-    <div className="fixed -top-0 -right-0 mt-20 p-4 flex flex-col gap-4 md:hidden justify-start items-end animate-slide-in bg-custom-navbar drop-shadow-navbar">
+    <div className="fixed -top-0 -right-0 z-10 mt-20 p-4 flex flex-col gap-4 md:hidden justify-start items-end animate-slide-in bg-custom-navbar drop-shadow-navbar">
       {navData.map((item) => {
         const isActive = (pathname === item.href) ? "text-white" : "text-custom-gray1 opacity-70";
         return (

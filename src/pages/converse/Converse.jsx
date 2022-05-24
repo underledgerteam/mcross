@@ -10,16 +10,16 @@ import { ipfsUriToHttps } from "../../utils/ipfsUriToHttps.util";
 import { NFT_CONTRACTS as nftContractAddress } from "../../utils/constants";
 
 const Converse = () => {
-  const { 
-    chain, 
-    isReload, 
-    account, 
-    nftConverse, 
+  const {
+    chain,
+    isReload,
+    account,
+    nftConverse,
     selectConverseNFT,
-    ChangeChain, 
-    myCollection, 
+    ChangeChain,
+    myCollection,
     GetCollection,
-    ConverseNFT, 
+    ConverseNFT,
     ConverseApproveNFT,
     ChangeConverseNFT,
     nftContractCollection,
@@ -35,7 +35,7 @@ const Converse = () => {
   };
 
   const onChangeNFT = () => {
-    const getNFT = myCollection.list.find((x)=>x.edition === Number.parseInt(refSelectNFT.current.value));
+    const getNFT = myCollection.list.find((x) => x.edition === Number.parseInt(refSelectNFT.current.value));
     ChangeConverseNFT("Converse", getNFT);
   };
 
@@ -44,28 +44,28 @@ const Converse = () => {
   };
 
   const onApprove = (isApprove) => {
-    if(isApprove){
+    if (isApprove) {
       ConverseNFT({
         ...selectConverseNFT,
         to: Number.parseInt(refSelectToChain.current.value)
       });
-    }else{
+    } else {
       ConverseApproveNFT("Converse", selectConverseNFT);
     }
   };
 
   useEffect(() => {
-    if(refSelectFromChain?.current?.value){
+    if (refSelectFromChain?.current?.value) {
       refSelectFromChain.current.value = chain;
     }
-  },[chain]);
+  }, [chain]);
 
-  useEffect(()=>{
-    if(account && nftContractCollection){
+  useEffect(() => {
+    if (account && nftContractCollection) {
       ChangeConverseNFT("Converse", null);
       GetCollection();
     }
-  },[account, isReload, nftContractCollection]);
+  }, [account, isReload, nftContractCollection]);
 
   return (
     <Fragment>
@@ -74,17 +74,17 @@ const Converse = () => {
           <div className="text-7xl font-dark font-extrabold text-center">NFT Converse</div>
 
           <div className="flex">
-          {!account ? (
-            <div className="w-full flex-auto py-8 px-8 text-center">
-              <div className="">
-                <button type="button" className="w-96 px-10 py-4 btn-home" onClick={ConnectedWallet}>
-                  Connect Wallet
-                </button>
+            {!account ? (
+              <div className="w-full flex-auto py-8 px-8 text-center">
+                <div className="">
+                  <button type="button" className="w-full md:w-96 px-10 py-4 btn-home" onClick={ConnectedWallet}>
+                    Connect Wallet
+                  </button>
+                </div>
               </div>
-            </div>
-          ) : (
-            <div className="lg:w-1/3 md:w-2/3 w-3/3 mx-auto mt-8">
-              <CardContainerTemplate
+            ) : (
+              <div className="lg:w-1/3 md:w-2/3 w-3/3 mx-auto mt-8">
+                <CardContainerTemplate
                   padding="py-4 px-8"
                   margin="my-10"
                 >
@@ -103,7 +103,7 @@ const Converse = () => {
                       <div className="flex items-end mt-3 mx-auto">
                         <div className="text-white text-xl lg:text-3xl font-bold mr-4">From: </div>
                         <div className="inline-block relative w-full text-gray-700 mt-4">
-                          <select 
+                          <select
                             disabled={selectConverseNFT?.approveLoading || nftConverse?.loading}
                             className="block appearance-none w-full bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none focus:shadow-outline"
                             ref={refSelectFromChain}
@@ -124,7 +124,7 @@ const Converse = () => {
                       <div className="flex items-end mt-3 mx-auto">
                         <div className="text-white text-xl lg:text-3xl font-bold mr-4">NFT: </div>
                         <div className="inline-block relative w-full text-gray-700 mt-4">
-                          <select 
+                          <select
                             disabled={selectConverseNFT?.approveLoading || nftConverse?.loading}
                             className="block appearance-none w-full bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none focus:shadow-outline"
                             ref={refSelectNFT}
@@ -143,25 +143,25 @@ const Converse = () => {
                       </div>
 
                       <div className="flex justify-center mt-5">
-                        <img 
-                          className="w-48 h-48 lg:w-72 lg:h-72 object-cover border-4 border-yellow-500" 
+                        <img
+                          className="w-48 h-48 lg:w-72 lg:h-72 object-cover border-4 border-yellow-500"
                           src={ipfsUriToHttps(selectConverseNFT?.image)}
-                          alt="selected_nft" 
+                          alt="selected_nft"
                         />
                       </div>
 
                       <div className="flex items-end mt-3 mx-auto">
                         <div className="text-white text-xl lg:text-3xl font-bold mr-4">To: </div>
                         <div className="inline-block relative w-full text-gray-700 mt-4">
-                          <select   
+                          <select
                             disabled={selectConverseNFT?.approveLoading || nftConverse?.loading}
                             className="block appearance-none w-full bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none focus:shadow-outline"
                             ref={refSelectToChain}
                             onChange={() => onChangeToChain()}
                           >
-                            { Object.keys(nftContractAddress).map((key, index)=>{
-                              return(chain !== Number.parseInt(key)? <option key={index} value={key}>{nftContractAddress[key]?.Label}</option>: "")
-                            }) } 
+                            {Object.keys(nftContractAddress).map((key, index) => {
+                              return (chain !== Number.parseInt(key) ? <option key={index} value={key}>{nftContractAddress[key]?.Label}</option> : "");
+                            })}
                           </select>
 
                           <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
@@ -169,7 +169,7 @@ const Converse = () => {
                           </div>
                         </div>
                       </div>
-                      { selectConverseNFT?.selected && (
+                      {selectConverseNFT?.selected && (
                         <div className="bg-slate-400/20 p-5 mt-8 mb-3 rounded-3xl">
                           {/* <div className="flex mb-1">
                             <div className="w-1/2">
@@ -191,21 +191,21 @@ const Converse = () => {
                       )}
 
                       <div className="flex items-end my-5 mx-auto">
-                        <button 
+                        <button
                           disabled={!selectConverseNFT?.selected || selectConverseNFT?.approveLoading || nftConverse?.loading}
                           className="w-48 px-4 py-2 btn-connect btn-converse disabled:opacity-50 disabled:cursor-not-allowed"
-                          onClick={()=> onApprove(selectConverseNFT?.approve)}
+                          onClick={() => onApprove(selectConverseNFT?.approve)}
                         >
                           <div className="flex justify-center gap-2">
-                            { selectConverseNFT?.approveLoading || nftConverse?.loading && <Loading fontSize={20} direction="right" /> }
-                            { selectConverseNFT?.approve?"Transfer": "Approve" }
+                            {selectConverseNFT?.approveLoading || nftConverse?.loading && <Loading fontSize={20} direction="right" />}
+                            {selectConverseNFT?.approve ? "Transfer" : "Approve"}
                           </div>
                         </button>
                       </div>
                     </div>
                   </Fragment>
                 </CardContainerTemplate>
-            </div>
+              </div>
             )}
           </div>
         </div>

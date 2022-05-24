@@ -57,7 +57,7 @@ const Mint = () => {
               <h1 className="text-white font-bold text-3xl md:text-5xl mb-8">
                 Mint Collection
               </h1>
-              <button type="button" className="w-96 px-10 py-4 btn-home" onClick={ConnectedWallet}>
+              <button type="button" className="w-full md:w-96 px-10 py-4 btn-home" onClick={ConnectedWallet}>
                 Connect Wallet
               </button>
             </div>
@@ -82,33 +82,33 @@ const Mint = () => {
                   <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" /></svg>
                 </div>
               </div>
-              <div className="flex justify-between font-bold text-xl lg:text-2xl mb-4">
+              <div className="flex justify-between font-semibold text-md md:text-lg lg:text-xl mb-4">
                 <div>{`Mint fee:`}</div>
                 <div>{`${valueEth} ${token} / Mint`}</div>
               </div>
               {chain === AVALANCHE_FUJI_CHAIN || chain === POLYGON_MUMBAI_CHAIN ?
                 (
-                  <div className="flex justify-between font-bold text-xl lg:text-2xl mb-4">
+                  <div className="flex justify-between font-semibold text-md md:text-lg lg:text-xl mb-4">
                     <div>{`Other Chain fee:`}</div>
                     <div>{`${feeCost} ${token} / Mint`}</div>
                   </div>
                 ) :
                 (null)
               }
-              <div className="flex justify-between font-bold text-xl lg:text-2xl mb-4">
+              <div className="flex justify-between font-bold text-md md:text-lg lg:text-xl mb-4">
                 <div className="underline">{`Total fee:`}</div>
                 <div>{`${calculateMintCost(value, mintAmount)} ${token}`}</div>
               </div>
-              <div className="m-auto">
-                <div>
-                  <button type="button" className="w-full lg:w-96 px-10 py-4 btn-home " disabled={mintProcessing} onClick={() => mint()}>
-                    <div className="flex justify-center gap-2">
-                      {mintProcessing ? <Loading fontSize={20} size={20} direction="right" /> : null}
-                      Mint
-                    </div>
-                  </button>
+
+
+              <button type="button" className="w-full px-10 py-4 btn-home " disabled={mintProcessing} onClick={() => mint()}>
+                <div className="flex justify-center gap-2">
+                  {mintProcessing ? <Loading fontSize={20} size={20} direction="right" /> : null}
+                  Mint
                 </div>
-              </div>
+              </button>
+
+
             </div>
           </div>
         )}

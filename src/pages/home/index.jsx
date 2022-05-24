@@ -10,7 +10,7 @@ const HomePage = () => {
   return (
     <Fragment>
       <div className="container flex flex-col lg:flex-row items-center justify-between px-5 text-gray-700 mx-auto">
-        <div className="w-full lg:w-1/2 mx-8 text-center lg:text-left">
+        <div className="w-full lg:w-1/2 mx-8 text-center">
 
           <div className="mt-5 md:mt-0 text-5xl md:text-6xl lg:text-7xl text-gray-100 font-dark font-extrabold mb-8"> First Cross-Chain</div>
           {/* <h1 className="text-3xl md:text-3xl font-light mb-8">
@@ -36,14 +36,14 @@ const HomePage = () => {
             <Fragment>
               <button
                 type="button"
-                className="w-60 my-4 py-4 px-12 mr-4 btn-home"
+                className="w-60 my-4 py-4 px-12 mx-4 btn-home"
                 onClick={() => navigate('/mint')}
               >
                 Mint
               </button>
               <button
                 type="button"
-                className="w-60 my-4 py-4 px-12 btn-home"
+                className="w-60 my-4 py-4 px-12 mx-4 btn-home"
                 onClick={() => navigate('/market')}
               >
                 Market
@@ -53,7 +53,7 @@ const HomePage = () => {
         </div>
 
         <div className="w-full lg:flex lg:justify-end lg:w-1/2 mx-5 my-12">
-          <img src="https://miro.medium.com/max/600/1*28Ve9dqkisZZ01B8dhdHOg.png" className="" alt="Page not found" />
+          <img src="https://miro.medium.com/max/600/1*28Ve9dqkisZZ01B8dhdHOg.png" className="mx-auto" alt="Page not found" />
         </div>
       </div>
     </Fragment>

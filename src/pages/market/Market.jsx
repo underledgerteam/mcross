@@ -1,6 +1,7 @@
 import React, { useContext, useEffect } from "react";
 import { Loading } from "web3uikit";
 import { Web3Provider } from "../../contexts/connect.context";
+import CardContainerTemplate from "../../components/shared/card/CardContainerTemplate";
 import { NFT_CONTRACTS as nftContractAddress } from "../../utils/constants";
 import CardListTemplate from "../../components/shared/card/CardListTemplate";
 
@@ -37,7 +38,10 @@ const Market = () => {
           </div>
         ) : (
           <div className="w-full">
-            <div className="py-8 px-8 shadow-lg rounded-lg my-20 backdrop-blur-lg bg-[#323652]/50">
+            <CardContainerTemplate
+              padding="py-8 px-8"
+              margin="my-20"
+            >
               <div className="flex flex-col">
                 <div className="grid lg:grid-cols-4 grid-cols-1 gap-4">
                   {listMarketplace.loading ? (<div className="col-span-4 mx-auto">
@@ -55,7 +59,7 @@ const Market = () => {
                           price={item.price}
                           image={item.image}
                           rarity={'Common'}
-                          chain={nftContractAddress[chain]?.Label}
+                          chain={nftContractAddress[chain]?.ShortLabel}
                           owner={item.owner}
                           textAction={'Buy'}
                           onClick={() => handleClickName(item.edition)}
@@ -67,7 +71,7 @@ const Market = () => {
                   }
                 </div>
               </div>
-            </div>
+            </CardContainerTemplate>
           </div>
         )}
 

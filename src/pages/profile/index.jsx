@@ -1,10 +1,10 @@
 import { useState, useMemo, Fragment, useRef, useContext, useEffect } from "react";
 import { Table, CryptoLogos, Loading } from "web3uikit";
-
 import { useNavigate } from "react-router-dom";
 
 import { Web3Provider } from "../../contexts/connect.context";
 import { NFT_CONTRACTS as nftContractAddress } from "../../utils/constants";
+import Title from "../../components/shared/Title";
 import CardContainerTemplate from "../../components/shared/card/CardContainerTemplate";
 import CardListTemplate from "../../components/shared/card/CardListTemplate";
 import ModelSell from "../../components/profile/ModelSell";
@@ -33,23 +33,23 @@ const data = [...Array(32)].map((v, key) => {
 
 const ProfilePage = () => {
   const history = useNavigate();
-  const { 
-    chain, 
-    account, 
-    isReload, 
+  const {
+    chain,
+    account,
+    isReload,
     myCollection,
     nftContractMarketplace,
     selectConverseNFT,
-    ChangeChain, 
+    ChangeChain,
     GetMyMarketplace,
     myMarketplace,
     ConverseApproveNFT,
-    GetCollection, 
+    GetCollection,
     ChangeConverseNFT,
-    CreateSellCollection, 
-    CancelSellCollection, 
-    ConnectedWallet, 
-    nftContractCollection 
+    CreateSellCollection,
+    CancelSellCollection,
+    ConnectedWallet,
+    nftContractCollection
   } = useContext(Web3Provider);
 
   const refSelectChain = useRef();
@@ -68,13 +68,13 @@ const ProfilePage = () => {
   // for open Model Sell
   const handleClickName = (id) => {
     history(`/profile/collection/${id}`);
-  }
+  };
   const onOpenModelSell = (objNFT) => {
     setOpenModelSell(true);
     ChangeConverseNFT("Marketplace", objNFT);
   };
   const onConfirmSellNFT = (isApprove, nftPrice) => {
-    if(isApprove){
+    if (isApprove) {
       CreateSellCollection(
         selectConverseNFT,
         nftPrice,
@@ -83,7 +83,7 @@ const ProfilePage = () => {
           setTab("My Marketplace");
         }
       );
-    }else{
+    } else {
       ConverseApproveNFT("Marketplace", selectConverseNFT);
     }
   };
@@ -97,7 +97,7 @@ const ProfilePage = () => {
   };
   const onConfirmCancelSell = (objNFT) => {
     // alert("Process MetaMask Sell NFT");
-    CancelSellCollection(objNFT, ()=> {
+    CancelSellCollection(objNFT, () => {
       setOpenModelCancelSell(false);
       setTab("My Collection");
     });
@@ -116,29 +116,29 @@ const ProfilePage = () => {
   ], []);
 
   useEffect(() => {
-    if(refSelectChain?.current?.value){
+    if (refSelectChain?.current?.value) {
       refSelectChain.current.value = chain;
     }
-  },[chain]);
-  
+  }, [chain]);
+
   useEffect(() => {
     if (account && nftContractCollection && nftContractMarketplace) {
       ChangeConverseNFT("Marketplace", null);
       GetCollection();
       GetMyMarketplace();
     }
-  },[account, isReload, nftContractCollection, nftContractMarketplace]);
+  }, [account, isReload, nftContractCollection, nftContractMarketplace]);
 
   return (
     <Fragment>
       <div className="h-screen w-screen">
         <div className="container md:container md:mx-auto">
-          <div className="text-7xl font-dark font-extrabold text-center">My Profile</div>
+          <Title text={"My Profile"} />
 
           {!account ? (
             <div className="w-full flex-auto py-8 px-8 text-center">
               <div className="">
-                <button type="button" className="w-96 px-10 py-4 btn-home" onClick={ConnectedWallet}>
+                <button type="button" className="w-full md:w-96 px-10 py-4 btn-home" onClick={ConnectedWallet}>
                   Connect Wallet
                 </button>
               </div>

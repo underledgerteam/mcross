@@ -3,6 +3,7 @@ import { Fragment, useRef, useContext, useEffect, useState } from "react";
 import { CryptoLogos, Loading } from "web3uikit";
 
 import { Web3Provider } from "../../contexts/connect.context";
+import Title from "../../components/shared/Title";
 import CardContainerTemplate from "../../components/shared/card/CardContainerTemplate";
 import { shortenAddress } from "../../utils/shortenAddress.util";
 import { ipfsUriToHttps } from "../../utils/ipfsUriToHttps.util";
@@ -71,7 +72,7 @@ const Converse = () => {
     <Fragment>
       <div className="h-screen w-screen">
         <div className="container md:container md:mx-auto">
-          <div className="text-7xl font-dark font-extrabold text-center">NFT Converse</div>
+          <Title text={"NFT Converse"} />
 
           <div className="flex">
             {!account ? (

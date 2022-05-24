@@ -43,7 +43,7 @@ const Market = () => {
               margin="my-20"
             >
               <div className="flex flex-col">
-                <div className="grid lg:grid-cols-4 grid-cols-1 gap-4">
+                <div className="grid md:grid-cols-sm md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                   {listMarketplace.loading ? (<div className="col-span-4 mx-auto">
                     <Loading
                       fontSize={20}

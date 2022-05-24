@@ -274,10 +274,11 @@ export const WalletProvider = ({ children }) => {
       const web3 = new Web3(window.ethereum);
       setListMarketplace({ ...listMarketplace, loading: true });
       const getMyMarketplace = await nftContractMarketplaceList.methods.getAllMarketItems().call();
+      const newObjGetMyMarketplace = getMyMarketplace.filter((x)=> x.status === "0");
       let objMarkets = [];
-      for (var i = 0; i < getMyMarketplace.length; i++) {
+      for (var i = 0; i < newObjGetMyMarketplace.length; i++) {
 
-        const uri = await nftContractCollection.methods.tokenURI(getMyMarketplace[i].tokenId).call();
+        const uri = await nftContractCollection.methods.tokenURI(newObjGetMyMarketplace[i].tokenId).call();
 
         const responseUri = await fetch(ipfsUriToHttps(uri));
 
@@ -286,10 +287,10 @@ export const WalletProvider = ({ children }) => {
           ...objMarkets,
           {
             ...objNFT,
-            price: web3.utils.fromWei(getMyMarketplace[i].price, "ether"),
-            owner: getMyMarketplace[i].owner,
-            nftContract: getMyMarketplace[i].nftContract,
-            status: getMyMarketplace[i].status,
+            price: web3.utils.fromWei(newObjGetMyMarketplace[i].price, "ether"),
+            owner: newObjGetMyMarketplace[i].owner,
+            nftContract: newObjGetMyMarketplace[i].nftContract,
+            status: newObjGetMyMarketplace[i].status,
             jsonUri: uri,
           },
         ];
@@ -310,20 +311,20 @@ export const WalletProvider = ({ children }) => {
       setMyMarketplace({ ...myMarketplace, loading: true });
       // const getAllMarketItems = await nftContractMarketplace.methods.getAllMarketItems().call();
       const getMyMarketplace = await nftContractMarketplace.methods.getMyMarketplace(account).call();
-      const mewObjMarketplace = getMyMarketplace.filter((x) => x.tokenId !== "0");
+      const newObjMarketplace = getMyMarketplace.filter((x) => x.tokenId !== "0");
       let objMarkets = [];
-      for (var i = 0; i < mewObjMarketplace.length; i++) {
-        const uri = await nftContractCollection.methods.tokenURI(mewObjMarketplace[i].tokenId).call();
+      for (var i = 0; i < newObjMarketplace.length; i++) {
+        const uri = await nftContractCollection.methods.tokenURI(newObjMarketplace[i].tokenId).call();
         const responseUri = await fetch(ipfsUriToHttps(uri));
         let objNFT = await responseUri.json();
         objMarkets = [
           ...objMarkets,
           {
             ...objNFT,
-            price: web3.utils.fromWei(mewObjMarketplace[i].price, "ether"),
-            owner: mewObjMarketplace[i].owner,
-            nftContract: mewObjMarketplace[i].nftContract,
-            status: mewObjMarketplace[i].status,
+            price: web3.utils.fromWei(newObjMarketplace[i].price, "ether"),
+            owner: newObjMarketplace[i].owner,
+            nftContract: newObjMarketplace[i].nftContract,
+            status: newObjMarketplace[i].status,
             jsonUri: uri,
           },
         ];

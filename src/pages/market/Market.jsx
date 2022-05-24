@@ -1,8 +1,10 @@
 import React, { useContext, useEffect } from "react";
 import { Loading } from "web3uikit";
 import { Web3Provider } from "../../contexts/connect.context";
-import { NFT_CONTRACTS as nftContractAddress } from "../../utils/constants";
+import Title from "../../components/shared/Title";
+import CardContainerTemplate from "../../components/shared/card/CardContainerTemplate";
 import CardListTemplate from "../../components/shared/card/CardListTemplate";
+import { NFT_CONTRACTS as nftContractAddress } from "../../utils/constants";
 
 const Market = () => {
 
@@ -24,22 +26,26 @@ const Market = () => {
 
   return (
     <div className="w-full flex flex-col">
-      <div className="mx-auto font-bold text-4xl text-white uppercase">Marketplace</div>
+      <Title text={"Marketplace"} />
+
       <div className="h-full flex gap-x-4 lg:gap-x-8 justify-center">
 
         {!account ? (
           <div className="w-full lg:w-1/2 flex-auto py-8 px-8 text-center">
             <div className="">
-              <button type="button" className="w-96 px-10 py-4 btn-home" onClick={ConnectedWallet}>
+              <button type="button" className="w-full md:w-96 px-10 py-4 btn-home" onClick={ConnectedWallet}>
                 Connect Wallet
               </button>
             </div>
           </div>
         ) : (
           <div className="w-full">
-            <div className="py-8 px-8 shadow-lg rounded-lg my-20 backdrop-blur-lg bg-[#323652]/50">
+            <CardContainerTemplate
+              padding="py-8 px-8"
+              margin="my-20"
+            >
               <div className="flex flex-col">
-                <div className="grid lg:grid-cols-4 grid-cols-1 gap-4">
+                <div className="grid md:grid-cols-sm md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                   {listMarketplace.loading ? (<div className="col-span-4 mx-auto">
                     <Loading
                       fontSize={20}
@@ -55,7 +61,8 @@ const Market = () => {
                           price={item.price}
                           image={item.image}
                           rarity={'Common'}
-                          chain={nftContractAddress[chain]?.Label}
+                          chain={nftContractAddress[chain]?.ShortLabel}
+                          owner={item.owner}
                           textAction={'Buy'}
                           onClick={() => handleClickName(item.edition)}
                           onClickAction={() => handleClickAction(item.edition)}
@@ -66,7 +73,7 @@ const Market = () => {
                   }
                 </div>
               </div>
-            </div>
+            </CardContainerTemplate>
           </div>
         )}
 

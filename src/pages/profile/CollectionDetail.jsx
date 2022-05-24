@@ -4,6 +4,7 @@ import { Loading } from "web3uikit";
 
 import { Web3Provider } from "../../contexts/connect.context";
 
+import CardContainerTemplate from "../../components/shared/card/CardContainerTemplate";
 import ModelSell from "../../components/profile/ModelSell";
 
 import { shortenAddress } from "../../utils/shortenAddress.util";
@@ -56,6 +57,7 @@ const CollectionDetail = () => {
   };
   useEffect(()=>{
     if(account && nftContractCollection){
+      ChangeConverseNFT("Marketplace", null);
       GetByIdCollection(params.id);
     }
   },[account, nftContractCollection]);
@@ -65,10 +67,13 @@ const CollectionDetail = () => {
       <div className="h-screen w-screen">
         <div className="container md:container md:mx-auto">
 
-          <div className="text-6xl font-dark font-extrabold mb-8">Collection Detail</div>
+          <div className="text-7xl font-dark font-extrabold mb-8 text-center">Collection Detail</div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="w-full">
-              <div className="py-8 px-8 shadow-lg rounded-lg md:my-5 lg:my-15 backdrop-blur-lg bg-[#323652]/50">
+              <CardContainerTemplate
+                padding="py-8 px-8"
+                margin="md:my-5 lg:my-15"
+              >
                 {myCollectionById.loading ? (
                   <div className="flex justify-center h-60">
                     <Loading
@@ -87,10 +92,12 @@ const CollectionDetail = () => {
                     </div>
                   </Fragment>
                 )}
-              </div>
+              </CardContainerTemplate>
             </div>
-
-            <div className="md:col-span-2 w-full p-6 rounded-lg shadow-lg backdrop-blur-lg bg-[#323652]/50 md:my-5 lg:my-15">
+            <CardContainerTemplate
+              padding="p-6"
+              margin="md:my-5 lg:my-15"
+            >
               {myCollectionById.loading ? (
                 <div className="flex justify-center h-80">
                   <Loading
@@ -146,7 +153,7 @@ const CollectionDetail = () => {
                   </div>
                 </Fragment>
               )}
-            </div>
+            </CardContainerTemplate>
           </div>
 
         </div>

@@ -32,12 +32,12 @@ const dropdownMenu = (toggleMenu, pathname) => {
     return (null);
   }
   return (
-    <div className="fixed -top-0 -right-0 mt-20 p-4 flex flex-col gap-4 md:hidden justify-start items-end animate-slide-in bg-custom-navbar drop-shadow-navbar">
+    <div className="fixed -top-0 -right-0 z-10 mt-20 p-4 flex flex-col gap-4 lg:hidden justify-start items-end animate-slide-in bg-custom-navbar drop-shadow-navbar">
       {navData.map((item) => {
         const isActive = (pathname === item.href) ? "text-white" : "text-custom-gray1 opacity-70";
         return (
           <Link key={item.name} to={item.href}>
-            <div className={`text-xl uppercase ${isActive} hover:opacity-100 hover:text-white active:bg-pink-500 active:opacity-100 cursor-pointer`}>
+            <div className={`text-xl uppercase ${isActive} hover:opacity-100 hover:text-white active:opacity-100 cursor-pointer`}>
               {item.name}
             </div>
           </Link>
@@ -56,7 +56,7 @@ const Navbar = () => {
   return (
     <>
       <div className="bg-custom-navbar drop-shadow-navbar">
-        <div className="flex container w-full mx-auto justify-between items-center font-bold px-5 py-6">
+        <div className="flex w-full lg:mx-auto justify-between items-center font-bold px-5 py-6">
           <Link to='/'>
             <div
               className="flex text-center text-2xl text-white uppercase cursor-pointer"
@@ -67,12 +67,12 @@ const Navbar = () => {
             </div>
           </Link>
 
-          <nav className="hidden md:flex space-x-10 items-center">
+          <nav className="hidden lg:flex space-x-10 items-center">
             {navData.map((item) => {
               const isActive = (pathname === item.href) ? "text-white" : "text-custom-gray1 opacity-70";
               return (
                 <Link key={item.name} to={item.href}>
-                  <div className={`text-xl uppercase ${isActive} hover:opacity-100 hover:text-white active:bg-pink-500 active:opacity-100 cursor-pointer`}>
+                  <div className={`text-xl uppercase ${isActive} hover:opacity-100 hover:text-white active:opacity-100 cursor-pointer`}>
                     {item.name}
                   </div>
                 </Link>
@@ -94,12 +94,12 @@ const Navbar = () => {
               </Fragment>
             )}
           </nav>
-          <div className="flex md:hidden text-white">
+          <div className="flex lg:hidden text-white">
             {!toggleMenu && (
-              <AiOutlineMenu fontSize={28} className="md:hidden cursor-pointer" onClick={() => setToggleMenu(true)} />
+              <AiOutlineMenu fontSize={28} className="lg:hidden cursor-pointer" onClick={() => setToggleMenu(true)} />
             )}
             {toggleMenu && (
-              <AiOutlineClose fontSize={28} className="md:hidden cursor-pointer" onClick={() => setToggleMenu(false)} />
+              <AiOutlineClose fontSize={28} className="lg:hidden cursor-pointer" onClick={() => setToggleMenu(false)} />
             )}
           </div>
         </div>

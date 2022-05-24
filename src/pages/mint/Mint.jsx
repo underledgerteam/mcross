@@ -2,6 +2,7 @@ import React, { useState, useContext, Fragment } from "react";
 import { Loading } from "web3uikit";
 import { Web3Provider } from "../../contexts/connect.context";
 
+import Title from "../../components/shared/Title";
 import CardContainerTemplate from "../../components/shared/card/CardContainerTemplate";
 import { AVALANCHE_FUJI_CHAIN, POLYGON_MUMBAI_CHAIN } from "../../utils/constants";
 
@@ -30,9 +31,7 @@ const Mint = () => {
 
   return (
     <div className="w-full flex flex-col">
-      <div className="text-7xl font-dark font-extrabold mb-8 text-center">
-        Mint NFT
-      </div>
+      <Title text={"Mint NFT"} />
       <div className="h-full flex flex-col lg:flex-row gap-4 lg:gap-x-8">
 
         <div className="w-full lg:w-1/2 flex-auto">

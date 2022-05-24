@@ -1,9 +1,10 @@
 import React, { useContext, useEffect } from "react";
 import { Loading } from "web3uikit";
 import { Web3Provider } from "../../contexts/connect.context";
+import Title from "../../components/shared/Title";
 import CardContainerTemplate from "../../components/shared/card/CardContainerTemplate";
-import { NFT_CONTRACTS as nftContractAddress } from "../../utils/constants";
 import CardListTemplate from "../../components/shared/card/CardListTemplate";
+import { NFT_CONTRACTS as nftContractAddress } from "../../utils/constants";
 
 const Market = () => {
 
@@ -25,7 +26,8 @@ const Market = () => {
 
   return (
     <div className="w-full flex flex-col">
-      <div className="text-7xl font-dark font-extrabold text-center">Marketplace</div>
+      <Title text={"Marketplace"} />
+
       <div className="h-full flex gap-x-4 lg:gap-x-8 justify-center">
 
         {!account ? (

@@ -71,7 +71,7 @@ const Converse = () => {
     <Fragment>
       <div className="h-screen w-screen">
         <div className="container md:container md:mx-auto">
-          <div className="text-7xl font-dark font-extrabold mb-8 text-center">NFT Converse</div>
+          <div className="text-7xl font-dark font-extrabold text-center">NFT Converse</div>
 
           <div className="flex">
           {!account ? (
@@ -83,7 +83,7 @@ const Converse = () => {
               </div>
             </div>
           ) : (
-            <div className="lg:w-1/3 md:w-2/3 w-3/3 mx-auto">
+            <div className="lg:w-1/3 md:w-2/3 w-3/3 mx-auto mt-8">
               <CardContainerTemplate
                   padding="py-4 px-8"
                   margin="my-10"

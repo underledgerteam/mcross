@@ -133,7 +133,7 @@ const ProfilePage = () => {
     <Fragment>
       <div className="h-screen w-screen">
         <div className="container md:container md:mx-auto">
-          <div className="text-7xl font-dark font-extrabold mb-8 text-center">My Profile</div>
+          <div className="text-7xl font-dark font-extrabold text-center">My Profile</div>
 
           {!account ? (
             <div className="w-full flex-auto py-8 px-8 text-center">

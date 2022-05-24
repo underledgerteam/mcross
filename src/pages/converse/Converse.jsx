@@ -145,7 +145,7 @@ const Converse = () => {
 
                       <div className="flex justify-center mt-5">
                         <img
-                          className="w-48 h-48 lg:w-72 lg:h-72 object-cover border-4 border-yellow-500"
+                          className="w-48 h-48 lg:w-72 lg:h-72 object-cover border-4 border-purple-500"
                           src={ipfsUriToHttps(selectConverseNFT?.image)}
                           alt="selected_nft"
                         />

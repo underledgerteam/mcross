@@ -84,11 +84,11 @@ const CollectionDetail = () => {
                 ) : (
                   <Fragment>
                     <div className="flex justify-center">
-                      <img className="w-48 h-48 lg:w-72 lg:h-72 object-cover border-8 border-yellow-500" src={myCollectionById?.data?.image && ipfsUriToHttps(myCollectionById?.data.image)} alt={myCollectionById?.data?.name} />
+                      <img className="w-48 h-48 lg:w-72 lg:h-72 object-cover border-8 border-purple-500" src={myCollectionById?.data?.image && ipfsUriToHttps(myCollectionById?.data.image)} alt={myCollectionById?.data?.name} />
                     </div>
                     <div className="grid justify-items-center">
-                      <h2 className="text-2xl font-semibold mt-4">Rarity : <span className="py-2 px-3 bg-yellow-400 text-yellow-900 text-base rounded-lg">Legend</span> </h2>
-                      <h2 className="text-2xl font-semibold mt-2">Chain : {nftContractAddress[chain]?.Label}</h2>
+                      {/* <h2 className="text-2xl font-semibold mt-4">Rarity : <span className="py-2 px-3 bg-yellow-400 text-yellow-900 text-base rounded-lg">Legend</span> </h2> */}
+                      <h2 className="text-2xl font-semibold mt-2">Chain : {nftContractAddress[chain]?.ShortLabel}</h2>
                     </div>
                   </Fragment>
                 )}

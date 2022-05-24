@@ -11,7 +11,7 @@ const ModelSell = ({ objNFT, onConfirm, onClose }) => {
   const refPrice = useRef();
   const [ price, setPrice ] = useState(0);
   const onChangePrice = () => {
-    const priceVal = Number(refPrice.current.value);
+    const priceVal = Number(refPrice.current.value || 0);
     const amount = priceVal-((priceVal*serviceFee/100)+(priceVal*axelarFee/100));
     const total = amount-(amount*creatorFee/100);
     setPrice(total);
@@ -25,7 +25,7 @@ const ModelSell = ({ objNFT, onConfirm, onClose }) => {
           <div className="text-gray-500 ">
             <div className="text-center p-5 flex-auto justify-center">
               <h2 className="text-xl font-bold pt-4 text-gray-800">Sale NFT</h2>
-              <h2 className="text-xl font-bold pt-2 pb-4">{objNFT?.name}</h2>
+              <h2 className="text-xl font-bold pt-2 pb-4">{objNFT?.name || "Loading..."}</h2>
               <div>
                 <div className="flex">
                   <h5 className="text-warmGray-200 text-2xl">Price: </h5>
@@ -67,7 +67,7 @@ const ModelSell = ({ objNFT, onConfirm, onClose }) => {
                 <div className="flex border-b-4 border-warmGray-300 rounded-lg my-5"></div>
                 
                 <div className="ml-8 text-2xl text-warmGray-200 text-left">
-                  You Recieve : {(Number(refPrice?.current?.value) - Number(refPrice?.current?.value)*serviceFee/100)} Weth
+                  You Recieve : {(Number(refPrice?.current?.value || 0) - Number(refPrice?.current?.value || 0)*serviceFee/100)} Weth
                   {/* <div className="text-sm mt-3">
                     <p className="text-lg">Example</p>
                     <p>1. Amount = Price - (Service Fee + Axelar Fee)(%)</p>
@@ -84,7 +84,7 @@ const ModelSell = ({ objNFT, onConfirm, onClose }) => {
                 Close
               </button>
               <button 
-                disabled={Number(refPrice?.current?.value) <= 0 || objNFT?.approveLoading}
+                disabled={!objNFT?.name || Number(refPrice?.current?.value) <= 0 || objNFT?.approveLoading}
                 className="mb-2 btn-confirm-sell"
                 onClick={()=> {
                   if(Number(refPrice?.current?.value) <= 0){
@@ -94,9 +94,10 @@ const ModelSell = ({ objNFT, onConfirm, onClose }) => {
                   }
                 }}
               >
-                { objNFT?.approveLoading?(
-                  <Loading fontSize={14} size={14} text={objNFT?.approve?"Confirm": "Approve"} direction="right" />
-                ): objNFT?.approve?"Confirm": "Approve" }
+                <div className="flex justify-center gap-2">
+                  { objNFT?.approveLoading && <Loading fontSize={14} direction="right" />}
+                  { objNFT?.approve?"Confirm": "Approve" }
+                </div>
               </button>
             </div>
           </div>

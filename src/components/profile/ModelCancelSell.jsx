@@ -13,7 +13,7 @@ const ModelCancelSell = ({ objNFT, onConfirm, onClose }) => {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
               <h2 className="text-xl font-bold py-4 ">Are you sure?</h2>
-              <p className="text-sm text-gray-500 px-8">Do you really want to cancel sale NFT {objNFT?.name} ?
+              <p className="text-sm text-gray-500 px-8">Do you really want to cancel sale NFT {objNFT?.name || "Loading..."} ?
               </p>    
             </div>
           </div>
@@ -25,13 +25,14 @@ const ModelCancelSell = ({ objNFT, onConfirm, onClose }) => {
               Cancel
             </button>
             <button 
-              disabled={objNFT?.approveLoading}
-              className={`mb-2 md:mb-0 ${objNFT?.approveLoading && "w-36"} btn-cancel-sell`}
+              disabled={!objNFT?.name || objNFT?.approveLoading}
+              className={`md:mb-0 btn-cancel-sell`}
               onClick={()=> onConfirm(objNFT)}
             >
-              { objNFT?.approveLoading?(
-                <Loading fontSize={14} size={14} text="Cancel Sell" direction="right" />
-              ):"Cancel Sell" }
+              <div className="flex justify-center gap-2">
+                { objNFT?.approveLoading &&(<Loading fontSize={14} direction="right" />) } 
+                Cancel Sell
+              </div>
             </button>
             
           </div>

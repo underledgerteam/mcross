@@ -5,8 +5,11 @@ import { shortenAddress } from "../../../utils/shortenAddress.util";
 import { NFT_CONTRACTS as nftContractAddress } from "../../../utils/constants";
 
 
-const CardListTemplate = ({ id, name, owner, textAction, price, image, rarity, chain, onClick, onClickAction }) => {
-
+const CardListTemplate = ({ id, name, owner, textAction, price, image, rarity, chain, sell = false, onClick, onClickAction }) => {
+  const colorButton = {
+    "buy": "from-green-500 to-blue-600 text-white hover:from-pink-500 hover:to-yellow-500",
+    "sell": "from-red-500 to-pink-600 text-white hover:from-red-600 hover:to-pink-700"
+  };
   return (
     <div className="w-full rounded overflow-hidden shadow-md hover:shadow-xl bg-[#292929] relative group">
       <img className="w-full cursor-pointer" src={image && ipfsUriToHttps(image)} alt={name} onClick={onClick} />
@@ -25,21 +28,21 @@ const CardListTemplate = ({ id, name, owner, textAction, price, image, rarity, c
           <p className="text-right"><span className="bg-yellow-100 text-yellow-800 text-xs font-semibold px-2.5 py-0.5 rounded">{rarity} #{id}</span></p>
         </div>
         <div className="grid-cols-2 flex mt-3 mb-3">
-          <div className="font-bold text-white text-xl px-3 py-3 cursor-pointer" onClick={onClick}>{name}</div>
+          <div className="font-bold text-white text-xl cursor-pointer" onClick={onClick}>{name}</div>
         </div>
         {price && (
           <div className="grid mt-3">
             <hr />
-            <div className="mr-4 ml-4">
+            <div>
               <div className="text-xl text-gray-500 font-bold mb-2 mt-3 font-">
 
               </div>
-              <div className="flex text-xl font-bold text-white mb-2">
-                Price :&nbsp;
-                <CryptoLogos
+              <div className="text-base font-bold text-white mb-2">
+                Price :<br />
+                <div className="flex mt-2"><CryptoLogos
                   chain={nftContractAddress[chain]?.Icon.toLowerCase()}
                   size="28px"
-                /> {price} WETH
+                /> {price} WETH</div>
               </div>
             </div>
           </div>
@@ -47,15 +50,13 @@ const CardListTemplate = ({ id, name, owner, textAction, price, image, rarity, c
 
         <div className="mt-5">
           <button
-            className={`w-full font-bold py-3 px-12 rounded bg-gradient-to-r from-green-500 to-blue-600 text-white hover:from-pink-500 hover:to-yellow-500 z-50`}
+            className={`w-full font-bold py-3 px-12 rounded bg-gradient-to-r ${colorButton[(sell) ? "sell" : "buy"]} z-50`}
             onClick={onClickAction}
           >
             {textAction}
           </button>
         </div>
-
       </div>
-
     </div >
   );
 };

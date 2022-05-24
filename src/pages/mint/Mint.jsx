@@ -1,6 +1,8 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, Fragment } from "react";
 import { Loading } from "web3uikit";
 import { Web3Provider } from "../../contexts/connect.context";
+
+import CardContainerTemplate from "../../components/shared/card/CardContainerTemplate";
 import { AVALANCHE_FUJI_CHAIN, POLYGON_MUMBAI_CHAIN } from "../../utils/constants";
 
 const Mint = () => {
@@ -57,60 +59,62 @@ const Mint = () => {
               <h1 className="text-white font-bold text-3xl md:text-5xl mb-8">
                 Mint Collection
               </h1>
-              <button type="button" className="w-96 px-10 py-4 btn-home" onClick={ConnectedWallet}>
+              <button type="button" className="w-full md:w-96 px-10 py-4 btn-home" onClick={ConnectedWallet}>
                 Connect Wallet
               </button>
             </div>
           </div>
         ) : (
-          <div className="w-full lg:w-1/2 flex-auto py-8 px-8 shadow-lg rounded-lg backdrop-blur-lg bg-[#323652]/50 text-center">
-            <h1 className="text-white font-bold text-3xl md:text-5xl mb-8">
-              Mint Collection
-            </h1>
-            <div className="flex flex-col p-0 lg:px-12">
-              <div className="inline-block relative w-full text-gray-700 font-bold text-lg lg:text-xl mb-4">
-                <select
-                  name="qty"
-                  className="block appearance-none w-full bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none focus:shadow-outline"
-                  defaultValue={mintAmount}
-                  onChange={(e) => setMintAmount(e.target.value)}
-                  disabled={mintProcessing}
-                >
-                  {createSelectOptions()}
-                </select>
-                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-                  <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" /></svg>
-                </div>
-              </div>
-              <div className="flex justify-between font-bold text-xl lg:text-2xl mb-4">
-                <div>{`Mint fee:`}</div>
-                <div>{`${valueEth} ${token} / Mint`}</div>
-              </div>
-              {chain === AVALANCHE_FUJI_CHAIN || chain === POLYGON_MUMBAI_CHAIN ?
-                (
-                  <div className="flex justify-between font-bold text-xl lg:text-2xl mb-4">
-                    <div>{`Other Chain fee:`}</div>
-                    <div>{`${feeCost} ${token} / Mint`}</div>
+          <CardContainerTemplate
+            text="text-center"
+            size="w-full lg:w-1/2 flex-auto"
+            padding="py-8 px-8"
+          >
+            <Fragment>
+              <h1 className="text-white font-bold text-3xl md:text-5xl mb-8">
+                Mint Collection
+              </h1>
+              <div className="flex flex-col p-0 lg:px-12">
+                <div className="inline-block relative w-full text-gray-700 font-bold text-lg lg:text-xl mb-4">
+                  <select
+                    name="qty"
+                    className="block appearance-none w-full bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none focus:shadow-outline"
+                    defaultValue={mintAmount}
+                    onChange={(e) => setMintAmount(e.target.value)}
+                    disabled={mintProcessing}
+                  >
+                    {createSelectOptions()}
+                  </select>
+                  <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                    <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" /></svg>
                   </div>
-                ) :
-                (null)
-              }
-              <div className="flex justify-between font-bold text-xl lg:text-2xl mb-4">
-                <div className="underline">{`Total fee:`}</div>
-                <div>{`${calculateMintCost(value, mintAmount)} ${token}`}</div>
-              </div>
-              <div className="m-auto">
-                <div>
-                  <button type="button" className="w-full lg:w-96 px-10 py-4 btn-home " disabled={mintProcessing} onClick={() => mint()}>
-                    <div className="flex justify-center gap-2">
-                      {mintProcessing ? <Loading fontSize={20} size={20} direction="right" /> : null}
-                      Mint
-                    </div>
-                  </button>
                 </div>
+                <div className="flex justify-between font-semibold text-md md:text-lg lg:text-xl mb-4">
+                  <div>{`Mint fee:`}</div>
+                  <div>{`${valueEth} ${token} / Mint`}</div>
+                </div>
+                {chain === AVALANCHE_FUJI_CHAIN || chain === POLYGON_MUMBAI_CHAIN ?
+                  (
+                    <div className="flex justify-between font-semibold text-md md:text-lg lg:text-xl mb-4">
+                      <div>{`Other Chain fee:`}</div>
+                      <div>{`${feeCost} ${token} / Mint`}</div>
+                    </div>
+                  ) :
+                  (null)
+                }
+                <div className="flex justify-between font-bold text-md md:text-lg lg:text-xl mb-4">
+                  <div className="underline">{`Total fee:`}</div>
+                  <div>{`${calculateMintCost(value, mintAmount)} ${token}`}</div>
+                </div>
+                <button type="button" className="w-full px-10 py-4 btn-home " disabled={mintProcessing} onClick={() => mint()}>
+                  <div className="flex justify-center gap-2">
+                    {mintProcessing ? <Loading fontSize={20} size={20} direction="right" /> : null}
+                    Mint
+                  </div>
+                </button>
               </div>
-            </div>
-          </div>
+            </Fragment>
+          </CardContainerTemplate>
         )}
       </div>
     </div>

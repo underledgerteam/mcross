@@ -531,7 +531,7 @@ export const WalletProvider = ({ children }) => {
     setNftContractMarketplaceList(contractMarketplaceList);
     setOwner(owner);
     setMintCost({
-      token: NFT_CONTRACTS[chain].Token,
+      token: NFT_CONTRACTS[chain].MintCost,
       valueEth: web3.utils.fromWei(cost, "ether"),
       value: Number(cost)
     });

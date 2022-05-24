@@ -38,6 +38,7 @@ export const NFT_CONTRACTS = {
     ShortLabel: "Ropsten",
     Icon: "Ethereum",
     Token: "ETH",
+    MintCost: "ETH",
 
     Address: NFT_ROPSTEN_ADDRESS,
     ABI: NFT_CONTRACT_ABI,
@@ -55,6 +56,7 @@ export const NFT_CONTRACTS = {
     ShortLabel: "Avalanche",
     Icon: "Avalanche",
     Token: "AVAX",
+    MintCost: "WETH",
 
     Address: NFT_AVALANHCE_FUJI_ADDRESS,
     ABI: NFT_CROSS_CONTRACT_ABI,
@@ -72,6 +74,7 @@ export const NFT_CONTRACTS = {
     ShortLabel: "Polygon",
     Icon: "Polygon",
     Token: "MATIC",
+    MintCost: "WETH",
 
     Address: NFT_POLYGON_MUMBAI_ADDRESS,
     ABI: NFT_CROSS_CONTRACT_ABI,

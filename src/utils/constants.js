@@ -37,6 +37,7 @@ export const NFT_CONTRACTS = {
     Label: "Ropsten Testnet Network",
     Icon: "Ethereum",
     Token: "ETH",
+    MintCost: "ETH",
 
     Address: NFT_ROPSTEN_ADDRESS,
     ABI: NFT_CONTRACT_ABI,
@@ -53,6 +54,7 @@ export const NFT_CONTRACTS = {
     Label: "AVAX Testnet Network",
     Icon: "Avalanche",
     Token: "AVAX",
+    MintCost: "WETH",
 
     Address: NFT_AVALANHCE_FUJI_ADDRESS,
     ABI: NFT_CROSS_CONTRACT_ABI,
@@ -69,6 +71,7 @@ export const NFT_CONTRACTS = {
     Label: "Polygon Testnet Network",
     Icon: "Polygon",
     Token: "MATIC",
+    MintCost: "WETH",
 
     Address: NFT_POLYGON_MUMBAI_ADDRESS,
     ABI: NFT_CROSS_CONTRACT_ABI,

@@ -92,7 +92,7 @@ const ProfilePage = () => {
   };
   // for open Model Cancel Sell
   const onOpenModelCancelSell = (objNFT) => {
-    ChangeConverseNFT("CancelSell", objNFT);
+    ChangeConverseNFT("Marketplace", objNFT);
     setOpenModelCancelSell(true);
   };
   const onConfirmCancelSell = (objNFT) => {

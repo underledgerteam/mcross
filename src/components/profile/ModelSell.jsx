@@ -12,7 +12,7 @@ const ModelSell = ({ objNFT, onConfirm, onClose }) => {
   const [ price, setPrice ] = useState(0);
   const { chain } = useContext(Web3Provider);
   const onChangePrice = () => {
-    const priceVal = Number(refPrice.current.value || 0);
+    const priceVal = Number(refPrice?.current?.value || 0);
     // const amount = priceVal-((priceVal*serviceFee/100)+(priceVal*axelarFee/100));
     const amount = priceVal-(priceVal*serviceFee/100);
     const total = amount-(amount*creatorFee/100);
@@ -80,10 +80,10 @@ const ModelSell = ({ objNFT, onConfirm, onClose }) => {
                 Close
               </button>
               <button 
-                disabled={!objNFT?.name || Number(refPrice?.current?.value) <= 0 || objNFT?.approveLoading}
+                disabled={!objNFT?.name || objNFT?.approveLoading || (Number(refPrice?.current?.value || 0) <= 0 && objNFT?.approve)}
                 className="mb-2 btn-confirm-sell"
                 onClick={()=> {
-                  if(Number(refPrice?.current?.value) <= 0){
+                  if(Number(refPrice?.current?.value || 0) <= 0 && objNFT?.approve){
                     refPrice.current.focus();
                   }else{
                     onConfirm(objNFT?.approve, Number(refPrice.current.value));

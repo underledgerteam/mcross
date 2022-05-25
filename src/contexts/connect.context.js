@@ -390,7 +390,7 @@ export const WalletProvider = ({ children }) => {
     if (type === "Marketplace") {
       isApproveAssress = NFT_CONTRACTS[chain].AddressMarketplace;
     }
-    return (isApprove === isApproveAssress) ? true : false;
+    return (isApprove.toLowerCase() === isApproveAssress.toLowerCase()) ? true : false;
   };
 
   const ChangeConverseNFT = async (type, objNFT) => {

@@ -61,12 +61,12 @@ const ModelSell = ({ objNFT, onConfirm, onClose }) => {
                   <div className="flex border-b-4 border-warmGray-300 rounded-lg my-5"></div>
                   
                   <div className="ml-8 text-2xl text-warmGray-200 text-left">
-                    You Recieve : {price} { NFT_CONTRACTS[chain].MintCost }
+                    You Receive : {price} { NFT_CONTRACTS[chain].MintCost }
                     <div className="text-sm mt-3">
                       <p className="text-lg">Example</p>
                       {/* <p>1. Amount = Price - (Service Fee + Axelar Fee)(%)</p> */}
                       <p>1. Amount = Price - Service Fee(%)</p>
-                      <p>2. Total = Amount - Creator Fee(%)</p>
+                      <p>2. You Receive = Amount - Creator Fee(%)</p>
                     </div>
                   </div>
                 </div>   

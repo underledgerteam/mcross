@@ -146,7 +146,26 @@ export const WalletProvider = ({ children }) => {
         // This error code indicates that the chain has not been added to MetaMask.
         setChain(currentChainId);
         if (switchError.code === 4902) {
-          alert('add this chain id');
+          try {
+            await web3.currentProvider.request({
+              method: "wallet_addEthereumChain",
+              params: [
+                {
+                  chainId: NFT_CONTRACTS[chainId].chainId,
+                  chainName: NFT_CONTRACTS[chainId].Label,
+                  nativeCurrency: {
+                    name: NFT_CONTRACTS[chainId].nativeCurrency.name,
+                    symbol: NFT_CONTRACTS[chainId].nativeCurrency.symbol,
+                    decimals: NFT_CONTRACTS[chainId].nativeCurrency.decimals,
+                  },
+                  rpcUrls: NFT_CONTRACTS[chainId].rpcUrls,
+                  blockExplorerUrls: NFT_CONTRACTS[chainId].blockExplorerUrls,
+                },
+              ],
+            });
+          } catch (addError) {
+            alert(addError.message);
+          }
         }
       }
     }
@@ -274,7 +293,7 @@ export const WalletProvider = ({ children }) => {
       const web3 = new Web3(window.ethereum);
       setListMarketplace({ ...listMarketplace, loading: true });
       const getMyMarketplace = await nftContractMarketplaceList.methods.getAllMarketItems().call();
-      const newObjGetMyMarketplace = getMyMarketplace.filter((x)=> x.status === "0");
+      const newObjGetMyMarketplace = getMyMarketplace.filter((x) => x.status === "0");
       let objMarkets = [];
       for (var i = 0; i < newObjGetMyMarketplace.length; i++) {
 

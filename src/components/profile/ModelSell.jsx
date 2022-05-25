@@ -1,18 +1,20 @@
 import { useState, useRef, Fragment, useContext } from "react";
 import { Loading } from "web3uikit";
-
-const currencyList = [{
-  text: "WETH"
-}];
+import { Web3Provider } from "../../contexts/connect.context";
+import {
+  NFT_CONTRACTS,
+} from "../../utils/constants";
 
 const ModelSell = ({ objNFT, onConfirm, onClose }) => {
   // set default fees
   const serviceFee = 3, axelarFee = 2, creatorFee = 10;
   const refPrice = useRef();
   const [ price, setPrice ] = useState(0);
+  const { chain } = useContext(Web3Provider);
   const onChangePrice = () => {
     const priceVal = Number(refPrice.current.value || 0);
-    const amount = priceVal-((priceVal*serviceFee/100)+(priceVal*axelarFee/100));
+    // const amount = priceVal-((priceVal*serviceFee/100)+(priceVal*axelarFee/100));
+    const amount = priceVal-(priceVal*serviceFee/100);
     const total = amount-(amount*creatorFee/100);
     setPrice(total);
   }
@@ -22,7 +24,7 @@ const ModelSell = ({ objNFT, onConfirm, onClose }) => {
       <div className="min-w-screen h-screen fixed left-0 top-0 flex justify-center items-center inset-0 z-50 outline-none focus:outline-none">
         <div className="absolute bg-black opacity-70 inset-0 z-0" />
         <div className="w-full max-w-lg p-5 relative mx-auto my-auto rounded-xl shadow-lg  bg-white ">
-          <div className="text-gray-500 ">
+          <div className="text-gray-500">
             <div className="text-center p-5 flex-auto justify-center">
               <h2 className="text-xl font-bold pt-4 text-gray-800">Sale NFT</h2>
               <h2 className="text-xl font-bold pt-2 pb-4">{objNFT?.name || "Loading..."}</h2>
@@ -37,17 +39,8 @@ const ModelSell = ({ objNFT, onConfirm, onClose }) => {
                     onChange={onChangePrice}
                   />
                   
-                  <div className="inline-block relative w-64 text-gray-700">
-                    <select 
-                      className="block appearance-none w-full bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none focus:shadow-outline"
-                    >
-                      { currencyList.map((list, key)=>{
-                        return(<option key={key}>{list.text}</option>)
-                      }) }
-                    </select>
-                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-                      <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
-                    </div>
+                  <div className="inline-block relative mr-5 text-gray-500">
+                    <h5 className="text-warmGray-200 text-2xl text-left">{ NFT_CONTRACTS[chain].MintCost }</h5>
                   </div>
                 </div>
                 
@@ -58,21 +51,22 @@ const ModelSell = ({ objNFT, onConfirm, onClose }) => {
                     <p>Service Fee : </p>
                     <p className="text-right">{serviceFee}%</p>
                     {/* <p>Axelar Fee : </p>
-                    <p className="text-right">{axelarFee}%</p>
+                    <p className="text-right">{axelarFee}%</p> */}
                     <p>Creator Fee : </p>
-                    <p className="text-right">{creatorFee}%</p> */}
+                    <p className="text-right">{creatorFee}%</p>
                   </div>
                 </div>
                 
                 <div className="flex border-b-4 border-warmGray-300 rounded-lg my-5"></div>
                 
                 <div className="ml-8 text-2xl text-warmGray-200 text-left">
-                  You Recieve : {(Number(refPrice?.current?.value || 0) - Number(refPrice?.current?.value || 0)*serviceFee/100)} Weth
-                  {/* <div className="text-sm mt-3">
+                  You Recieve : {price} { NFT_CONTRACTS[chain].MintCost }
+                  <div className="text-sm mt-3">
                     <p className="text-lg">Example</p>
-                    <p>1. Amount = Price - (Service Fee + Axelar Fee)(%)</p>
+                    {/* <p>1. Amount = Price - (Service Fee + Axelar Fee)(%)</p> */}
+                    <p>1. Amount = Price - Service Fee(%)</p>
                     <p>2. Total = Amount - Creator Fee(%)</p>
-                  </div> */}
+                  </div>
                 </div>
               </div>    
             </div>

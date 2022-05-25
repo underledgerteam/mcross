@@ -42,7 +42,7 @@ const Market = () => {
           <div className="w-full">
             <CardContainerTemplate
               padding="py-8 px-8"
-              margin="my-20"
+              margin="my-8"
             >
               <div className="flex flex-col">
                 <div className="grid md:grid-cols-sm md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">

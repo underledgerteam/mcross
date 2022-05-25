@@ -27,48 +27,50 @@ const ModelSell = ({ objNFT, onConfirm, onClose }) => {
           <div className="text-gray-500">
             <div className="text-center p-5 flex-auto justify-center">
               <h2 className="text-xl font-bold pt-4 text-gray-800">Sale NFT</h2>
-              <h2 className="text-xl font-bold pt-2 pb-4">{objNFT?.name || "Loading..."}</h2>
-              <div>
-                <div className="flex">
-                  <h5 className="text-warmGray-200 text-2xl">Price: </h5>
-                  <input 
-                    type="number" 
-                    disabled={objNFT?.approveLoading}
-                    className="mx-3 shadow appearance-none w-full border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
-                    ref={refPrice} 
-                    onChange={onChangePrice}
-                  />
+              <h2 className="text-xl font-bold pt-2 pb-4">{objNFT?.name}</h2>
+              { !objNFT?.name? (<div className="flex justify-center items-center mb-3"><Loading size={50} spinnerColor="#6b7280" fontSize={18} text="Loading NFT ..." /></div>)
+                :<div>
+                  <div className="flex">
+                    <h5 className="text-warmGray-200 text-2xl">Price: </h5>
+                    <input 
+                      type="number" 
+                      disabled={objNFT?.approveLoading}
+                      className="mx-3 shadow appearance-none w-full border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                      ref={refPrice} 
+                      onChange={onChangePrice}
+                    />
+                    
+                    <div className="inline-block relative mr-5 text-gray-500">
+                      <h5 className="text-warmGray-200 text-2xl text-left">{ NFT_CONTRACTS[chain].MintCost }</h5>
+                    </div>
+                  </div>
                   
-                  <div className="inline-block relative mr-5 text-gray-500">
-                    <h5 className="text-warmGray-200 text-2xl text-left">{ NFT_CONTRACTS[chain].MintCost }</h5>
+                  <h5 className="text-warmGray-200 text-2xl text-left mt-3 mb-2">Fees:</h5>
+                  <div className="ml-8 mr-5 text-2xl text-warmGray-200 text-left">
+                    
+                    <div className="grid grid-cols-2 text-xl">
+                      <p>Service Fee : </p>
+                      <p className="text-right">{serviceFee}%</p>
+                      {/* <p>Axelar Fee : </p>
+                      <p className="text-right">{axelarFee}%</p> */}
+                      <p>Creator Fee : </p>
+                      <p className="text-right">{creatorFee}%</p>
+                    </div>
                   </div>
-                </div>
-                
-                <h5 className="text-warmGray-200 text-2xl text-left mt-3 mb-2">Fees:</h5>
-                <div className="ml-8 mr-5 text-2xl text-warmGray-200 text-left">
                   
-                  <div className="grid grid-cols-2 text-xl">
-                    <p>Service Fee : </p>
-                    <p className="text-right">{serviceFee}%</p>
-                    {/* <p>Axelar Fee : </p>
-                    <p className="text-right">{axelarFee}%</p> */}
-                    <p>Creator Fee : </p>
-                    <p className="text-right">{creatorFee}%</p>
+                  <div className="flex border-b-4 border-warmGray-300 rounded-lg my-5"></div>
+                  
+                  <div className="ml-8 text-2xl text-warmGray-200 text-left">
+                    You Recieve : {price} { NFT_CONTRACTS[chain].MintCost }
+                    <div className="text-sm mt-3">
+                      <p className="text-lg">Example</p>
+                      {/* <p>1. Amount = Price - (Service Fee + Axelar Fee)(%)</p> */}
+                      <p>1. Amount = Price - Service Fee(%)</p>
+                      <p>2. Total = Amount - Creator Fee(%)</p>
+                    </div>
                   </div>
-                </div>
-                
-                <div className="flex border-b-4 border-warmGray-300 rounded-lg my-5"></div>
-                
-                <div className="ml-8 text-2xl text-warmGray-200 text-left">
-                  You Recieve : {price} { NFT_CONTRACTS[chain].MintCost }
-                  <div className="text-sm mt-3">
-                    <p className="text-lg">Example</p>
-                    {/* <p>1. Amount = Price - (Service Fee + Axelar Fee)(%)</p> */}
-                    <p>1. Amount = Price - Service Fee(%)</p>
-                    <p>2. Total = Amount - Creator Fee(%)</p>
-                  </div>
-                </div>
-              </div>    
+                </div>   
+              } 
             </div>
             <div className="p-3  mt-2 text-center space-x-4 md:block">
               <button 

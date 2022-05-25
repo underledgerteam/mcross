@@ -67,14 +67,14 @@ code {
 .btn-cancel-sell:not([disabled]):hover {
   @apply hover:shadow-lg hover:bg-red-600;
 }
-.lgkmjB > span {
-  margin-top: 2rem!important;
+div[role="spinner"] > span {
+  margin-top: 1.25rem!important;
 }
-.btn-connect > .dOeptj {
+.btn-connect > div[role="spinner"] {
   margin-left: auto;
   margin-right: auto;
 }
-.btn-connect > .dOeptj > span {
+.btn-connect > div[role="spinner"] > span {
   margin-left: 0.5rem!important;
   font-size: 1.25rem;
   line-height: 1.75rem;

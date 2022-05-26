@@ -58,6 +58,15 @@ export const NFT_CONTRACTS = {
     Token: "AVAX",
     MintCost: "WETH",
 
+    chainId: '0xA869',
+    nativeCurrency: {
+      name: 'Avalanche',
+      symbol: 'AVAX',
+      decimals: 18
+    },
+    rpcUrls: ['https://api.avax-test.network/ext/bc/C/rpc'],
+    blockExplorerUrls: ['https://testnet.snowtrace.io/'],
+
     Address: NFT_AVALANHCE_FUJI_ADDRESS,
     ABI: NFT_CROSS_CONTRACT_ABI,
 
@@ -76,6 +85,15 @@ export const NFT_CONTRACTS = {
     Token: "MATIC",
     MintCost: "WETH",
 
+    chainId: '0x13881',
+    nativeCurrency: {
+      name: 'MATIC Token',
+      symbol: 'MATIC',
+      decimals: 18
+    },
+    rpcUrls: ['https://matic-mumbai.chainstacklabs.com/'],
+    blockExplorerUrls: ['https://mumbai.polygonscan.com/'],
+
     Address: NFT_POLYGON_MUMBAI_ADDRESS,
     ABI: NFT_CROSS_CONTRACT_ABI,
 
@@ -84,7 +102,7 @@ export const NFT_CONTRACTS = {
 
     AddressMarketplace: NFT_POLYGON_MARKETPLACE_ADDRESS,
     ABIMarketplace: NFT_CONTRACT_MARKETPLACE_ABI,
-    
+
     CrossChain: true
   }
 };

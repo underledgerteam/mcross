@@ -33,19 +33,19 @@ export const WalletProvider = ({ children }) => {
   const [balance, setBalance] = useState(0);
   const [myMarketplace, setMyMarketplace] = useState({
     list: [],
-    loading: false,
+    loading: true,
   });
   const [myCollection, setMyCollection] = useState({
     list: [],
-    loading: false,
+    loading: true,
   });
   const [myCollectionById, setMyCollectionById] = useState({
     data: [],
-    loading: false,
+    loading: true,
   });
   const [listMarketplace, setListMarketplace] = useState({
     list: [],
-    loading: false,
+    loading: true,
   });
 
 
@@ -110,9 +110,6 @@ export const WalletProvider = ({ children }) => {
       setChain(web3.utils.hexToNumber(chainId));
       createNftContract();
       onSetIsReload(onEventListenReload);
-    });
-    currentProvider.on('message', (message) => {
-      console.log("message=>", message);
     });
   };
 
@@ -409,7 +406,6 @@ export const WalletProvider = ({ children }) => {
     if (type === "Marketplace") {
       isApproveAssress = NFT_CONTRACTS[chain].AddressMarketplace;
     }
-    console.log(isApprove, isApproveAssress)
     return (isApprove.toLowerCase() === isApproveAssress?.toLowerCase()) ? true : false;
   };
 
@@ -423,7 +419,7 @@ export const WalletProvider = ({ children }) => {
         selected: true,
         fee: await getPriceCryptoCurrency()
       };
-      if (!NFT_CONTRACTS[chain].CrossChain) {
+      if (!NFT_CONTRACTS[chain].CrossChain || type === "Marketplace") {
         objNFT = {
           ...objNFT,
           approve: await checkApproved(type, objNFT.edition),
@@ -477,7 +473,7 @@ export const WalletProvider = ({ children }) => {
       arr = [...arr, fee];
       let fixGas = "10000000000000000";
       if (NFT_CONTRACTS[chain].CrossChain) {
-        fixGas = "2000000000000000";
+        fixGas = "300000000000000000";
       }
       await nftContractConverse.methods.sendNFT(...arr).send({ from: account, value: fixGas });
       setNftConverse({ ...nftConverse, loading: false });
@@ -532,10 +528,12 @@ export const WalletProvider = ({ children }) => {
       case AVALANCHE_FUJI_CHAIN:
         cost = await nftContract.methods.costNFT().call();
         contractCollection = new web3.eth.Contract(NFT_CONTRACTS[chain].ABIConverse, NFT_CONTRACTS[chain].AddressConverse);
+        contractMarketplaceList = new web3.eth.Contract(NFT_CONTRACTS[chain].ABIMarketplace, NFT_CONTRACTS[chain].AddressMarketplace);
         break;
       case POLYGON_MUMBAI_CHAIN:
         cost = await nftContract.methods.costNFT().call();
         contractCollection = new web3.eth.Contract(NFT_CONTRACTS[chain].ABIConverse, NFT_CONTRACTS[chain].AddressConverse);
+        contractMarketplaceList = new web3.eth.Contract(NFT_CONTRACTS[chain].ABIMarketplace, NFT_CONTRACTS[chain].AddressMarketplace);
         break;
       default:
         console.log("not supported chain");

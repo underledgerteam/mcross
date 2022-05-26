@@ -197,7 +197,7 @@ const Converse = () => {
                         onClick={() => onApprove(selectConverseNFT?.approve)}
                       >
                         <div className="flex justify-center gap-2">
-                          {selectConverseNFT?.approveLoading || nftConverse?.loading && <Loading fontSize={20} direction="right" />}
+                          {(selectConverseNFT?.approveLoading || nftConverse?.loading) && <Loading size={20} direction="right" />}
                           {selectConverseNFT?.approve ? "Transfer" : "Approve"}
                         </div>
                       </button>

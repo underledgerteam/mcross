@@ -91,7 +91,7 @@ const ModelSell = ({ objNFT, onConfirm, onClose }) => {
                 }}
               >
                 <div className="flex justify-center gap-2">
-                  { objNFT?.approveLoading && <Loading fontSize={14} direction="right" />}
+                  { objNFT?.approveLoading && <Loading size={14} direction="right" />}
                   { objNFT?.approve?"Confirm": "Approve" }
                 </div>
               </button>

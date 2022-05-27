@@ -5,7 +5,7 @@ import {
   NFT_CONTRACTS,
 } from "../../utils/constants";
 
-const ModelSell = ({ objNFT, onConfirm, onClose }) => {
+const ModalSell = ({ objNFT, onConfirm, onClose }) => {
   // set default fees
   const serviceFee = 3, axelarFee = 2, creatorFee = 10;
   const refPrice = useRef();
@@ -103,4 +103,4 @@ const ModelSell = ({ objNFT, onConfirm, onClose }) => {
   )
 }
 
-export default ModelSell;
+export default ModalSell;

@@ -7,8 +7,8 @@ import { NFT_CONTRACTS as nftContractAddress } from "../../utils/constants";
 import Title from "../../components/shared/Title";
 import CardContainerTemplate from "../../components/shared/card/CardContainerTemplate";
 import CardListTemplate from "../../components/shared/card/CardListTemplate";
-import ModelSell from "../../components/profile/ModelSell";
-import ModelCancelSell from "../../components/profile/ModelCancelSell";
+import ModalSell from "../../components/profile/ModalSell";
+import ModalCancelSell from "../../components/profile/ModalCancelSell";
 
 import { shortenAddress } from "../../utils/shortenAddress.util";
 
@@ -55,8 +55,8 @@ const ProfilePage = () => {
   const refSelectChain = useRef();
 
   const [tab, setTab] = useState(localStorage.getItem("myTab") || "My Collection");
-  const [openModelSell, setOpenModelSell] = useState(false);
-  const [openModelCancelSell, setOpenModelCancelSell] = useState(false);
+  const [openModalSell, setOpenModalSell] = useState(false);
+  const [openModalCancelSell, setOpenModalCancelSell] = useState(false);
 
   const onChangeChain = async () => {
     ChangeChain(Number.parseInt(refSelectChain.current.value));
@@ -65,12 +65,12 @@ const ProfilePage = () => {
     setTab(tab);
     localStorage.setItem("myTab", tab);
   };
-  // for open Model Sell
+  // for open Modal Sell
   const handleClickName = (id) => {
     history(`/profile/collection/${id}`);
   };
-  const onOpenModelSell = (objNFT) => {
-    setOpenModelSell(true);
+  const onOpenModalSell = (objNFT) => {
+    setOpenModalSell(true);
     ChangeConverseNFT("Marketplace", objNFT);
   };
   const onConfirmSellNFT = (isApprove, nftPrice) => {
@@ -79,7 +79,7 @@ const ProfilePage = () => {
         selectConverseNFT,
         nftPrice,
         () => {
-          setOpenModelSell(false);
+          setOpenModalSell(false);
           setTab("My Marketplace");
         }
       );
@@ -87,23 +87,23 @@ const ProfilePage = () => {
       ConverseApproveNFT("Marketplace", selectConverseNFT);
     }
   };
-  const onCloseModelSell = () => {
-    setOpenModelSell(false);
+  const onCloseModalSell = () => {
+    setOpenModalSell(false);
   };
-  // for open Model Cancel Sell
-  const onOpenModelCancelSell = (objNFT) => {
+  // for open Modal Cancel Sell
+  const onOpenModalCancelSell = (objNFT) => {
     ChangeConverseNFT("Marketplace", objNFT);
-    setOpenModelCancelSell(true);
+    setOpenModalCancelSell(true);
   };
   const onConfirmCancelSell = (objNFT) => {
     // alert("Process MetaMask Sell NFT");
     CancelSellCollection(objNFT, () => {
-      setOpenModelCancelSell(false);
+      setOpenModalCancelSell(false);
       setTab("My Collection");
     });
   };
-  const onCloseModelCancelSell = () => {
-    setOpenModelCancelSell(false);
+  const onCloseModalCancelSell = () => {
+    setOpenModalCancelSell(false);
   };
 
   const columns = useMemo(() => [
@@ -217,7 +217,7 @@ const ProfilePage = () => {
                         //     ...item,
                         //     chain: nftContractAddress[chain]?.ShortLabel
                         //   }}
-                        //   onClickSell={(objNFT) => onOpenModelSell(objNFT)}
+                        //   onClickSell={(objNFT) => onOpenModalSell(objNFT)}
                         // />
                         <CardListTemplate
                           key={key}
@@ -230,7 +230,7 @@ const ProfilePage = () => {
                           owner={item.owner}
                           textAction={`Sell ${item.name}`}
                           onClick={() => handleClickName(item.edition)}
-                          onClickAction={() => onOpenModelSell(item)}
+                          onClickAction={() => onOpenModalSell(item)}
                         />
                       );
                     }) : (<h5 className="text-center text-2xl col-span-3 text-gray-200">My Collection No Result...</h5>)
@@ -267,7 +267,7 @@ const ProfilePage = () => {
                           textAction={`Cancel Sell`}
                           sell={true}
                           onClick={() => handleClickName(item.edition)}
-                          onClickAction={() => onOpenModelCancelSell(item)}
+                          onClickAction={() => onOpenModalCancelSell(item)}
                         />
                       );
                     }) : (<h5 className="text-center text-2xl col-span-3 text-gray-200">My Collection No Result...</h5>)
@@ -296,19 +296,19 @@ const ProfilePage = () => {
           </div>
         )}
 
-        {openModelSell && (
-          <ModelSell
+        {openModalSell && (
+          <ModalSell
             objNFT={selectConverseNFT}
             onConfirm={onConfirmSellNFT}
-            onClose={onCloseModelSell}
+            onClose={onCloseModalSell}
           />
         )}
 
-        {openModelCancelSell && (
-          <ModelCancelSell
+        {openModalCancelSell && (
+          <ModalCancelSell
             objNFT={selectConverseNFT}
             onConfirm={onConfirmCancelSell}
-            onClose={onCloseModelCancelSell}
+            onClose={onCloseModalCancelSell}
           />
         )}
 

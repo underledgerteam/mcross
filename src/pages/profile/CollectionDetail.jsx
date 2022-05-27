@@ -5,7 +5,7 @@ import { Loading } from "web3uikit";
 import { Web3Provider } from "../../contexts/connect.context";
 
 import CardContainerTemplate from "../../components/shared/card/CardContainerTemplate";
-import ModelSell from "../../components/profile/ModelSell";
+import ModalSell from "../../components/profile/ModalSell";
 import Title from "../../components/shared/Title";
 import { shortenAddress } from "../../utils/shortenAddress.util";
 import { ipfsUriToHttps } from "../../utils/ipfsUriToHttps.util";
@@ -15,7 +15,7 @@ import { NFT_CONTRACTS as nftContractAddress } from "../../utils/constants";
 const CollectionDetail = () => {
   const params = useParams();
   const navigate = useNavigate();
-  const [ openModel, setOpenModel ] = useState(false);
+  const [ openModal, setOpenModal ] = useState(false);
   const { 
     chain, 
     owner, 
@@ -32,8 +32,8 @@ const CollectionDetail = () => {
   const onHistoryBack = () => {
     navigate("/profile");
   };
-  const onOpenModel = () => {
-    setOpenModel(true);
+  const onOpenModal = () => {
+    setOpenModal(true);
     ChangeConverseNFT("Marketplace", myCollectionById.data);
   };
   const onConfirmSellNFT = (isApprove, nftPrice) => {
@@ -42,7 +42,7 @@ const CollectionDetail = () => {
         selectConverseNFT,
         nftPrice,
         () => {
-          setOpenModel(false);
+          setOpenModal(false);
           setTimeout(() => {
             navigate('/profile');
           }, 2000);
@@ -53,8 +53,8 @@ const CollectionDetail = () => {
       ConverseApproveNFT("Marketplace", selectConverseNFT);
     }
   };
-  const onCloseModel = () => {
-    setOpenModel(false);
+  const onCloseModal = () => {
+    setOpenModal(false);
   };
   useEffect(()=>{
     if(account && nftContractCollection){
@@ -153,7 +153,7 @@ const CollectionDetail = () => {
                         <button
                           type="button"
                           className="w-full font-bold py-3 px-12 mt-4 rounded bg-gradient-to-r from-custom-purple1 to-pink-500 hover:from-custom-purple1/90 hover:to-pink-500/90 text-white"
-                          onClick={() => onOpenModel()}
+                          onClick={() => onOpenModal()}
                         >
                           Sale
                         </button>
@@ -165,11 +165,11 @@ const CollectionDetail = () => {
             </div>
           )}
         </div>
-      {openModel && (
-        <ModelSell
+      {openModal && (
+        <ModalSell
           objNFT={selectConverseNFT}
           onConfirm={onConfirmSellNFT}
-          onClose={onCloseModel}
+          onClose={onCloseModal}
         />
       )}
     </Fragment>

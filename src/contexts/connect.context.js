@@ -13,6 +13,7 @@ import {
   WETH_CONTRACT_ADDRESS,
   NFT_CROSS_CONTRACT_ABI,
   NFT_AVALANHCE_FUJI_ADDRESS,
+  NFT_DEFAULT_CHAIN,
 } from "../utils/constants";
 
 export const Web3Provider = React.createContext();
@@ -57,8 +58,10 @@ export const WalletProvider = ({ children }) => {
   const [nftContractMarketplaceList, setNftContractMarketplaceList] = useState();
   const [mintProcessing, setMintProcessing] = useState(false);
   const [nftConverse, setNftConverse] = useState({ data: [], loading: false });
-  const [chain, setChain] = useState(3);
+  const [chain, setChain] = useState(NFT_DEFAULT_CHAIN);
   const [isReload, setIsReload] = useState(false);
+  const [isConnectChain, setIsConnectChain] = useState("");
+
   /* onEventListenReload use swap true/false isReload in function eventListener
   on function eventListener cant get state current of isReload */
   let onEventListenReload = false;
@@ -559,6 +562,15 @@ export const WalletProvider = ({ children }) => {
     });
   };
 
+  const checkConnectChain = () => {
+    if (chain === ROPSTEN_CHAIN || chain === AVALANCHE_FUJI_CHAIN || chain === POLYGON_MUMBAI_CHAIN) {
+      setIsConnectChain(1);
+    } else {
+      setIsConnectChain("");
+    }
+
+  };
+
   const getAllTransaction = async () => {
     // contract.getPastEvents('Transfer', {
     //   // filter: { myIndexedParam: [20, 23], myOtherIndexedParam: '0x123456789...' }, // Using an array means OR: e.g. 20 or 23
@@ -676,7 +688,9 @@ export const WalletProvider = ({ children }) => {
         mintProcessing,
         mintCost,
         calculateMintCost,
-        cost
+        cost,
+        isConnectChain,
+        checkConnectChain
       }}
     >
       {children}

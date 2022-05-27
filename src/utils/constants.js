@@ -32,6 +32,8 @@ export const ROPSTEN_CHAIN = 3;
 export const AVALANCHE_FUJI_CHAIN = 43113;
 export const POLYGON_MUMBAI_CHAIN = 80001;
 
+export const NFT_DEFAULT_CHAIN = 3;
+
 export const NFT_CONTRACTS = {
   3: {
     Label: "Ropsten Testnet Network",

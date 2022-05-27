@@ -16,7 +16,7 @@ const ModalSell = ({ objNFT, onConfirm, onClose }) => {
     // const amount = priceVal-((priceVal*serviceFee/100)+(priceVal*axelarFee/100));
     const amount = priceVal-(priceVal*serviceFee/100);
     const total = amount-(amount*creatorFee/100);
-    setPrice(total);
+    setPrice(total.toFixed(7));
   }
 
   return(

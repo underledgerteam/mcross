@@ -1,11 +1,10 @@
 import React, { useState, useContext, Fragment } from "react";
-import { Loading } from "web3uikit";
+import { Loading, CryptoLogos } from "web3uikit";
 import { Web3Provider } from "../../contexts/connect.context";
 
 import Title from "../../components/shared/Title";
 import CardContainerTemplate from "../../components/shared/card/CardContainerTemplate";
-import { AVALANCHE_FUJI_CHAIN, POLYGON_MUMBAI_CHAIN } from "../../utils/constants";
-
+import { AVALANCHE_FUJI_CHAIN, POLYGON_MUMBAI_CHAIN, NFT_CONTRACTS } from "../../utils/constants";
 const Mint = () => {
   const { account, ConnectedWallet, mintNft, mintProcessing, mintCost, calculateMintCost, cost, chain } = useContext(Web3Provider);
   const { token, value } = mintCost;
@@ -70,6 +69,12 @@ const Mint = () => {
             padding="py-8 px-8"
           >
             <Fragment>
+              <div className="flex justify-center -mt-[5rem] mb-4">
+                <CryptoLogos
+                  chain={NFT_CONTRACTS[chain]?.Icon.toLowerCase()}
+                  size="7.5rem"
+                />
+              </div>
               <h1 className="text-white font-bold text-3xl md:text-5xl mb-8">
                 Mint Collection
               </h1>

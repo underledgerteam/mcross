@@ -10,7 +10,7 @@ import { ipfsUriToHttps } from "../../utils/ipfsUriToHttps.util";
 
 import { NFT_CONTRACTS as nftContractAddress, NFT_DEFAULT_CHAIN } from "../../utils/constants";
 
-const Converse = () => {
+const Bridge = () => {
   const {
     chain,
     isReload,
@@ -78,7 +78,7 @@ const Converse = () => {
   return (
     <Fragment>
       <div className="container md:container md:mx-auto">
-        <Title text={"NFT Converse"} />
+        <Title text={"NFT Bridge"} />
 
         <div className="flex">
           {!account ? (
@@ -232,4 +232,4 @@ const Converse = () => {
   );
 };
 
-export default Converse;
+export default Bridge;

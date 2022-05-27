@@ -3,7 +3,7 @@ import { Table, CryptoLogos, Loading } from "web3uikit";
 import { useNavigate } from "react-router-dom";
 
 import { Web3Provider } from "../../contexts/connect.context";
-import { NFT_CONTRACTS as nftContractAddress } from "../../utils/constants";
+import { NFT_CONTRACTS as nftContractAddress, NFT_DEFAULT_CHAIN } from "../../utils/constants";
 import Title from "../../components/shared/Title";
 import CardContainerTemplate from "../../components/shared/card/CardContainerTemplate";
 import CardListTemplate from "../../components/shared/card/CardListTemplate";
@@ -49,7 +49,9 @@ const ProfilePage = () => {
     CreateSellCollection,
     CancelSellCollection,
     ConnectedWallet,
-    nftContractCollection
+    nftContractCollection,
+    checkConnectChain,
+    isConnectChain
   } = useContext(Web3Provider);
 
   const refSelectChain = useRef();
@@ -61,6 +63,7 @@ const ProfilePage = () => {
   const onChangeChain = async () => {
     ChangeChain(Number.parseInt(refSelectChain.current.value));
   };
+
   const onClickTab = (tab) => {
     setTab(tab);
     localStorage.setItem("myTab", tab);
@@ -106,6 +109,10 @@ const ProfilePage = () => {
     setOpenModalCancelSell(false);
   };
 
+  const onChangeNetwork = () => {
+    ChangeChain(NFT_DEFAULT_CHAIN);
+  };
+
   const columns = useMemo(() => [
     'ID',
     'Event',
@@ -127,6 +134,7 @@ const ProfilePage = () => {
       GetCollection();
       GetMyMarketplace();
     }
+    checkConnectChain();
   }, [account, isReload, nftContractCollection, nftContractMarketplace]);
 
   return (
@@ -143,157 +151,168 @@ const ProfilePage = () => {
             </div>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="w-full">
-              <CardContainerTemplate
-                padding="py-8 px-8"
-                margin="my-20"
-              >
-                <Fragment>
-                  <div className="flex justify-center -mt-16">
-                    <CryptoLogos
-                      chain={nftContractAddress[chain]?.Icon.toLowerCase()}
-                      size="7.5rem"
-                    />
-                  </div>
-                  <div className="flex flex-col">
-                    <h2 className="text-3xl font-semibold mt-4 text-center">{shortenAddress(account)}</h2>
-                    <div className="flex items-end mt-3 mx-auto">
-                      <div className="text-white text-xl lg:text-3xl font-bold mr-4">Chain: </div>
-                      <div className="inline-block relative w-full text-gray-700 mt-4">
-                        <select
-                          className="block appearance-none w-full bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none focus:shadow-outline"
-                          ref={refSelectChain}
-                          onChange={() => onChangeChain()}
-                          defaultValue={chain}
-                        >
-                          {Object.keys(nftContractAddress).map((key, index) => {
-                            return (<option key={index} value={key}>{nftContractAddress[key]?.Label}</option>);
-                          })}
-                        </select>
-                        <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-                          <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" /></svg>
+
+          !isConnectChain ? (
+            <div className="w-full flex-auto py-8 px-8 text-center">
+              <div className="">
+                <button type="button" className="w-full md:w-96 px-10 py-4 btn-home" onClick={onChangeNetwork}>
+                  Switch to Ropsten
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="w-full">
+                <CardContainerTemplate
+                  padding="py-8 px-8"
+                  margin="my-20"
+                >
+                  <Fragment>
+                    <div className="flex justify-center -mt-16">
+                      <CryptoLogos
+                        chain={nftContractAddress[chain]?.Icon.toLowerCase()}
+                        size="7.5rem"
+                      />
+                    </div>
+                    <div className="flex flex-col">
+                      <h2 className="text-3xl font-semibold mt-4 text-center">{shortenAddress(account)}</h2>
+                      <div className="flex items-end mt-3 mx-auto">
+                        <div className="text-white text-xl lg:text-3xl font-bold mr-4">Chain: </div>
+                        <div className="inline-block relative w-full text-gray-700 mt-4">
+                          <select
+                            className="block appearance-none w-full bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none focus:shadow-outline"
+                            ref={refSelectChain}
+                            onChange={() => onChangeChain()}
+                            defaultValue={chain}
+                          >
+                            {Object.keys(nftContractAddress).map((key, index) => {
+                              return (<option key={index} value={key}>{nftContractAddress[key]?.Label}</option>);
+                            })}
+                          </select>
+                          <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                            <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" /></svg>
+                          </div>
                         </div>
                       </div>
+                      {menuProfile.map((item, key) => {
+                        return (
+                          <button
+                            type="button"
+                            className={`btn-menu-profile ${tab === item.text && ("active")}`}
+                            onClick={() => onClickTab(item.text)}
+                            key={key}
+                          >
+                            {item.text}
+                          </button>
+                        );
+                      })}
+
                     </div>
-                    {menuProfile.map((item, key) => {
-                      return (
-                        <button
-                          type="button"
-                          className={`btn-menu-profile ${tab === item.text && ("active")}`}
-                          onClick={() => onClickTab(item.text)}
-                          key={key}
-                        >
-                          {item.text}
-                        </button>
-                      );
-                    })}
+                  </Fragment>
+                </CardContainerTemplate>
+              </div>
 
+              {tab === "My Collection" && (
+                <CardContainerTemplate
+                  title="My Collection"
+                  padding="p-6"
+                  margin="my-0 md:my-20"
+                >
+                  {/* No Record! */}
+                  <div className="grid lg:grid-cols-3 grid-cols-1 gap-4">
+                    {myCollection.loading ? (<div className="col-span-3 mx-auto">
+                      <Loading
+                        fontSize={20}
+                        size={100}
+                        spinnerColor="#fff"
+                        text="Loading...."
+                      /></div>) :
+                      (myCollection?.list.length > 0) ? myCollection.list.map((item, key) => {
+                        return (
+                          // <CardNFT
+                          //   key={key}
+                          //   objNFT={{
+                          //     ...item,
+                          //     chain: nftContractAddress[chain]?.ShortLabel
+                          //   }}
+                          //   onClickSell={(objNFT) => onOpenModalSell(objNFT)}
+                          // />
+                          <CardListTemplate
+                            key={key}
+                            id={item.edition}
+                            name={item.name}
+                            price={item.price}
+                            image={item.image}
+                            rarity={'Common'}
+                            chain={nftContractAddress[chain]?.ShortLabel}
+                            owner={item.owner}
+                            textAction={`Sell ${item.name}`}
+                            onClick={() => handleClickName(item.edition)}
+                            onClickAction={() => onOpenModalSell(item)}
+                          />
+                        );
+                      }) : (<h5 className="text-center text-2xl col-span-3 text-gray-200">My Collection No Result...</h5>)
+                    }
                   </div>
-                </Fragment>
-              </CardContainerTemplate>
+                </CardContainerTemplate>
+              )}
+
+              {tab === "My Marketplace" && (
+                <CardContainerTemplate
+                  title="My Marketplace"
+                  padding="p-6"
+                  margin="my-0 md:my-20"
+                >
+                  <div className="grid lg:grid-cols-3 grid-cols-1 gap-4">
+                    {myMarketplace.loading ? (<div className="col-span-3 mx-auto">
+                      <Loading
+                        fontSize={20}
+                        size={100}
+                        spinnerColor="#fff"
+                        text="Loading...."
+                      /></div>) :
+                      (myMarketplace?.list.length > 0) ? myMarketplace.list.map((item, key) => {
+                        return (
+                          <CardListTemplate
+                            key={key}
+                            id={item.edition}
+                            name={item.name}
+                            price={item.price}
+                            image={item.image}
+                            rarity={'Common'}
+                            chain={nftContractAddress[chain]?.ShortLabel}
+                            owner={item.owner}
+                            textAction={`Cancel Sell`}
+                            sell={true}
+                            onClick={() => handleClickName(item.edition)}
+                            onClickAction={() => onOpenModalCancelSell(item)}
+                          />
+                        );
+                      }) : (<h5 className="text-center text-2xl col-span-3 text-gray-200">My Collection No Result...</h5>)
+                    }
+                  </div>
+                </CardContainerTemplate>
+              )}
+
+              {tab === "My Transaction" && (
+                <CardContainerTemplate
+                  title="My Transaction"
+                  padding="p-6"
+                  margin="my-0 md:my-20"
+                >
+                  <Table
+                    columnsConfig="80px 3fr 2fr 2fr 2fr 3fr"
+                    data={data}
+                    header={columns}
+                    maxPages={3}
+                    onPageNumberChanged={(number) => console.log(number)}
+                    pageSize={5}
+                  />
+                </CardContainerTemplate>
+              )}
+
             </div>
-
-            {tab === "My Collection" && (
-              <CardContainerTemplate
-                title="My Collection"
-                padding="p-6"
-                margin="my-0 md:my-20"
-              >
-                {/* No Record! */}
-                <div className="grid lg:grid-cols-3 grid-cols-1 gap-4">
-                  {myCollection.loading ? (<div className="col-span-3 mx-auto">
-                    <Loading
-                      fontSize={20}
-                      size={100}
-                      spinnerColor="#fff"
-                      text="Loading...."
-                    /></div>) :
-                    (myCollection?.list.length > 0) ? myCollection.list.map((item, key) => {
-                      return (
-                        // <CardNFT
-                        //   key={key}
-                        //   objNFT={{
-                        //     ...item,
-                        //     chain: nftContractAddress[chain]?.ShortLabel
-                        //   }}
-                        //   onClickSell={(objNFT) => onOpenModalSell(objNFT)}
-                        // />
-                        <CardListTemplate
-                          key={key}
-                          id={item.edition}
-                          name={item.name}
-                          price={item.price}
-                          image={item.image}
-                          rarity={'Common'}
-                          chain={nftContractAddress[chain]?.ShortLabel}
-                          owner={item.owner}
-                          textAction={`Sell ${item.name}`}
-                          onClick={() => handleClickName(item.edition)}
-                          onClickAction={() => onOpenModalSell(item)}
-                        />
-                      );
-                    }) : (<h5 className="text-center text-2xl col-span-3 text-gray-200">My Collection No Result...</h5>)
-                  }
-                </div>
-              </CardContainerTemplate>
-            )}
-
-            {tab === "My Marketplace" && (
-              <CardContainerTemplate
-                title="My Marketplace"
-                padding="p-6"
-                margin="my-0 md:my-20"
-              >
-                <div className="grid lg:grid-cols-3 grid-cols-1 gap-4">
-                  {myMarketplace.loading ? (<div className="col-span-3 mx-auto">
-                    <Loading
-                      fontSize={20}
-                      size={100}
-                      spinnerColor="#fff"
-                      text="Loading...."
-                    /></div>) :
-                    (myMarketplace?.list.length > 0) ? myMarketplace.list.map((item, key) => {
-                      return (
-                        <CardListTemplate
-                          key={key}
-                          id={item.edition}
-                          name={item.name}
-                          price={item.price}
-                          image={item.image}
-                          rarity={'Common'}
-                          chain={nftContractAddress[chain]?.ShortLabel}
-                          owner={item.owner}
-                          textAction={`Cancel Sell`}
-                          sell={true}
-                          onClick={() => handleClickName(item.edition)}
-                          onClickAction={() => onOpenModalCancelSell(item)}
-                        />
-                      );
-                    }) : (<h5 className="text-center text-2xl col-span-3 text-gray-200">My Collection No Result...</h5>)
-                  }
-                </div>
-              </CardContainerTemplate>
-            )}
-
-            {tab === "My Transaction" && (
-              <CardContainerTemplate
-                title="My Transaction"
-                padding="p-6"
-                margin="my-0 md:my-20"
-              >
-                <Table
-                  columnsConfig="80px 3fr 2fr 2fr 2fr 3fr"
-                  data={data}
-                  header={columns}
-                  maxPages={3}
-                  onPageNumberChanged={(number) => console.log(number)}
-                  pageSize={5}
-                />
-              </CardContainerTemplate>
-            )}
-
-          </div>
+          )
         )}
 
         {openModalSell && (

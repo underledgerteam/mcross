@@ -5,7 +5,7 @@ import {
   NFT_CONTRACTS,
 } from "../../utils/constants";
 
-const ModelSell = ({ objNFT, onConfirm, onClose }) => {
+const ModalSell = ({ objNFT, onConfirm, onClose }) => {
   // set default fees
   const serviceFee = 3, axelarFee = 2, creatorFee = 10;
   const refPrice = useRef();
@@ -16,7 +16,7 @@ const ModelSell = ({ objNFT, onConfirm, onClose }) => {
     // const amount = priceVal-((priceVal*serviceFee/100)+(priceVal*axelarFee/100));
     const amount = priceVal-(priceVal*serviceFee/100);
     const total = amount-(amount*creatorFee/100);
-    setPrice(total);
+    setPrice(total.toFixed(7));
   }
 
   return(
@@ -103,4 +103,4 @@ const ModelSell = ({ objNFT, onConfirm, onClose }) => {
   )
 }
 
-export default ModelSell;
+export default ModalSell;

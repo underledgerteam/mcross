@@ -1,7 +1,7 @@
 import { Fragment } from "react";
 import { Loading } from "web3uikit";
 
-const ModelCancelSell = ({ objNFT, onConfirm, onClose }) => {
+const ModalCancelSell = ({ objNFT, onConfirm, onClose }) => {
   return(
     <Fragment>
       <div className="min-w-screen h-screen fixed left-0 top-0 flex justify-center items-center inset-0 z-50 outline-none focus:outline-none">
@@ -45,4 +45,4 @@ const ModelCancelSell = ({ objNFT, onConfirm, onClose }) => {
   )
 }
 
-export default ModelCancelSell;
+export default ModalCancelSell;

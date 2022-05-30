@@ -601,7 +601,7 @@ export const WalletProvider = ({ children }) => {
       // calculate mint cost
       const tx = {
         from: account,
-        gas: (285000 * mintAmount).toString(),
+        // gas: (285000 * mintAmount).toString(),
         value: Web3.utils.numberToHex(mintCost.value * mintAmount),
       };
       await nftContract.methods.mint(mintAmount).send(tx);

@@ -9,6 +9,7 @@ import Profile from './pages/profile';
 import CollectionDetail from './pages/profile/CollectionDetail';
 import NotFound from './pages/notFound/NotFound';
 import ConnectWallet from "./pages/connect/ConnectWallet";
+import MarketDetail from "./pages/market/MarketDetail";
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
             <Route index element={<Home />} />
             <Route path="/mint" element={<Mint />} />
             <Route path="/market" element={<Market />} />
+            <Route path="/market/detail/:id" element={<MarketDetail />} />
             <Route path="/bridge" element={<Bridge />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/connect-wallet" element={<ConnectWallet />} />

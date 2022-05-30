@@ -48,6 +48,10 @@ export const WalletProvider = ({ children }) => {
     list: [],
     loading: true,
   });
+  const [detailMarketplace, setDetailMarketplace] = useState({
+    data: [],
+    loading: true,
+  });
 
 
   const [selectConverseNFT, setSelectConverseNFT] = useState(initiSelectNFT);
@@ -319,6 +323,40 @@ export const WalletProvider = ({ children }) => {
     } catch (error) {
       console.log(error);
       setListMarketplace({ list: [], loading: false });
+    }
+
+
+  };
+
+  const getMarketplaceDetail = async (id) => {
+    try {
+      const web3 = new Web3(window.ethereum);
+      setDetailMarketplace({ detailMarketplace, loading: true });
+      const getMyMarketplace = await nftContractMarketplaceList.methods.getAllMarketItems().call();
+      const newObjGetMyMarketplace = getMyMarketplace.filter((x) => x.tokenId === id);
+      let objMarkets = [];
+      for (var i = 0; i < newObjGetMyMarketplace.length; i++) {
+
+        const uri = await nftContractCollection.methods.tokenURI(newObjGetMyMarketplace[i].tokenId).call();
+
+        const responseUri = await fetch(ipfsUriToHttps(uri));
+
+        let objNFT = await responseUri.json();
+        objMarkets =
+        {
+          ...objNFT,
+          price: web3.utils.fromWei(newObjGetMyMarketplace[i].price, "ether"),
+          owner: newObjGetMyMarketplace[i].owner,
+          nftContract: newObjGetMyMarketplace[i].nftContract,
+          status: newObjGetMyMarketplace[i].status,
+          jsonUri: uri,
+        };
+      }
+      setDetailMarketplace({ data: objMarkets, loading: false });
+
+    } catch (error) {
+      console.log(error);
+      setDetailMarketplace({ data: [], loading: false });
     }
 
 
@@ -662,6 +700,7 @@ export const WalletProvider = ({ children }) => {
         ChangeChain,
         GetMyMarketplace,
         getMarketplaceList,
+        getMarketplaceDetail,
         GetByIdCollection,
         GetCollection,
         ConnectedWallet,
@@ -681,6 +720,7 @@ export const WalletProvider = ({ children }) => {
         listMarketplace,
         myCollection,
         myCollectionById,
+        detailMarketplace,
         owner,
         balance,
         account,

@@ -1,4 +1,5 @@
 import React, { useContext, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Loading } from "web3uikit";
 import { Web3Provider } from "../../contexts/connect.context";
 import Title from "../../components/shared/Title";
@@ -7,6 +8,7 @@ import CardListTemplate from "../../components/shared/card/CardListTemplate";
 import { NFT_CONTRACTS as nftContractAddress, NFT_DEFAULT_CHAIN } from "../../utils/constants";
 
 const Market = () => {
+  const history = useNavigate();
 
   const { chain, account, ConnectedWallet, nftContractMarketplace, isReload, getMarketplaceList, listMarketplace, ChangeChain, checkConnectChain, isConnectChain } = useContext(Web3Provider);
 
@@ -18,7 +20,7 @@ const Market = () => {
   }, [account, isReload, nftContractMarketplace]);
 
   const handleClickName = (id) => {
-    console.log(id);
+    history(`/market/detail/${id}`);
   };
 
   const handleClickAction = (id) => {

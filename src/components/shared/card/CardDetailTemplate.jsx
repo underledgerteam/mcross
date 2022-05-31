@@ -8,7 +8,7 @@ import { ipfsUriToHttps } from "../../../utils/ipfsUriToHttps.util";
 import { NFT_CONTRACTS as nftContractAddress } from "../../../utils/constants";
 
 
-const CardDetailTemplate = ({ name, image, chain, nft_owner, nft_creator, description, price, attributes, onOpenModal, onHistoryBack }) => {
+const CardDetailTemplate = ({ name, image, chain, nft_owner, nft_creator, description, price, attributes, onOpenModal, onHistoryBack, textAction }) => {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -107,7 +107,7 @@ const CardDetailTemplate = ({ name, image, chain, nft_owner, nft_creator, descri
                 className="w-full font-bold py-3 px-12 mt-4 rounded bg-gradient-to-r from-custom-purple1 to-pink-500 hover:from-custom-purple1/90 hover:to-pink-500/90 text-white"
                 onClick={onOpenModal}
               >
-                Buy
+                {textAction}
               </button>
             </div>
           </div>

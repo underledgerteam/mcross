@@ -68,6 +68,7 @@ const MarketDetail = () => {
               attributes={myCollectionById.data.attributes}
               onOpenModal={() => onOpenModal()}
               onHistoryBack={() => onHistoryBack()}
+              textAction={"Buy"}
             />
           )
         )}

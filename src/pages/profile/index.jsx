@@ -69,7 +69,10 @@ const ProfilePage = () => {
     localStorage.setItem("myTab", tab);
   };
   // for open Modal Sell
-  const handleClickName = (id) => {
+  const handleClickName = (id, isSell = false) => {
+    if(isSell){
+      return history(`/market/detail/${id}`, {state: { isMyMarket: true }});
+    }
     history(`/profile/collection/${id}`);
   };
   const onOpenModalSell = (objNFT) => {
@@ -247,7 +250,7 @@ const ProfilePage = () => {
                             chain={nftContractAddress[chain]?.ShortLabel}
                             owner={item.owner}
                             textAction={`Sell ${item.name}`}
-                            onClick={() => handleClickName(item.edition)}
+                            onClick={() => handleClickName(item.edition, false)}
                             onClickAction={() => onOpenModalSell(item)}
                           />
                         );
@@ -284,7 +287,7 @@ const ProfilePage = () => {
                             owner={item.owner}
                             textAction={`Cancel Sell`}
                             sell={true}
-                            onClick={() => handleClickName(item.edition)}
+                            onClick={() => handleClickName(item.edition, true)}
                             onClickAction={() => onOpenModalCancelSell(item)}
                           />
                         );

@@ -1,5 +1,5 @@
 import { Fragment, useEffect, useContext } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { Loading } from "web3uikit";
 
 import { Web3Provider } from "../../contexts/connect.context";
@@ -10,6 +10,7 @@ import CardDetailTemplate from "../../components/shared/card/CardDetailTemplate"
 
 const MarketDetail = () => {
   const params = useParams();
+  const location = useLocation();
   const navigate = useNavigate();
   const {
     chain,
@@ -21,8 +22,10 @@ const MarketDetail = () => {
     GetByIdCollection,
     getMarketplaceDetail,
     detailMarketplace } = useContext(Web3Provider);
-
   const onHistoryBack = () => {
+    if(location?.state?.isMyMarket){
+      return navigate("/profile");
+    }
     navigate("/market");
   };
   const onOpenModal = () => {

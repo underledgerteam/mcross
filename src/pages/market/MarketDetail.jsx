@@ -125,14 +125,21 @@ const MarketDetail = () => {
                     <p className="text-lg">{detailMarketplace?.data?.description}</p>
                   </div>
 
-                  <div className="mt-5">
-                    <h5 className="text-2xl flex">
-                      <CryptoLogos
-                        chain={nftContractAddress[chain]?.Icon.toLowerCase()}
-                        size="24px"
-                      />&nbsp;Price : {detailMarketplace?.data?.price} {nftContractAddress[chain]?.MintCost}</h5>
+                  <div className="mt-10">
+
+                    <div className="flex justify-between mt-2 items-center px-2 py-2 bg-[#C0C9F6]/30 rounded-lg text-xl font-bold">
+                      <div>Price</div>
+
+                      <div className="flex">
+                        <CryptoLogos
+                          chain={nftContractAddress[chain]?.Icon.toLowerCase()}
+                          size="28px"
+                        />&nbsp;{detailMarketplace?.data?.price} {nftContractAddress[chain]?.MintCost}
+                      </div>
+                    </div>
+
                   </div>
-                  <div className="flex justify-between mt-5 absolute inset-x-5 bottom-5">
+                  <div className="flex justify-between mt-2">
                     <div className="w-56">
                       <button
                         type="button"

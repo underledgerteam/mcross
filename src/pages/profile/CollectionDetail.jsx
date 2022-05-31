@@ -4,13 +4,8 @@ import { Loading } from "web3uikit";
 
 import { Web3Provider } from "../../contexts/connect.context";
 
-import CardContainerTemplate from "../../components/shared/card/CardContainerTemplate";
 import ModalSell from "../../components/profile/ModalSell";
 import Title from "../../components/shared/Title";
-import { shortenAddress } from "../../utils/shortenAddress.util";
-import { ipfsUriToHttps } from "../../utils/ipfsUriToHttps.util";
-
-import { NFT_CONTRACTS as nftContractAddress } from "../../utils/constants";
 import CardDetailTemplate from "../../components/shared/card/CardDetailTemplate";
 
 const CollectionDetail = () => {

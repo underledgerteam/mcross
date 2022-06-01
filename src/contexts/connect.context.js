@@ -430,7 +430,7 @@ export const WalletProvider = ({ children }) => {
           },
         ];
       }
-      setMyCollection({ ...myCollection, list: objNFTs, loading: false });
+      setMyCollection({ ...myCollection, list: objNFTs.sort((a, b)=> a.date - b.date), loading: false });
     } catch (error) {
       console.log(error);
       setMyCollection({ list: [], loading: false });

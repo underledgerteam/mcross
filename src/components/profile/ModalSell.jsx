@@ -13,12 +13,14 @@ const ModalSell = ({ objNFT, onConfirm, onClose }) => {
   const { chain } = useContext(Web3Provider);
   const onChangePrice = () => {
     const priceVal = Number(refPrice?.current?.value || 0);
+    if(priceVal <= 0){
+      return setPrice(Number(0).toFixed(7));
+    }
     // const amount = priceVal-((priceVal*serviceFee/100)+(priceVal*axelarFee/100));
     const amount = priceVal-(priceVal*serviceFee/100);
     const total = amount-(amount*creatorFee/100);
     setPrice(total.toFixed(7));
   }
-
   return(
     <Fragment>
       <div className="min-w-screen h-screen fixed left-0 top-0 flex justify-center items-center inset-0 z-50 outline-none focus:outline-none">
@@ -35,7 +37,7 @@ const ModalSell = ({ objNFT, onConfirm, onClose }) => {
                     <input 
                       type="number" 
                       disabled={objNFT?.approveLoading}
-                      className="mx-3 shadow appearance-none w-full border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                      className={`mx-3 shadow ${Number(refPrice?.current?.value || 0) <= 0?"shadow-red-400": "shadow-green-400"} appearance-none w-full border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline`} 
                       ref={refPrice} 
                       onChange={onChangePrice}
                     />
@@ -80,7 +82,7 @@ const ModalSell = ({ objNFT, onConfirm, onClose }) => {
                 Close
               </button>
               <button 
-                disabled={!objNFT?.name || objNFT?.approveLoading || (Number(refPrice?.current?.value || 0) <= 0 && objNFT?.approve)}
+                disabled={!objNFT?.name || objNFT?.approveLoading || Number(refPrice?.current?.value || 0) <= 0 || objNFT?.approve}
                 className="mb-2 btn-confirm-sell"
                 onClick={()=> {
                   if(Number(refPrice?.current?.value || 0) <= 0 && objNFT?.approve){

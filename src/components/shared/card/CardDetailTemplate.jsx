@@ -1,15 +1,19 @@
-import { Fragment } from "react";
+import { Fragment, useContext } from "react";
 import { CryptoLogos } from "web3uikit";
 
 import CardContainerTemplate from "./CardContainerTemplate";
 import { shortenAddress } from "../../../utils/shortenAddress.util";
 import { ipfsUriToHttps } from "../../../utils/ipfsUriToHttps.util";
 
+import { Web3Provider } from "../../../contexts/connect.context";
+
 import { NFT_CONTRACTS as nftContractAddress } from "../../../utils/constants";
 
 
 const CardDetailTemplate = ({ name, image, chain, nft_owner, nft_creator, description, price, attributes, onOpenModal, onHistoryBack, textAction }) => {
-
+  const {
+    account
+  } = useContext(Web3Provider);
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
       <div className="w-full">
@@ -101,15 +105,18 @@ const CardDetailTemplate = ({ name, image, chain, nft_owner, nft_creator, descri
                 Back
               </button>
             </div>
-            <div className="w-56">
-              <button
-                type="button"
-                className="w-full font-bold py-3 px-12 mt-4 rounded bg-gradient-to-r from-custom-purple1 to-pink-500 hover:from-custom-purple1/90 hover:to-pink-500/90 text-white"
-                onClick={onOpenModal}
-              >
-                {textAction}
-              </button>
+            { nft_owner !== account && (
+              <div className="w-56">
+                <button
+                  type="button"
+                  className="w-full font-bold py-3 px-12 mt-4 rounded bg-gradient-to-r from-custom-purple1 to-pink-500 hover:from-custom-purple1/90 hover:to-pink-500/90 text-white"
+                  onClick={onOpenModal}
+                >
+                  {textAction}
+                </button>
             </div>
+            ) }
+            
           </div>
         </Fragment>
       </CardContainerTemplate>

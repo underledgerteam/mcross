@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Web3 from "web3";
+import { ethers } from "ethers";
 import { ipfsUriToHttps } from "../utils/ipfsUriToHttps.util";
 import { useNotification } from "web3uikit";
 import {
@@ -14,6 +15,8 @@ import {
   NFT_CROSS_CONTRACT_ABI,
   NFT_AVALANHCE_FUJI_ADDRESS,
   NFT_DEFAULT_CHAIN,
+  NFT_ROPSTEN_CONVERSE_ADDRESS,
+  NFT_ROPSTEN_MARKETPLACE_ADDRESS,
 } from "../utils/constants";
 
 export const Web3Provider = React.createContext();
@@ -610,14 +613,122 @@ export const WalletProvider = ({ children }) => {
   };
 
   const getAllTransaction = async () => {
-    // contract.getPastEvents('Transfer', {
-    //   // filter: { myIndexedParam: [20, 23], myOtherIndexedParam: '0x123456789...' }, // Using an array means OR: e.g. 20 or 23
+    // Events: Approval, ApprovalForAll, Transfer, OwnershipTransferred, allEvents
+    // console.log('account', account); // 0x23abB459fC3Ae05B52f482aBB2D2D9D7C9e33D28
+    // const ropstenProvider = new Web3(new Web3.providers.WebsocketProvider('wss://ropsten.infura.io/ws/v3/1e94515fc5874c4291a6491caeaff8f1'));
+    // const coreContract = new ropstenProvider.eth.Contract(NFT_CONTRACT_ABI, NFT_ROPSTEN_ADDRESS);
+    // const mintEvent = await coreContract.getPastEvents('Transfer', {
+    //   filter: { from: account, }, // Using an array means OR: e.g. 20 or 23
     //   fromBlock: 0,
     //   toBlock: 'latest'
-    // }, function (error, events) { console.log(events); })
-    //   .then(function (events) {
-    //     console.log(events); // same results as the optional callback above
-    //   });
+    // }).catch(error => error);
+    // 
+
+    // web3js
+
+    // const allEvents = await nftContract.getPastEvents('allEvents', {
+    //   fromBlock: 0,
+    //   toBlock: 'latest'
+    // }).catch(error => error);
+    // // tf
+    // const transfer = await nftContract.getPastEvents('Transfer', {
+    //   fromBlock: 0,
+    //   toBlock: 'latest'
+    // }).catch(error => error);
+    // set to sell
+    const transferFrom = await nftContract.getPastEvents('Transfer', {
+      filter: { from: account },
+      fromBlock: 0,
+      toBlock: 'latest'
+    }).catch(error => error);
+
+    const txFrom = transferFrom.reduce((result, tx) => {
+      // converse topic "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef"
+      // sell topic "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef"
+      if (tx?.returnValues?.to === NFT_ROPSTEN_CONVERSE_ADDRESS) {
+        return [
+          ...result,
+          { ...tx, methodName: 'Converse' }
+        ];
+      } else if (tx?.returnValues?.to === NFT_ROPSTEN_MARKETPLACE_ADDRESS) {
+        // will have problem when buy
+        return [
+          ...result,
+          { ...tx, methodName: 'Sell' }
+        ];
+      } else {
+        return [
+          ...result,
+          { ...tx }
+        ];
+      }
+    }, []);
+    // const authorize = subMenus.reduce((result, { permissions }) => {
+    //   if (result.isBypass) {
+    //     return result;
+    //   } else if (_.isEmpty(permissions)) {
+    //     return { permissions: [], isBypass: true };
+    //   } else {
+    //     return {
+    //       ...result,
+    //       permissions: [...result.permissions, ...permissions]
+    //     };
+    //   }
+    // }, { permissions: [], isBypass: false });
+    // // mint
+    const transferTo = await nftContract.getPastEvents('Transfer', {
+      filter: { to: account },
+      fromBlock: 0,
+      toBlock: 'latest'
+    }).catch(error => error);
+
+    // console.log('allEvents', allEvents);
+    // console.log('transfer', transfer);
+    console.log('transferFrom', transferFrom);
+    console.log('transferTo', transferTo);
+
+    // let filterTo = transferTo.filter((tx) => tx.raw.topics[0])
+    // no tx date
+
+    // ethers
+    const provider = new ethers.providers.EtherscanProvider("ropsten", "CZABQFEUZJDTVGTHJU8MSNIQKVPQXFFMYJ");
+    const history = await provider.getHistory(account);
+    const providerAvax = new ethers.providers;
+
+    console.log('history', history);
+
+
+    // const newData = history.map((tx) => ({
+    //   // ...tx,
+    //   // timestamp: new Date(tx.timestamp * 1000).toLocaleString(),
+    //   // amount: ethers.utils.formatEther(tx.value),
+    //   // from: tx.from,
+    //   to: tx.to,
+    // }));
+
+    // console.log('history', history);
+    // console.log('newData', newData);
+
+    // queryFilter by event
+    // const providerEth = new ethers.providers.Web3Provider(detectCurrentProvider());
+    // const signer = providerEth.getSigner();
+    // const contract = new ethers.Contract(NFT_CONTRACTS[chain].Address, NFT_CONTRACTS[chain].ABI, signer);
+
+    // const testData = await contract.queryFilter('Transfer', 0, 'latest');
+    // console.log('testData', testData);
+
+    // // List all token transfers *from* myAddress:
+    // const from = await contract.filters.Transfer(account);
+    // // List all token transfers *to* myAddress:
+    // const to = await contract.filters.Transfer(null, account);
+
+    // console.log('from', from);
+    // console.log('to', to);
+
+    // lib web3uikit ที่จะนำมาใช้ทำ ui มีปัญหาบาง component ต้องใช้ร่วมกับ moralis
+    // reacttable ตอน implement ยังไม่รองรับกับ react 18
+    // doc ของ web3.js ใช้งานยาก
+
   };
 
   const mintNft = async (mintAmount = 0) => {
@@ -693,6 +804,12 @@ export const WalletProvider = ({ children }) => {
     // initFunction();
     // getTransaction();
   }, []);
+
+  useEffect(() => {
+    if (account !== '' && nftContract !== undefined) {
+      getAllTransaction();
+    }
+  }, [account, nftContract]);
 
   return (
     <Web3Provider.Provider

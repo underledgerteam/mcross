@@ -8,9 +8,9 @@ import CardContainerTemplate from "../../components/shared/card/CardContainerTem
 import { shortenAddress } from "../../utils/shortenAddress.util";
 import { ipfsUriToHttps } from "../../utils/ipfsUriToHttps.util";
 
-import { NFT_CONTRACTS as nftContractAddress } from "../../utils/constants";
+import { NFT_CONTRACTS as nftContractAddress, NFT_DEFAULT_CHAIN } from "../../utils/constants";
 
-const Converse = () => {
+const Bridge = () => {
   const {
     chain,
     isReload,
@@ -24,7 +24,9 @@ const Converse = () => {
     ConverseApproveNFT,
     ChangeConverseNFT,
     nftContractCollection,
-    ConnectedWallet
+    ConnectedWallet,
+    checkConnectChain,
+    isConnectChain
   } = useContext(Web3Provider);
 
   const refSelectFromChain = useRef();
@@ -55,10 +57,15 @@ const Converse = () => {
     }
   };
 
+  const onChangeNetwork = () => {
+    ChangeChain(NFT_DEFAULT_CHAIN);
+  };
+
   useEffect(() => {
     if (refSelectFromChain?.current?.value) {
       refSelectFromChain.current.value = chain;
     }
+    checkConnectChain();
   }, [chain]);
 
   useEffect(() => {
@@ -70,20 +77,30 @@ const Converse = () => {
 
   return (
     <Fragment>
-      <div className="h-screen w-screen">
-        <div className="container md:container md:mx-auto">
-          <Title text={"NFT Converse"} />
+      <div className="container md:container md:mx-auto">
+        <Title text={"NFT Bridge"} />
 
-          <div className="flex">
-            {!account ? (
-              <div className="w-full flex-auto py-8 px-8 text-center">
+        <div className="flex">
+          {!account ? (
+            <div className="w-full flex-auto py-8 px-8 text-center">
+              <div className="">
+                <button type="button" className="w-full md:w-96 px-10 py-4 btn-home" onClick={ConnectedWallet}>
+                  Connect Wallet
+                </button>
+              </div>
+            </div>
+          ) : (
+
+            !isConnectChain ? (
+              <div className="w-full lg:w-1/2 flex-auto py-8 px-8 text-center">
                 <div className="">
-                  <button type="button" className="w-full md:w-96 px-10 py-4 btn-home" onClick={ConnectedWallet}>
-                    Connect Wallet
+                  <button type="button" className="w-full md:w-96 px-10 py-4 btn-home" onClick={onChangeNetwork}>
+                    Switch to Ropsten
                   </button>
                 </div>
               </div>
             ) : (
+
               <div className="lg:w-1/3 md:w-2/3 w-3/3 mx-auto mt-8">
                 <CardContainerTemplate
                   padding="py-4 px-8"
@@ -145,7 +162,7 @@ const Converse = () => {
 
                       <div className="flex justify-center mt-5">
                         <img
-                          className="w-48 h-48 lg:w-72 lg:h-72 object-cover border-4 border-yellow-500"
+                          className="w-48 h-48 lg:w-72 lg:h-72 object-cover border-4 border-purple-500"
                           src={ipfsUriToHttps(selectConverseNFT?.image)}
                           alt="selected_nft"
                         />
@@ -173,13 +190,13 @@ const Converse = () => {
                       {selectConverseNFT?.selected && (
                         <div className="bg-slate-400/20 p-5 mt-8 mb-3 rounded-3xl">
                           {/* <div className="flex mb-1">
-                            <div className="w-1/2">
-                              Fee
-                            </div>
-                            <div className="w-1/2 text-right">
-                              { `${selectConverseNFT?.fee / 2} ${nftContractAddress[chain].Token}` }
-                            </div>
-                          </div> */}
+                          <div className="w-1/2">
+                            Fee
+                          </div>
+                          <div className="w-1/2 text-right">
+                            { `${selectConverseNFT?.fee / 2} ${nftContractAddress[chain].Token}` }
+                          </div>
+                        </div> */}
                           <div className="flex">
                             <div className="w-1/2">
                               Estimated Time
@@ -198,7 +215,7 @@ const Converse = () => {
                           onClick={() => onApprove(selectConverseNFT?.approve)}
                         >
                           <div className="flex justify-center gap-2">
-                            {selectConverseNFT?.approveLoading || nftConverse?.loading && <Loading fontSize={20} direction="right" />}
+                            {(selectConverseNFT?.approveLoading || nftConverse?.loading) && <Loading size={20} direction="right" />}
                             {selectConverseNFT?.approve ? "Transfer" : "Approve"}
                           </div>
                         </button>
@@ -207,12 +224,12 @@ const Converse = () => {
                   </Fragment>
                 </CardContainerTemplate>
               </div>
-            )}
-          </div>
+            )
+          )}
         </div>
       </div>
     </Fragment>
   );
 };
 
-export default Converse;
+export default Bridge;

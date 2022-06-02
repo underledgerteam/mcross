@@ -4,167 +4,108 @@ import { Loading } from "web3uikit";
 
 import { Web3Provider } from "../../contexts/connect.context";
 
-import CardContainerTemplate from "../../components/shared/card/CardContainerTemplate";
-import ModelSell from "../../components/profile/ModelSell";
-
-import { shortenAddress } from "../../utils/shortenAddress.util";
-import { ipfsUriToHttps } from "../../utils/ipfsUriToHttps.util";
-
-import { NFT_CONTRACTS as nftContractAddress } from "../../utils/constants";
+import ModalSell from "../../components/profile/ModalSell";
+import Title from "../../components/shared/Title";
+import CardDetailTemplate from "../../components/shared/card/CardDetailTemplate";
 
 const CollectionDetail = () => {
   const params = useParams();
   const navigate = useNavigate();
-  const [ openModel, setOpenModel ] = useState(false);
-  const { 
-    chain, 
-    owner, 
-    account, 
+  const [openModal, setOpenModal] = useState(false);
+  const {
+    chain,
+    owner,
+    account,
     selectConverseNFT,
-    myCollectionById, 
-    nftContractCollection, 
+    myCollectionById,
+    nftContractCollection,
+    ConnectedWallet,
     ChangeConverseNFT,
-    GetByIdCollection, 
+    GetByIdCollection,
     ConverseApproveNFT,
     CreateSellCollection } = useContext(Web3Provider);
- 
+
   const onHistoryBack = () => {
     navigate("/profile");
   };
-  const onOpenModel = () => {
-    setOpenModel(true);
+  const onOpenModal = () => {
+    setOpenModal(true);
     ChangeConverseNFT("Marketplace", myCollectionById.data);
   };
   const onConfirmSellNFT = (isApprove, nftPrice) => {
-    if(isApprove){
+    if (isApprove) {
       CreateSellCollection(
         selectConverseNFT,
         nftPrice,
         () => {
-          setOpenModel(false);
+          setOpenModal(false);
           setTimeout(() => {
             navigate('/profile');
           }, 2000);
           localStorage.setItem("myTab", "My Marketplace");
         }
       );
-    }else{
+    } else {
       ConverseApproveNFT("Marketplace", selectConverseNFT);
     }
   };
-  const onCloseModel = () => {
-    setOpenModel(false);
+  const onCloseModal = () => {
+    setOpenModal(false);
   };
-  useEffect(()=>{
-    if(account && nftContractCollection){
+  useEffect(() => {
+    if (account && nftContractCollection) {
       ChangeConverseNFT("Marketplace", null);
       GetByIdCollection(params.id);
     }
-  },[account, nftContractCollection]);
+  }, [account, nftContractCollection]);
 
   return (
     <Fragment>
-      <div className="h-screen w-screen">
-        <div className="container md:container md:mx-auto">
-
-          <div className="text-7xl font-dark font-extrabold mb-8 text-center">Collection Detail</div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="w-full">
-              <CardContainerTemplate
-                padding="py-8 px-8"
-                margin="md:my-5 lg:my-15"
-              >
-                {myCollectionById.loading ? (
-                  <div className="flex justify-center h-60">
-                    <Loading
-                      fontSize={20}
-                      size={100}
-                      spinnerColor="#fff"
-                    /></div>
-                ) : (
-                  <Fragment>
-                    <div className="flex justify-center">
-                      <img className="w-48 h-48 lg:w-72 lg:h-72 object-cover border-8 border-yellow-500" src={myCollectionById?.data?.image && ipfsUriToHttps(myCollectionById?.data.image)} alt={myCollectionById?.data?.name} />
-                    </div>
-                    <div className="grid justify-items-center">
-                      <h2 className="text-2xl font-semibold mt-4">Rarity : <span className="py-2 px-3 bg-yellow-400 text-yellow-900 text-base rounded-lg">Legend</span> </h2>
-                      <h2 className="text-2xl font-semibold mt-2">Chain : {nftContractAddress[chain]?.Label}</h2>
-                    </div>
-                  </Fragment>
-                )}
-              </CardContainerTemplate>
+      <div className="container md:container md:mx-auto">
+        <Title text={"Collection Detail"} />
+        {!account ? (
+          <div className="w-full flex-auto py-8 px-8 text-center">
+            <div className="">
+              <button type="button" className="w-full md:w-96 px-10 py-4 btn-home" onClick={ConnectedWallet}>
+                Connect Wallet
+              </button>
             </div>
-            <CardContainerTemplate
-              padding="p-6"
-              margin="md:my-5 lg:my-15"
-            >
-              {myCollectionById.loading ? (
-                <div className="flex justify-center h-80">
-                  <Loading
-                    fontSize={20}
-                    size={100}
-                    spinnerColor="#fff"
-                  /></div>
-              ) : (
-                <Fragment>
-                  <h5 className="text-4xl text-extrabold text-center leading-tight font-bold mb-2">{myCollectionById?.data?.name}</h5>
-
-                  <div className="lg:flex justify-around">
-                    <div className="flex mt-8 items-center px-5 py-5 bg-[#C0C9F6]/30 rounded-lg">
-                      <img className="w-24 h-24 object-cover border-purple-500" src="https://th.jobsdb.com/en-th/cms/employer/wp-content/plugins/all-in-one-seo-pack/images/default-user-image.png" alt="owner_avatar" />
-                      <div className="ml-5">
-                        <h5 className="text-xl">Owner By</h5>
-                        <p className="text-xl">{myCollectionById?.data?.owner && shortenAddress(myCollectionById?.data?.owner)}</p>
-                      </div>
-                    </div>
-
-                    <div className="flex mt-8 items-center px-5 py-5 bg-[#C0C9F6]/30 rounded-lg">
-                      <img className="w-24 h-24 object-cover border-purple-500" src="https://th.jobsdb.com/en-th/cms/employer/wp-content/plugins/all-in-one-seo-pack/images/default-user-image.png" alt="creator_avatar" />
-                      <div className="ml-5">
-                        <h5 className="text-xl">Creator By</h5>
-                        <p className="text-xl">{owner && shortenAddress(owner)}</p>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="mt-5">
-                    <h5 className="text-2xl">Detail : </h5>
-                    <p className="text-lg">{myCollectionById?.data?.description}</p>
-                  </div>
-                  <div className="flex justify-between mt-5">
-                    <div className="w-56">
-                      <button
-                        type="button"
-                        className="btn-menu-profile border border-gray-300"
-                        onClick={() => onHistoryBack()}
-                      >
-                        Back
-                      </button>
-                    </div>
-                    <div className="w-56">
-                      <button
-                        type="button"
-                        className="w-full font-bold py-3 px-12 mt-4 rounded bg-gradient-to-r from-custom-purple1 to-pink-500 hover:from-custom-purple1/90 hover:to-pink-500/90 text-white"
-                        onClick={() => onOpenModel()}
-                      >
-                        Sale
-                      </button>
-                    </div>
-                  </div>
-                </Fragment>
-              )}
-            </CardContainerTemplate>
           </div>
+        ) : (
+          myCollectionById.loading ? (
+            <div className="flex justify-center h-60">
+              <Loading
+                fontSize={20}
+                size={100}
+                spinnerColor="#fff"
+              /></div>
+          ) : (
 
-        </div>
-        {openModel && (
-          <ModelSell
-            objNFT={selectConverseNFT}
-            onConfirm={onConfirmSellNFT}
-            onClose={onCloseModel}
-          />
+            <CardDetailTemplate
+              image={myCollectionById?.data?.image}
+              name={myCollectionById?.data?.name}
+              nft_owner={myCollectionById?.data?.owner}
+              nft_creator={owner}
+              description={myCollectionById?.data?.description}
+              price={myCollectionById?.data?.price}
+              chain={chain}
+              attributes={myCollectionById.data.attributes}
+              onOpenModal={() => onOpenModal()}
+              onHistoryBack={() => onHistoryBack()}
+              textAction={"Sell"}
+            />
+          )
         )}
+
+
       </div>
+      {openModal && (
+        <ModalSell
+          objNFT={selectConverseNFT}
+          onConfirm={onConfirmSellNFT}
+          onClose={onCloseModal}
+        />
+      )}
     </Fragment>
   );
 };

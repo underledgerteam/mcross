@@ -1,7 +1,7 @@
 import { Fragment } from "react";
 import { Loading } from "web3uikit";
 
-const ModelCancelSell = ({ objNFT, onConfirm, onClose }) => {
+const ModalCancelSell = ({ objNFT, onConfirm, onClose }) => {
   return(
     <Fragment>
       <div className="min-w-screen h-screen fixed left-0 top-0 flex justify-center items-center inset-0 z-50 outline-none focus:outline-none">
@@ -9,12 +9,15 @@ const ModelCancelSell = ({ objNFT, onConfirm, onClose }) => {
         <div className="w-full max-w-lg p-5 relative mx-auto my-auto rounded-xl shadow-lg  bg-white ">
           <div className="text-gray-500 ">
             <div className="text-center p-5 flex-auto justify-center">
-              <svg xmlns="http://www.w3.org/2000/svg" className="w-20 h-20 flex items-center text-red-500 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              <h2 className="text-xl font-bold py-4 ">Are you sure?</h2>
-              <p className="text-sm text-gray-500 px-8">Do you really want to cancel sale NFT {objNFT?.name || "Loading..."} ?
-              </p>    
+              { !objNFT?.name? <div className="flex justify-center items-center mb-3"><Loading size={50} spinnerColor="#6b7280" fontSize={18} text="Loading NFT ..." /></div>
+                :<Fragment>
+                  <svg xmlns="http://www.w3.org/2000/svg" className="w-20 h-20 flex items-center text-red-500 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg> 
+                  <h2 className="text-xl font-bold py-4 ">Are you sure?</h2>
+                  <p className="text-sm text-gray-500 px-8">Do you really want to cancel sale NFT {objNFT?.name} ?</p>  
+                </Fragment>  
+              }
             </div>
           </div>
           <div className="p-3  mt-2 text-center space-x-4 md:block">
@@ -30,7 +33,7 @@ const ModelCancelSell = ({ objNFT, onConfirm, onClose }) => {
               onClick={()=> onConfirm(objNFT)}
             >
               <div className="flex justify-center gap-2">
-                { objNFT?.approveLoading &&(<Loading fontSize={14} direction="right" />) } 
+                { objNFT?.approveLoading &&(<Loading size={14} direction="right" />) } 
                 Cancel Sell
               </div>
             </button>
@@ -42,4 +45,4 @@ const ModelCancelSell = ({ objNFT, onConfirm, onClose }) => {
   )
 }
 
-export default ModelCancelSell;
+export default ModalCancelSell;

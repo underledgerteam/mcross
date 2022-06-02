@@ -18,8 +18,8 @@ const navData = [
     href: "/market",
   },
   {
-    name: "nft converse",
-    href: "/converse",
+    name: "nft bridge",
+    href: "/bridge",
   },
   {
     name: "profile",

@@ -15,15 +15,15 @@ export const WETH_CONTRACT_ABI = wethAbi;
 
 export const NFT_ROPSTEN_ADDRESS = "0x670694bEaA4737910669037B55499f47f408c0ca";
 export const NFT_ROPSTEN_CONVERSE_ADDRESS = "0x651B7183c4a4336cC694aE0aB9755176b8d51AaD";
-export const NFT_ROPSTEN_MARKETPLACE_ADDRESS = "0xB7f3bcBB70664491D42aaE295F74ec0e0ec77848";
+export const NFT_ROPSTEN_MARKETPLACE_ADDRESS = "0x84ff9cf27fdf56748cde7d0c029170934cfff006";
 
 export const NFT_AVALANHCE_FUJI_ADDRESS = "0x87D00f9223ebAC32fd1fbdc526D9927774267617";
 export const NFT_AVALANHCE_CONVERSE_ADDRESS = "0xc16b3e4b56dbf62f312f9ec857ac3df36d7a6fef";
-export const NFT_AVALANHCE_MARKETPLACE_ADDRESS = "0x575bec1c6072f1a5102472ac642db17df60f2b6c";
+export const NFT_AVALANHCE_MARKETPLACE_ADDRESS = "0x8d4a32680361206c56a09dbadb048337fe0fdf10";
 
 export const NFT_POLYGON_MUMBAI_ADDRESS = "0xE8bA59F8F566A3F5D3320095dA6CAABC5751ea0C";
 export const NFT_POLYGON_CONVERSE_ADDRESS = "0x8866b90De258e40A91B9a39E2dEF1f0C40e6Ab5a";
-export const NFT_POLYGON_MARKETPLACE_ADDRESS = "0x938d9ce22e4f76499b3382d6182e232d16bb410c";
+export const NFT_POLYGON_MARKETPLACE_ADDRESS = "0xc1ec5724daa60c8b7c3f27a448becd6d4a1d1408";
 
 export const WETH_AVALANCHE_FUJI_ADDRESS = "0x3613C187b3eF813619A25322595bA5E297E4C08a";
 export const WETH_POLYGON_MUMBAI_ADDRESS = "0xfba15fFF35558fE2A469B96A90AeD7727FE38fAE";
@@ -31,6 +31,8 @@ export const WETH_POLYGON_MUMBAI_ADDRESS = "0xfba15fFF35558fE2A469B96A90AeD7727F
 export const ROPSTEN_CHAIN = 3;
 export const AVALANCHE_FUJI_CHAIN = 43113;
 export const POLYGON_MUMBAI_CHAIN = 80001;
+
+export const NFT_DEFAULT_CHAIN = 3;
 
 export const NFT_CONTRACTS = {
   3: {
@@ -58,6 +60,15 @@ export const NFT_CONTRACTS = {
     Token: "AVAX",
     MintCost: "WETH",
 
+    chainId: '0xA869',
+    nativeCurrency: {
+      name: 'Avalanche',
+      symbol: 'AVAX',
+      decimals: 18
+    },
+    rpcUrls: ['https://api.avax-test.network/ext/bc/C/rpc'],
+    blockExplorerUrls: ['https://testnet.snowtrace.io/'],
+
     Address: NFT_AVALANHCE_FUJI_ADDRESS,
     ABI: NFT_CROSS_CONTRACT_ABI,
 
@@ -76,6 +87,15 @@ export const NFT_CONTRACTS = {
     Token: "MATIC",
     MintCost: "WETH",
 
+    chainId: '0x13881',
+    nativeCurrency: {
+      name: 'MATIC Token',
+      symbol: 'MATIC',
+      decimals: 18
+    },
+    rpcUrls: ['https://matic-mumbai.chainstacklabs.com/'],
+    blockExplorerUrls: ['https://mumbai.polygonscan.com/'],
+
     Address: NFT_POLYGON_MUMBAI_ADDRESS,
     ABI: NFT_CROSS_CONTRACT_ABI,
 
@@ -84,7 +104,7 @@ export const NFT_CONTRACTS = {
 
     AddressMarketplace: NFT_POLYGON_MARKETPLACE_ADDRESS,
     ABIMarketplace: NFT_CONTRACT_MARKETPLACE_ABI,
-    
+
     CrossChain: true
   }
 };

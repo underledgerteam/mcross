@@ -13,14 +13,15 @@ const ModalSell = ({ objNFT, onConfirm, onClose }) => {
   const { chain } = useContext(Web3Provider);
   const onChangePrice = () => {
     let priceVal = Number(refPrice?.current?.value?.replace('-', '') || 0);
+    if(refPrice?.current?.value?.split(".")?.[1]?.length > 7){
+      priceVal = priceVal.toFixed(7);
+      refPrice.current.value = priceVal;
+    }   
     if(priceVal <= 0){
       return setPrice(Number(0).toFixed(7));
     }
-    if(refPrice?.current?.value?.split(".")?.[1]?.length > 7){
-      priceVal = priceVal.toFixed(7);
-    }
+     
     // const amount = priceVal-((priceVal*serviceFee/100)+(priceVal*axelarFee/100));
-    refPrice.current.value = priceVal;
     const amount = priceVal-(priceVal*serviceFee/100);
     const total = amount-(amount*creatorFee/100);
     setPrice(total.toFixed(7));

@@ -12,11 +12,15 @@ const ModalSell = ({ objNFT, onConfirm, onClose }) => {
   const [ price, setPrice ] = useState(0);
   const { chain } = useContext(Web3Provider);
   const onChangePrice = () => {
-    const priceVal = Number(refPrice?.current?.value || 0);
+    let priceVal = Number(refPrice?.current?.value?.replace('-', '') || 0);
     if(priceVal <= 0){
       return setPrice(Number(0).toFixed(7));
     }
+    if(refPrice?.current?.value?.split(".")?.[1]?.length > 7){
+      priceVal = priceVal.toFixed(7);
+    }
     // const amount = priceVal-((priceVal*serviceFee/100)+(priceVal*axelarFee/100));
+    refPrice.current.value = priceVal;
     const amount = priceVal-(priceVal*serviceFee/100);
     const total = amount-(amount*creatorFee/100);
     setPrice(total.toFixed(7));
@@ -37,7 +41,8 @@ const ModalSell = ({ objNFT, onConfirm, onClose }) => {
                     <input 
                       type="number" 
                       disabled={objNFT?.approveLoading}
-                      className={`mx-3 shadow ${Number(refPrice?.current?.value || 0) <= 0?"shadow-red-400": "shadow-green-400"} appearance-none w-full border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline`} 
+                      step="0.01"
+                      className={`mx-3 shadow appearance-none w-full border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline`} 
                       ref={refPrice} 
                       onChange={onChangePrice}
                     />

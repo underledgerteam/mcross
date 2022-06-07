@@ -1,30 +1,25 @@
-import { useState, useRef, Fragment, useContext } from "react";
-import { Loading } from "web3uikit";
+import { useState, Fragment, useContext } from "react";
+import { Loading, Input } from "web3uikit";
 import { Web3Provider } from "../../contexts/connect.context";
+import { numberToBigNumber } from "../../utils/calculator"; 
 import {
   NFT_CONTRACTS,
 } from "../../utils/constants";
 
 const ModalSell = ({ objNFT, onConfirm, onClose }) => {
   // set default fees
-  const serviceFee = 3, axelarFee = 2, creatorFee = 10;
-  const refPrice = useRef();
-  const [ price, setPrice ] = useState(0);
+  const serviceFee = numberToBigNumber(3), axelarFee = numberToBigNumber(2), creatorFee = numberToBigNumber(10), percent = numberToBigNumber(100);
+  const [ price, setPrice ] = useState({ value: 0, fee: 0});
   const { chain } = useContext(Web3Provider);
-  const onChangePrice = () => {
-    let priceVal = Number(refPrice?.current?.value?.replace('-', '') || 0);
-    if(refPrice?.current?.value?.split(".")?.[1]?.length > 7){
-      priceVal = priceVal.toFixed(7);
-      refPrice.current.value = priceVal;
-    }   
-    if(priceVal <= 0){
-      return setPrice(Number(0).toFixed(7));
-    }
-     
-    // const amount = priceVal-((priceVal*serviceFee/100)+(priceVal*axelarFee/100));
-    const amount = priceVal-(priceVal*serviceFee/100);
-    const total = amount-(amount*creatorFee/100);
-    setPrice(total.toFixed(7));
+
+  const onChangePrice = (e) => {
+    const priceVal = numberToBigNumber(e.target.value);
+    const amount = priceVal.minus(priceVal.times(serviceFee).div(percent));
+    const total = amount.minus(amount.times(creatorFee).div(percent));
+    setPrice({
+      value: numberToBigNumber(e.target.value),
+      fee: !total.isNaN() && total.isPositive() ? total.toFixed(7): 0
+    });
   }
   return(
     <Fragment>
@@ -39,15 +34,18 @@ const ModalSell = ({ objNFT, onConfirm, onClose }) => {
                 :<div>
                   <div className="flex">
                     <h5 className="text-warmGray-200 text-2xl">Price: </h5>
-                    <input 
-                      type="number" 
+                    <Input
+                      type="number"
+                      autoFocus
                       disabled={objNFT?.approveLoading}
-                      step="0.01"
-                      className={`mx-3 shadow appearance-none w-full border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline`} 
-                      ref={refPrice} 
+                      step={0.0000001}
+                      value={price.value}
+                      validation={{
+                        numberMin: 0.0000001,
+                      }}
+                      style={{marginLeft: '1rem', marginRight: '1rem'}}
                       onChange={onChangePrice}
                     />
-                    
                     <div className="inline-block relative mr-5 text-gray-500">
                       <h5 className="text-warmGray-200 text-2xl text-left">{ NFT_CONTRACTS[chain].MintCost }</h5>
                     </div>
@@ -58,18 +56,18 @@ const ModalSell = ({ objNFT, onConfirm, onClose }) => {
                     
                     <div className="grid grid-cols-2 text-xl">
                       <p>Service Fee : </p>
-                      <p className="text-right">{serviceFee}%</p>
+                      <p className="text-right">{serviceFee.toFixed()}%</p>
                       {/* <p>Axelar Fee : </p>
                       <p className="text-right">{axelarFee}%</p> */}
                       <p>Creator Fee : </p>
-                      <p className="text-right">{creatorFee}%</p>
+                      <p className="text-right">{creatorFee.toFixed()}%</p>
                     </div>
                   </div>
                   
                   <div className="flex border-b-4 border-warmGray-300 rounded-lg my-5"></div>
                   
                   <div className="ml-8 text-2xl text-warmGray-200 text-left">
-                    You Receive : {price} { NFT_CONTRACTS[chain].MintCost }
+                    You Receive : {price.fee} { NFT_CONTRACTS[chain].MintCost }
                     <div className="text-sm mt-3">
                       <p className="text-lg">Example</p>
                       {/* <p>1. Amount = Price - (Service Fee + Axelar Fee)(%)</p> */}
@@ -88,14 +86,10 @@ const ModalSell = ({ objNFT, onConfirm, onClose }) => {
                 Close
               </button>
               <button 
-                disabled={!objNFT?.name || objNFT?.approveLoading || Number(refPrice?.current?.value || 0) <= 0 || objNFT?.approve}
+                disabled={!objNFT?.name || objNFT?.approveLoading || price.fee <= 0}
                 className="mb-2 btn-confirm-sell"
                 onClick={()=> {
-                  if(Number(refPrice?.current?.value || 0) <= 0 && objNFT?.approve){
-                    refPrice.current.focus();
-                  }else{
-                    onConfirm(objNFT?.approve, Number(refPrice.current.value));
-                  }
+                  onConfirm(objNFT?.approve, price.value.toFixed(7));
                 }}
               >
                 <div className="flex justify-center gap-2">

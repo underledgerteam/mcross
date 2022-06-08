@@ -13,13 +13,19 @@ const ModalSell = ({ objNFT, onConfirm, onClose }) => {
   const { chain } = useContext(Web3Provider);
 
   const onChangePrice = (e) => {
+    e.target.setCustomValidity("");
     let check7Decimal = e.target.value?.toString()?.split(".")?.[1]?.length || 0;
     const priceVal = numberToBigNumber(e.target.value);
     const amount = priceVal.minus(priceVal.times(serviceFee).div(percent));
     const total = amount.minus(amount.times(creatorFee).div(percent));
+    let priceFee = total.toFixed(7);
+    if(total.isNaN() || !total.isPositive() || check7Decimal>7){
+      e.target.setCustomValidity('Please match the requested format, price sell started 0.0000001');
+      priceFee = 0;
+    }
     setPrice({
       value: e.target.value.indexOf("e-7") === -1? e.target.value: priceVal.toFixed(7),
-      fee: !total.isNaN() && total.isPositive() && check7Decimal<=7 ? total.toFixed(7): 0
+      fee: priceFee
     });
   }
   return(
@@ -44,6 +50,7 @@ const ModalSell = ({ objNFT, onConfirm, onClose }) => {
                       value={price.value}
                       validation={{
                         numberMin: 0.0000001,
+                        required: true
                       }}
                       style={{marginLeft: '1rem', marginRight: '1rem'}}
                       onChange={onChangePrice}

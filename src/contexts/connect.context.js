@@ -450,6 +450,31 @@ export const WalletProvider = ({ children }) => {
     return (isApprove.toLowerCase() === isApproveAssress?.toLowerCase()) ? true : false;
   };
 
+  const BuyNFT = async (objNFT, handleSuccess = () => { }, handleError = () => { }) => {
+    try {
+      setSelectConverseNFT({ ...selectConverseNFT, approveLoading: true });
+      await nftContractMarketplaceList.methods.buyMarketItem(objNFT.edition).send({ from: account, value: Web3.utils.toWei(objNFT.price, "ether") });
+      setSelectConverseNFT({ ...selectConverseNFT, approve: true, approveLoading: false });
+      handleNewNotification({
+        type: "success",
+        title: 'Success',
+        message: `You Buy ${objNFT.name} Success`,
+      });
+      handleSuccess();
+      setListMarketplace({...listMarketplace, list: listMarketplace.list.filter(x=> x.edition !== objNFT.edition)});
+    } catch (error) {
+      console.log(error);
+      setSelectConverseNFT({ ...selectConverseNFT, approveLoading: false });
+      handleError();
+      handleNewNotification({
+        type: "error",
+        title: 'Rejected',
+        message: `MetaMask Signature. User denied transaction signature`,
+      });
+      throw new Error("Error Buy NFT");
+    }
+  }
+
   const ChangeConverseNFT = async (type, objNFT) => {
     setSelectConverseNFT(initiSelectNFT);
     if (objNFT) {
@@ -709,6 +734,7 @@ export const WalletProvider = ({ children }) => {
         ConverseApproveNFT,
         ChangeConverseNFT,
         ConverseNFT,
+        BuyNFT,
         isReload,
         nftContractCollection,
         nftContractMarketplace,

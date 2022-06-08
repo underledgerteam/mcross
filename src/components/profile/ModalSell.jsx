@@ -9,16 +9,17 @@ import {
 const ModalSell = ({ objNFT, onConfirm, onClose }) => {
   // set default fees
   const serviceFee = numberToBigNumber(3), axelarFee = numberToBigNumber(2), creatorFee = numberToBigNumber(10), percent = numberToBigNumber(100);
-  const [ price, setPrice ] = useState({ value: 0, fee: 0});
+  const [ price, setPrice ] = useState({ value: "", fee: 0});
   const { chain } = useContext(Web3Provider);
 
   const onChangePrice = (e) => {
+    let check7Decimal = e.target.value?.toString()?.split(".")?.[1]?.length || 0;
     const priceVal = numberToBigNumber(e.target.value);
     const amount = priceVal.minus(priceVal.times(serviceFee).div(percent));
     const total = amount.minus(amount.times(creatorFee).div(percent));
     setPrice({
-      value: numberToBigNumber(e.target.value),
-      fee: !total.isNaN() && total.isPositive() ? total.toFixed(7): 0
+      value: e.target.value.indexOf("e-7") === -1? e.target.value: priceVal.toFixed(7),
+      fee: !total.isNaN() && total.isPositive() && check7Decimal<=7 ? total.toFixed(7): 0
     });
   }
   return(
@@ -39,6 +40,7 @@ const ModalSell = ({ objNFT, onConfirm, onClose }) => {
                       autoFocus
                       disabled={objNFT?.approveLoading}
                       step={0.0000001}
+                      placeholder="Price max 7 decimal places."
                       value={price.value}
                       validation={{
                         numberMin: 0.0000001,
@@ -89,7 +91,7 @@ const ModalSell = ({ objNFT, onConfirm, onClose }) => {
                 disabled={!objNFT?.name || objNFT?.approveLoading || price.fee <= 0}
                 className="mb-2 btn-confirm-sell"
                 onClick={()=> {
-                  onConfirm(objNFT?.approve, price.value.toFixed(7));
+                  onConfirm(objNFT?.approve, numberToBigNumber(price.value).toFixed(7));
                 }}
               >
                 <div className="flex justify-center gap-2">

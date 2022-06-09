@@ -1,34 +1,8 @@
 [
   {
-    "inputs": [
-      {
-        "internalType": "string",
-        "name": "_name",
-        "type": "string"
-      },
-      {
-        "internalType": "string",
-        "name": "_symbol",
-        "type": "string"
-      },
-      {
-        "internalType": "string",
-        "name": "_initBaseURI",
-        "type": "string"
-      },
-      {
-        "internalType": "address",
-        "name": "gateway",
-        "type": "address"
-      }
-    ],
+    "inputs": [],
     "stateMutability": "nonpayable",
     "type": "constructor"
-  },
-  {
-    "inputs": [],
-    "name": "NotApprovedByGateway",
-    "type": "error"
   },
   {
     "anonymous": false,
@@ -203,80 +177,29 @@
   {
     "inputs": [
       {
-        "internalType": "bytes32",
-        "name": "commandId",
-        "type": "bytes32"
-      },
-      {
-        "internalType": "string",
-        "name": "sourceChain",
-        "type": "string"
-      },
-      {
-        "internalType": "string",
-        "name": "sourceAddress",
-        "type": "string"
-      },
-      {
-        "internalType": "bytes",
-        "name": "payload",
-        "type": "bytes"
-      }
-    ],
-    "name": "execute",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "bytes32",
-        "name": "commandId",
-        "type": "bytes32"
-      },
-      {
-        "internalType": "string",
-        "name": "sourceChain",
-        "type": "string"
-      },
-      {
-        "internalType": "string",
-        "name": "sourceAddress",
-        "type": "string"
-      },
-      {
-        "internalType": "bytes",
-        "name": "payload",
-        "type": "bytes"
-      },
-      {
-        "internalType": "string",
-        "name": "tokenSymbol",
-        "type": "string"
+        "internalType": "address",
+        "name": "_minter",
+        "type": "address"
       },
       {
         "internalType": "uint256",
-        "name": "amount",
+        "name": "_mintAmount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "_caller",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_amount",
         "type": "uint256"
       }
     ],
-    "name": "executeWithToken",
+    "name": "crossMint",
     "outputs": [],
     "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "gateway",
-    "outputs": [
-      {
-        "internalType": "contract IAxelarGateway",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -486,6 +409,19 @@
       }
     ],
     "name": "safeTransferFrom",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_address",
+        "type": "address"
+      }
+    ],
+    "name": "setAddressCanMint",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

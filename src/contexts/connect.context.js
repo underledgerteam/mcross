@@ -688,8 +688,14 @@ export const WalletProvider = ({ children }) => {
             Web3.utils.numberToHex(mintCost.value * maxSupply)
           ).send({ from: account });
         }
+        // encode params
+        const web3 = new Web3(Web3.givenProvider || detectCurrentProvider());
+        const encodePayload = web3.eth.abi.encodeParameters(['string', 'address'], ['Ethereum', account]);
+        // mint
+        await nftContract.methods.mint(mintAmount, encodePayload).send(tx);
+      } else {
+        await nftContract.methods.mint(mintAmount).send(tx);
       }
-      await nftContract.methods.mint(mintAmount).send(tx);
       handleNewNotification({ type: "success", title: "Mint success", message: "Please wait a few minutes for minting precess." });
       return { success: true };
     } catch (error) {
@@ -701,36 +707,10 @@ export const WalletProvider = ({ children }) => {
     }
   };
 
-  const getNewMintNft = async (mintAmount) => {
-    try {
-      // get all of my nft
-      const walletOfOwner = await coreContract.methods.walletOfOwner(account).call();
-      // get latest uri by mint amount
-      const newNft = walletOfOwner.slice(-mintAmount);
-      // transform data
-      let nftArr = [];
-      for (let tokenIndex of newNft) {
-        const uri = await coreContract.methods.tokenURI(tokenIndex).call();
-        const responseUri = await fetch(ipfsUriToHttps(uri));
-        let nft = await responseUri.json();
-        nftArr = [
-          ...nftArr,
-          {
-            ...nft,
-            image: ipfsUriToHttps(nft.image),
-            jsonUri: uri,
-          },
-        ];
-      }
-      return nftArr;
-    } catch (error) {
-      console.log("error getNewMintNft", error);
-    }
-  };
-
   const calculateMintCost = (mintCost, mintAmount) => {
     return Web3.utils.fromWei(Web3.utils.toBN(mintCost).mul(Web3.utils.toBN(mintAmount)), "ether");
   };
+  // mint page
 
   useEffect(() => {
     // async function initFunction() {

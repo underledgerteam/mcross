@@ -3,28 +3,8 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "_gateway",
+        "name": "_weth",
         "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "_gasReceiver",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "_tokenAddress",
-        "type": "address"
-      },
-      {
-        "internalType": "string",
-        "name": "_destinationAddress",
-        "type": "string"
-      },
-      {
-        "internalType": "string",
-        "name": "_destinationChain",
-        "type": "string"
       }
     ],
     "stateMutability": "nonpayable",
@@ -88,7 +68,7 @@
   },
   {
     "inputs": [],
-    "name": "axelarGatewayAddress",
+    "name": "WETH",
     "outputs": [
       {
         "internalType": "address",
@@ -113,37 +93,16 @@
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "destinationAddress",
-    "outputs": [
-      {
-        "internalType": "string",
-        "name": "",
-        "type": "string"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "destinationChain",
-    "outputs": [
-      {
-        "internalType": "string",
-        "name": "",
-        "type": "string"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [
       {
         "internalType": "uint256",
         "name": "_mintAmount",
         "type": "uint256"
+      },
+      {
+        "internalType": "bytes",
+        "name": "payload",
+        "type": "bytes"
       }
     ],
     "name": "mint",
@@ -174,6 +133,19 @@
   {
     "inputs": [
       {
+        "internalType": "address",
+        "name": "_bridgeAddress",
+        "type": "address"
+      }
+    ],
+    "name": "setBridgeAddress",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "uint256",
         "name": "_newCost",
         "type": "uint256"
@@ -187,53 +159,14 @@
   {
     "inputs": [
       {
-        "internalType": "string",
-        "name": "_newAddress",
-        "type": "string"
-      }
-    ],
-    "name": "setDestinationAddress",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "string",
-        "name": "_newChain",
-        "type": "string"
-      }
-    ],
-    "name": "setDestinationChain",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
         "internalType": "address",
-        "name": "_newAddress",
+        "name": "_address",
         "type": "address"
       }
     ],
-    "name": "setTokenAddress",
+    "name": "setWETHAddress",
     "outputs": [],
     "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "tokenAddress",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
     "type": "function"
   },
   {

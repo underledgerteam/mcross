@@ -581,25 +581,24 @@ export const WalletProvider = ({ children }) => {
     // get contract by network id
     const chain = await getNetworkId();
     const nftContract = new web3.eth.Contract(NFT_CONTRACTS[chain].ABI, NFT_CONTRACTS[chain].Address);
-    let contractCollection, contractMarketplaceList;
+    let contractCollection;
     const contractConverse = new web3.eth.Contract(NFT_CONTRACTS[chain].ABIConverse, NFT_CONTRACTS[chain].AddressConverse);
     const contractMarketplace = new web3.eth.Contract(NFT_CONTRACTS[chain].ABIMarketplace, NFT_CONTRACTS[chain].AddressMarketplace);
+    const contractMarketplaceList = new web3.eth.Contract(NFT_CONTRACTS[chain].ABIMarketplace, NFT_CONTRACTS[chain].AddressMarketplace);
+
     let cost;
     switch (chain) {
       case ROPSTEN_CHAIN:
         cost = await nftContract.methods.cost().call();
         contractCollection = new web3.eth.Contract(NFT_CONTRACTS[chain].ABI, NFT_CONTRACTS[chain].Address);
-        contractMarketplaceList = new web3.eth.Contract(NFT_CONTRACTS[chain].ABIMarketplace, NFT_CONTRACTS[chain].AddressMarketplace);
         break;
       case AVALANCHE_FUJI_CHAIN:
         cost = await nftContract.methods.costNFT().call();
         contractCollection = new web3.eth.Contract(NFT_CONTRACTS[chain].ABIConverse, NFT_CONTRACTS[chain].AddressConverse);
-        contractMarketplaceList = new web3.eth.Contract(NFT_CONTRACTS[chain].ABIMarketplace, NFT_CONTRACTS[chain].AddressMarketplace);
         break;
       case POLYGON_MUMBAI_CHAIN:
         cost = await nftContract.methods.costNFT().call();
         contractCollection = new web3.eth.Contract(NFT_CONTRACTS[chain].ABIConverse, NFT_CONTRACTS[chain].AddressConverse);
-        contractMarketplaceList = new web3.eth.Contract(NFT_CONTRACTS[chain].ABIMarketplace, NFT_CONTRACTS[chain].AddressMarketplace);
         break;
       default:
         console.log("not supported chain");

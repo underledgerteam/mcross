@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect, createContext, useReducer, useMemo } from "react";
 import Web3 from "web3";
-import { ipfsUriToHttps } from "../utils/ipfsUriToHttps.util";
 import { useNotification } from "web3uikit";
+import { ipfsUriToHttps } from "../utils/ipfsUriToHttps.util";
 import {
   ROPSTEN_CHAIN,
   AVALANCHE_FUJI_CHAIN,
@@ -16,7 +16,7 @@ import {
   NFT_DEFAULT_CHAIN,
 } from "../utils/constants";
 
-export const Web3Provider = React.createContext();
+export const Web3Provider = createContext();
 
 
 const initiSelectNFT = {
@@ -60,11 +60,14 @@ export const WalletProvider = ({ children }) => {
   const [nftContractConverse, setNftContractConverse] = useState();
   const [nftContractMarketplace, setNftContractMarketplace] = useState();
   const [nftContractMarketplaceList, setNftContractMarketplaceList] = useState();
+  const [loadingMintPage, setLoadingMintPage] = useState(true);
   const [mintProcessing, setMintProcessing] = useState(false);
   const [nftConverse, setNftConverse] = useState({ data: [], loading: false });
   const [chain, setChain] = useState(NFT_DEFAULT_CHAIN);
   const [isReload, setIsReload] = useState(false);
   const [isConnectChain, setIsConnectChain] = useState("");
+  const [maxSupply, setMaxSupply] = useState("...");
+  const [totalSupply, setTotalSupply] = useState("...");
 
   /* onEventListenReload use swap true/false isReload in function eventListener
   on function eventListener cant get state current of isReload */
@@ -568,11 +571,6 @@ export const WalletProvider = ({ children }) => {
     // init ropsten provider for get data
     const ropstenProvider = new Web3(new Web3.providers.WebsocketProvider('wss://ropsten.infura.io/ws/v3/1e94515fc5874c4291a6491caeaff8f1'));
     const coreContract = new ropstenProvider.eth.Contract(NFT_CONTRACT_ABI, NFT_ROPSTEN_ADDRESS);
-    const mintCost = await coreContract.methods.cost().call();
-
-    const avalancheProvider = new Web3(new Web3.providers.HttpProvider('https://api.avax-test.network/ext/bc/C/rpc'));
-    const crossContract = new avalancheProvider.eth.Contract(NFT_CROSS_CONTRACT_ABI, NFT_AVALANHCE_FUJI_ADDRESS);
-    const feeCost = await crossContract.methods.costNFT().call();
 
     const owner = await coreContract.methods.owner().call();
     // init current provider
@@ -586,18 +584,14 @@ export const WalletProvider = ({ children }) => {
     const contractMarketplace = new web3.eth.Contract(NFT_CONTRACTS[chain].ABIMarketplace, NFT_CONTRACTS[chain].AddressMarketplace);
     const contractMarketplaceList = new web3.eth.Contract(NFT_CONTRACTS[chain].ABIMarketplace, NFT_CONTRACTS[chain].AddressMarketplace);
 
-    let cost;
     switch (chain) {
       case ROPSTEN_CHAIN:
-        cost = await nftContract.methods.cost().call();
         contractCollection = new web3.eth.Contract(NFT_CONTRACTS[chain].ABI, NFT_CONTRACTS[chain].Address);
         break;
       case AVALANCHE_FUJI_CHAIN:
-        cost = await nftContract.methods.costNFT().call();
         contractCollection = new web3.eth.Contract(NFT_CONTRACTS[chain].ABIConverse, NFT_CONTRACTS[chain].AddressConverse);
         break;
       case POLYGON_MUMBAI_CHAIN:
-        cost = await nftContract.methods.costNFT().call();
         contractCollection = new web3.eth.Contract(NFT_CONTRACTS[chain].ABIConverse, NFT_CONTRACTS[chain].AddressConverse);
         break;
       default:
@@ -613,15 +607,6 @@ export const WalletProvider = ({ children }) => {
     setNftContractCollection(contractCollection);
     setNftContractMarketplaceList(contractMarketplaceList);
     setOwner(owner);
-    setMintCost({
-      token: NFT_CONTRACTS[chain].MintCost,
-      valueEth: web3.utils.fromWei(cost, "ether"),
-      value: Number(cost)
-    });
-    setCost({
-      mintCost: web3.utils.fromWei(mintCost, "ether"),
-      feeCost: Web3.utils.fromWei(Web3.utils.toBN(feeCost).sub(Web3.utils.toBN(mintCost)), "ether")
-    });
   };
 
   const checkConnectChain = () => {
@@ -633,20 +618,64 @@ export const WalletProvider = ({ children }) => {
 
   };
 
-  const getAllTransaction = async () => {
-    // contract.getPastEvents('Transfer', {
-    //   // filter: { myIndexedParam: [20, 23], myOtherIndexedParam: '0x123456789...' }, // Using an array means OR: e.g. 20 or 23
-    //   fromBlock: 0,
-    //   toBlock: 'latest'
-    // }, function (error, events) { console.log(events); })
-    //   .then(function (events) {
-    //     console.log(events); // same results as the optional callback above
-    //   });
+  // mint page
+  const initMintPage = async () => {
+    console.log('initMintPage');
+    try {
+      setLoadingMintPage(true);
+      const ropstenProvider = new Web3(new Web3.providers.WebsocketProvider('wss://ropsten.infura.io/ws/v3/1e94515fc5874c4291a6491caeaff8f1'));
+      const coreContract = new ropstenProvider.eth.Contract(NFT_CONTRACT_ABI, NFT_ROPSTEN_ADDRESS);
+      const mintCost = await coreContract.methods.cost().call();
+      const maxSupply = await coreContract.methods.maxSupply().call();
+      const totalSupply = await coreContract.methods.totalSupply().call();
+
+      const avalancheProvider = new Web3(new Web3.providers.HttpProvider('https://api.avax-test.network/ext/bc/C/rpc'));
+      const crossContract = new avalancheProvider.eth.Contract(NFT_CROSS_CONTRACT_ABI, NFT_AVALANHCE_FUJI_ADDRESS);
+      const feeCost = await crossContract.methods.costNFT().call();
+
+      let cost;
+      switch (chain) {
+        case ROPSTEN_CHAIN:
+          cost = await nftContract.methods.cost().call();
+          break;
+        case AVALANCHE_FUJI_CHAIN:
+          cost = await nftContract.methods.costNFT().call();
+          break;
+        case POLYGON_MUMBAI_CHAIN:
+          cost = await nftContract.methods.costNFT().call();
+          break;
+        default:
+          handleNewNotification({ type: "error", message: "Not supported chain" });
+          break;
+      }
+
+      setMintCost({
+        token: NFT_CONTRACTS[chain].MintCost,
+        valueEth: Web3.utils.fromWei(cost, "ether"),
+        value: Number(cost)
+      });
+      setMaxSupply(maxSupply);
+      setTotalSupply(totalSupply);
+      setCost({
+        mintCost: Web3.utils.fromWei(mintCost, "ether"),
+        feeCost: Web3.utils.fromWei(Web3.utils.toBN(feeCost).sub(Web3.utils.toBN(mintCost)), "ether")
+      });
+    } catch (error) {
+      console.log('initMintPage error', error);
+    } finally {
+      setLoadingMintPage(false);
+    }
   };
 
   const mintNft = async (mintAmount = 0) => {
     try {
       setMintProcessing(true);
+      // calculate mint cost
+      const tx = {
+        from: account,
+        // gas: (285000 * mintAmount).toString(),
+        value: Web3.utils.numberToHex(mintCost.value * mintAmount),
+      };
       // case cross chain mint
       if (chain === AVALANCHE_FUJI_CHAIN || chain === POLYGON_MUMBAI_CHAIN) {
         // call approve WETH abi
@@ -660,12 +689,6 @@ export const WalletProvider = ({ children }) => {
           ).send({ from: account });
         }
       }
-      // calculate mint cost
-      const tx = {
-        from: account,
-        // gas: (285000 * mintAmount).toString(),
-        value: Web3.utils.numberToHex(mintCost.value * mintAmount),
-      };
       await nftContract.methods.mint(mintAmount).send(tx);
       handleNewNotification({ type: "success", title: "Mint success", message: "Please wait a few minutes for minting precess." });
       return { success: true };
@@ -755,7 +778,12 @@ export const WalletProvider = ({ children }) => {
         calculateMintCost,
         cost,
         isConnectChain,
-        checkConnectChain
+        checkConnectChain,
+        nftContract,
+        loadingMintPage,
+        maxSupply,
+        totalSupply,
+        initMintPage,
       }}
     >
       {children}

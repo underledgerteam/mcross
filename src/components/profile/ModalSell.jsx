@@ -1,7 +1,7 @@
 import { useState, Fragment, useContext } from "react";
 import { Loading, Input } from "web3uikit";
 import { Web3Provider } from "../../contexts/connect.context";
-import { numberToBigNumber } from "../../utils/calculator"; 
+import { numberToBigNumber } from "../../utils/calculator.util"; 
 import {
   NFT_CONTRACTS,
 } from "../../utils/constants";

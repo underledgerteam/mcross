@@ -1,17 +1,19 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Loading } from "web3uikit";
 import { Web3Provider } from "../../contexts/connect.context";
 import Title from "../../components/shared/Title";
 import CardContainerTemplate from "../../components/shared/card/CardContainerTemplate";
 import CardListTemplate from "../../components/shared/card/CardListTemplate";
+
+import ModalConfirm from "../../components/shared/ModalConfirm";
 import { NFT_CONTRACTS as nftContractAddress, NFT_DEFAULT_CHAIN } from "../../utils/constants";
 
 const Market = () => {
   const history = useNavigate();
 
-  const { chain, account, ConnectedWallet, nftContractMarketplace, isReload, getMarketplaceList, listMarketplace, ChangeChain, checkConnectChain, isConnectChain } = useContext(Web3Provider);
-
+  const { chain, account, ConnectedWallet, nftContractMarketplace, isReload, selectConverseNFT, BuyNFT, ChangeConverseNFT, getMarketplaceList, listMarketplace, ChangeChain, checkConnectChain, isConnectChain } = useContext(Web3Provider);
+  const [openModalBuyConfirm, setOpenModalBuyConfirm] = useState(false);
   useEffect(() => {
     if (account && nftContractMarketplace) {
       getMarketplaceList();
@@ -23,10 +25,23 @@ const Market = () => {
     history(`/market/detail/${id}`);
   };
 
-  const handleClickAction = (id) => {
-    console.log(id);
+  const handleClickAction = (objNFT) => {
+    ChangeConverseNFT("BuyMarketplace", objNFT);
+    setOpenModalBuyConfirm(true);
   };
-
+  const onBuyConfirm = (objNFT) => {
+    // alert("Process MetaMask Sell NFT");
+    BuyNFT(
+      objNFT,
+      ()=> {
+        setOpenModalBuyConfirm(false)
+      },
+      ()=> {}
+    );
+  };
+  const onCloseModalBuyConfirm = () => {
+    setOpenModalBuyConfirm(false);
+  };
   const onChangeNetwork = () => {
     ChangeChain(NFT_DEFAULT_CHAIN);
   };
@@ -82,7 +97,7 @@ const Market = () => {
                             owner={item.owner}
                             textAction={'Buy'}
                             onClick={() => handleClickName(item.edition)}
-                            onClickAction={() => handleClickAction(item.edition)}
+                            onClickAction={() => handleClickAction(item)}
                           />
                         </div>
                         );
@@ -97,6 +112,18 @@ const Market = () => {
 
       </div>
 
+      {openModalBuyConfirm && (
+        <ModalConfirm
+          iconColor="text-purple-500"
+          title="Confirm Buy NFT"
+          desc={`Are you sure to Buy ${selectConverseNFT?.name} with ${selectConverseNFT?.price} ${nftContractAddress[chain]?.MintCost}?`}
+          textAction="Confirm Buy"
+          buttonColor="btn-confirm-sell"
+          objNFT={selectConverseNFT}
+          onConfirm={onBuyConfirm}
+          onClose={onCloseModalBuyConfirm}
+        />
+      )}
     </div >
   );
 };

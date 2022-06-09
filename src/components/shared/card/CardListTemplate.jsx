@@ -6,7 +6,7 @@ import { Web3Provider } from "../../../contexts/connect.context";
 import { NFT_CONTRACTS as nftContractAddress } from "../../../utils/constants";
 
 const CardListTemplate = ({ id, name, owner, textAction, price, image, rarity, chain, sell = false, onClick, onClickAction }) => {
-  const { chain: chainId } = useContext(Web3Provider);
+  const { chain: chainId, account } = useContext(Web3Provider);
   const colorButton = {
     "buy": "from-green-500 to-blue-600 text-white hover:from-pink-500 hover:to-yellow-500",
     "sell": "from-red-500 to-pink-600 text-white hover:from-red-600 hover:to-pink-700"
@@ -52,15 +52,16 @@ const CardListTemplate = ({ id, name, owner, textAction, price, image, rarity, c
             </div>
           </div>
         )}
-
-        <div className="mt-5">
-          <button
-            className={`w-full font-bold py-3 px-12 rounded bg-gradient-to-r ${colorButton[(sell) ? "sell" : "buy"]} z-50`}
-            onClick={onClickAction}
-          >
-            {textAction}
-          </button>
-        </div>
+        { ((owner && account?.toLowerCase() !== owner?.toLowerCase()) || !owner) && (
+          <div className="mt-5">
+            <button
+              className={`w-full font-bold py-3 px-12 rounded bg-gradient-to-r ${colorButton[(sell) ? "sell" : "buy"]} z-50`}
+              onClick={onClickAction}
+            >
+              {textAction}
+            </button>
+          </div>
+        ) }
       </div>
     </div >
   );

@@ -433,7 +433,7 @@ export const WalletProvider = ({ children }) => {
           },
         ];
       }
-      setMyCollection({ ...myCollection, list: objNFTs.sort((a, b)=> a.date - b.date), loading: false });
+      setMyCollection({ ...myCollection, list: objNFTs.sort((a, b) => a.date - b.date), loading: false });
     } catch (error) {
       console.log(error);
       setMyCollection({ list: [], loading: false });
@@ -464,7 +464,7 @@ export const WalletProvider = ({ children }) => {
         message: `You Buy ${objNFT.name} Success`,
       });
       handleSuccess();
-      setListMarketplace({...listMarketplace, list: listMarketplace.list.filter(x=> x.edition !== objNFT.edition)});
+      setListMarketplace({ ...listMarketplace, list: listMarketplace.list.filter(x => x.edition !== objNFT.edition) });
     } catch (error) {
       console.log(error);
       setSelectConverseNFT({ ...selectConverseNFT, approveLoading: false });
@@ -476,7 +476,7 @@ export const WalletProvider = ({ children }) => {
       });
       throw new Error("Error Buy NFT");
     }
-  }
+  };
 
   const ChangeConverseNFT = async (type, objNFT) => {
     setSelectConverseNFT(initiSelectNFT);

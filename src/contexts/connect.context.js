@@ -579,26 +579,11 @@ export const WalletProvider = ({ children }) => {
     // get contract by network id
     const chain = await getNetworkId();
     const nftContract = new web3.eth.Contract(NFT_CONTRACTS[chain].ABI, NFT_CONTRACTS[chain].Address);
-    let contractCollection;
     const contractConverse = new web3.eth.Contract(NFT_CONTRACTS[chain].ABIConverse, NFT_CONTRACTS[chain].AddressConverse);
     const contractMarketplace = new web3.eth.Contract(NFT_CONTRACTS[chain].ABIMarketplace, NFT_CONTRACTS[chain].AddressMarketplace);
     const contractMarketplaceList = new web3.eth.Contract(NFT_CONTRACTS[chain].ABIMarketplace, NFT_CONTRACTS[chain].AddressMarketplace);
+    const contractCollection = new web3.eth.Contract(NFT_CONTRACTS[chain].ABICollection, NFT_CONTRACTS[chain].AddressCollection);;
 
-    switch (chain) {
-      case ROPSTEN_CHAIN:
-        contractCollection = new web3.eth.Contract(NFT_CONTRACTS[chain].ABI, NFT_CONTRACTS[chain].Address);
-        break;
-      case AVALANCHE_FUJI_CHAIN:
-        contractCollection = new web3.eth.Contract(NFT_CONTRACTS[chain].ABIConverse, NFT_CONTRACTS[chain].AddressConverse);
-        break;
-      case POLYGON_MUMBAI_CHAIN:
-        contractCollection = new web3.eth.Contract(NFT_CONTRACTS[chain].ABIConverse, NFT_CONTRACTS[chain].AddressConverse);
-        break;
-      default:
-        console.log("not supported chain");
-        handleNewNotification({ type: "error", message: "Not supported chain" });
-        break;
-    }
     setCoreContract(coreContract); // ropsten chain
     setNftContract(nftContract);
     setWethContract(new web3.eth.Contract(WETH_CONTRACT_ABI, WETH_CONTRACT_ADDRESS[chain]));

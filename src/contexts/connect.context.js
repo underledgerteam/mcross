@@ -620,7 +620,6 @@ export const WalletProvider = ({ children }) => {
 
   // mint page
   const initMintPage = async () => {
-    console.log('initMintPage');
     try {
       setLoadingMintPage(true);
       const ropstenProvider = new Web3(new Web3.providers.WebsocketProvider('wss://ropsten.infura.io/ws/v3/1e94515fc5874c4291a6491caeaff8f1'));
@@ -670,14 +669,17 @@ export const WalletProvider = ({ children }) => {
   const mintNft = async (mintAmount = 0) => {
     try {
       setMintProcessing(true);
+      // mock calculate estimate gasPrice. eth won't manual set gas price, cross chain must spare for axelar service
+      const fixGas = NFT_CONTRACTS[chain].CrossChain ? 3 * (10 ** 11).toString() : null;
       // calculate mint cost
       const tx = {
         from: account,
         // gas: (285000 * mintAmount).toString(),
+        gasPrice: fixGas,
         value: Web3.utils.numberToHex(mintCost.value * mintAmount),
       };
       // case cross chain mint
-      if (chain === AVALANCHE_FUJI_CHAIN || chain === POLYGON_MUMBAI_CHAIN) {
+      if (NFT_CONTRACTS[chain].CrossChain) {
         // call approve WETH abi
         const allowance = await wethContract.methods.allowance(account, NFT_CONTRACTS[chain].Address).call();
         if (allowance <= 0) {

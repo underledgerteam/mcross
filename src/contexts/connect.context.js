@@ -480,20 +480,15 @@ export const WalletProvider = ({ children }) => {
 
   const ChangeConverseNFT = async (type, objNFT) => {
     setSelectConverseNFT(initiSelectNFT);
+    const bridgeFee = 0.0005;
     if (objNFT) {
       objNFT = {
         ...objNFT,
-        approve: true,
+        approve: await checkApproved(type, objNFT.edition),
         approveLoading: false,
         selected: true,
-        fee: await getPriceCryptoCurrency()
+        fee: bridgeFee
       };
-      if (!NFT_CONTRACTS[chain].CrossChain || type === "Marketplace") {
-        objNFT = {
-          ...objNFT,
-          approve: await checkApproved(type, objNFT.edition),
-        };
-      }
       setSelectConverseNFT(objNFT);
     }
   };
@@ -544,7 +539,9 @@ export const WalletProvider = ({ children }) => {
       if (NFT_CONTRACTS[chain].CrossChain) {
         fixGas = "300000000000000000";
       }
-      await nftContractConverse.methods.sendNFT(...arr).send({ from: account, value: fixGas });
+
+      await nftContractConverse.methods.bridge(objConverse.to, objConverse.edition, fee, "0x00").send({ from: account, value: fixGas });
+
       setNftConverse({ ...nftConverse, loading: false });
       handleNewNotification({
         type: "success",

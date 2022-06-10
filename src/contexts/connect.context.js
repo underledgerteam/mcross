@@ -443,14 +443,14 @@ export const WalletProvider = ({ children }) => {
 
   const checkApproved = async (type, nftId) => {
     const isApprove = await nftContractCollection.methods.getApproved(nftId).call();
-    let isApproveAssress;
+    let isApproveAddress;
     if (type === "Converse") {
-      isApproveAssress = NFT_CONTRACTS[chain].AddressConverse;
+      isApproveAddress = NFT_CONTRACTS[chain].AddressConverse;
     }
     if (type === "Marketplace") {
-      isApproveAssress = NFT_CONTRACTS[chain].AddressMarketplace;
+      isApproveAddress = NFT_CONTRACTS[chain].AddressMarketplace;
     }
-    return (isApprove.toLowerCase() === isApproveAssress?.toLowerCase()) ? true : false;
+    return (isApprove.toLowerCase() === isApproveAddress?.toLowerCase()) ? true : false;
   };
 
   const BuyNFT = async (objNFT, handleSuccess = () => { }, handleError = () => { }) => {
@@ -480,20 +480,15 @@ export const WalletProvider = ({ children }) => {
 
   const ChangeConverseNFT = async (type, objNFT) => {
     setSelectConverseNFT(initiSelectNFT);
+    const bridgeFee = 0.0005;
     if (objNFT) {
       objNFT = {
         ...objNFT,
-        approve: true,
+        approve: await checkApproved(type, objNFT.edition),
         approveLoading: false,
         selected: true,
-        fee: await getPriceCryptoCurrency()
+        fee: bridgeFee
       };
-      if (!NFT_CONTRACTS[chain].CrossChain || type === "Marketplace") {
-        objNFT = {
-          ...objNFT,
-          approve: await checkApproved(type, objNFT.edition),
-        };
-      }
       setSelectConverseNFT(objNFT);
     }
   };
@@ -544,7 +539,9 @@ export const WalletProvider = ({ children }) => {
       if (NFT_CONTRACTS[chain].CrossChain) {
         fixGas = "300000000000000000";
       }
-      await nftContractConverse.methods.sendNFT(...arr).send({ from: account, value: fixGas });
+
+      await nftContractConverse.methods.bridge(objConverse.to, objConverse.edition, fee, "0x00").send({ from: account, value: fixGas });
+
       setNftConverse({ ...nftConverse, loading: false });
       handleNewNotification({
         type: "success",
@@ -579,26 +576,11 @@ export const WalletProvider = ({ children }) => {
     // get contract by network id
     const chain = await getNetworkId();
     const nftContract = new web3.eth.Contract(NFT_CONTRACTS[chain].ABI, NFT_CONTRACTS[chain].Address);
-    let contractCollection;
     const contractConverse = new web3.eth.Contract(NFT_CONTRACTS[chain].ABIConverse, NFT_CONTRACTS[chain].AddressConverse);
     const contractMarketplace = new web3.eth.Contract(NFT_CONTRACTS[chain].ABIMarketplace, NFT_CONTRACTS[chain].AddressMarketplace);
     const contractMarketplaceList = new web3.eth.Contract(NFT_CONTRACTS[chain].ABIMarketplace, NFT_CONTRACTS[chain].AddressMarketplace);
+    const contractCollection = new web3.eth.Contract(NFT_CONTRACTS[chain].ABICollection, NFT_CONTRACTS[chain].AddressCollection);;
 
-    switch (chain) {
-      case ROPSTEN_CHAIN:
-        contractCollection = new web3.eth.Contract(NFT_CONTRACTS[chain].ABI, NFT_CONTRACTS[chain].Address);
-        break;
-      case AVALANCHE_FUJI_CHAIN:
-        contractCollection = new web3.eth.Contract(NFT_CONTRACTS[chain].ABIConverse, NFT_CONTRACTS[chain].AddressConverse);
-        break;
-      case POLYGON_MUMBAI_CHAIN:
-        contractCollection = new web3.eth.Contract(NFT_CONTRACTS[chain].ABIConverse, NFT_CONTRACTS[chain].AddressConverse);
-        break;
-      default:
-        console.log("not supported chain");
-        handleNewNotification({ type: "error", message: "Not supported chain" });
-        break;
-    }
     setCoreContract(coreContract); // ropsten chain
     setNftContract(nftContract);
     setWethContract(new web3.eth.Contract(WETH_CONTRACT_ABI, WETH_CONTRACT_ADDRESS[chain]));
@@ -620,7 +602,6 @@ export const WalletProvider = ({ children }) => {
 
   // mint page
   const initMintPage = async () => {
-    console.log('initMintPage');
     try {
       setLoadingMintPage(true);
       const ropstenProvider = new Web3(new Web3.providers.WebsocketProvider('wss://ropsten.infura.io/ws/v3/1e94515fc5874c4291a6491caeaff8f1'));
@@ -670,14 +651,17 @@ export const WalletProvider = ({ children }) => {
   const mintNft = async (mintAmount = 0) => {
     try {
       setMintProcessing(true);
+      // mock calculate estimate gasPrice. eth won't manual set gas price, cross chain must spare for axelar service
+      const fixGas = NFT_CONTRACTS[chain].CrossChain ? 3 * (10 ** 11).toString() : null;
       // calculate mint cost
       const tx = {
         from: account,
         // gas: (285000 * mintAmount).toString(),
+        gasPrice: fixGas,
         value: Web3.utils.numberToHex(mintCost.value * mintAmount),
       };
       // case cross chain mint
-      if (chain === AVALANCHE_FUJI_CHAIN || chain === POLYGON_MUMBAI_CHAIN) {
+      if (NFT_CONTRACTS[chain].CrossChain) {
         // call approve WETH abi
         const allowance = await wethContract.methods.allowance(account, NFT_CONTRACTS[chain].Address).call();
         if (allowance <= 0) {

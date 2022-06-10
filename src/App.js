@@ -10,6 +10,7 @@ import CollectionDetail from './pages/profile/CollectionDetail';
 import NotFound from './pages/notFound/NotFound';
 import ConnectWallet from "./pages/connect/ConnectWallet";
 import MarketDetail from "./pages/market/MarketDetail";
+import AllMarket from "./pages/market/AllMarket";
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
             <Route path="/profile" element={<Profile />} />
             <Route path="/connect-wallet" element={<ConnectWallet />} />
             <Route path="/profile/collection/:id" element={<CollectionDetail />} />
+            <Route path="/all-market" element={<AllMarket />} />
             <Route path="*" element={<NotFound />} />
           </Route>
         </Routes>

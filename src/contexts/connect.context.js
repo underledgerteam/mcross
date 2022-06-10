@@ -443,14 +443,14 @@ export const WalletProvider = ({ children }) => {
 
   const checkApproved = async (type, nftId) => {
     const isApprove = await nftContractCollection.methods.getApproved(nftId).call();
-    let isApproveAssress;
+    let isApproveAddress;
     if (type === "Converse") {
-      isApproveAssress = NFT_CONTRACTS[chain].AddressConverse;
+      isApproveAddress = NFT_CONTRACTS[chain].AddressConverse;
     }
     if (type === "Marketplace") {
-      isApproveAssress = NFT_CONTRACTS[chain].AddressMarketplace;
+      isApproveAddress = NFT_CONTRACTS[chain].AddressMarketplace;
     }
-    return (isApprove.toLowerCase() === isApproveAssress?.toLowerCase()) ? true : false;
+    return (isApprove.toLowerCase() === isApproveAddress?.toLowerCase()) ? true : false;
   };
 
   const BuyNFT = async (objNFT, handleSuccess = () => { }, handleError = () => { }) => {

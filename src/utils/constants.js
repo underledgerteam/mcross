@@ -38,12 +38,14 @@ export const AVALANCHE_FUJI_CHAIN = 43113;
 export const POLYGON_MUMBAI_CHAIN = 80001;
 
 export const NFT_DEFAULT_CHAIN = 3;
+export const ADDRESS_ZERO = "0x0000000000000000000000000000000000000000";
 
 export const NFT_CONTRACTS = {
   3: {
     Label: "Ropsten Testnet Network",
     ShortLabel: "Ropsten",
     Icon: "Ethereum",
+    Name: "Ethereum",
     Token: "ETH",
     MintCost: "ETH",
 
@@ -65,6 +67,7 @@ export const NFT_CONTRACTS = {
     Label: "AVAX Testnet Network",
     ShortLabel: "Avalanche",
     Icon: "Avalanche",
+    Name: "Avalanche",
     Token: "AVAX",
     MintCost: "WETH",
 
@@ -95,6 +98,7 @@ export const NFT_CONTRACTS = {
     Label: "Polygon Testnet Network",
     ShortLabel: "Polygon",
     Icon: "Polygon",
+    Name: "Polygon",
     Token: "MATIC",
     MintCost: "WETH",
 

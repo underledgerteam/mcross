@@ -1,6 +1,7 @@
 import { useState, useEffect, createContext, useReducer, useMemo } from "react";
 import Web3 from "web3";
 import { useNotification } from "web3uikit";
+import { getGasPrice } from "../services/gas.service";
 import { ipfsUriToHttps } from "../utils/ipfsUriToHttps.util";
 import {
   ROPSTEN_CHAIN,
@@ -14,6 +15,7 @@ import {
   NFT_CROSS_CONTRACT_ABI,
   NFT_AVALANHCE_FUJI_ADDRESS,
   NFT_DEFAULT_CHAIN,
+  ADDRESS_ZERO
 } from "../utils/constants";
 
 export const Web3Provider = createContext();
@@ -652,12 +654,11 @@ export const WalletProvider = ({ children }) => {
     try {
       setMintProcessing(true);
       // mock calculate estimate gasPrice. eth won't manual set gas price, cross chain must spare for axelar service
-      const fixGas = NFT_CONTRACTS[chain].CrossChain ? 3 * (10 ** 11).toString() : null;
+      // const fixGas = NFT_CONTRACTS[chain].CrossChain ? 3 * (10 ** 11).toString() : null;
       // calculate mint cost
       const tx = {
         from: account,
         // gas: (285000 * mintAmount).toString(),
-        gasPrice: fixGas,
         value: Web3.utils.numberToHex(mintCost.value * mintAmount),
       };
       // case cross chain mint
@@ -675,8 +676,24 @@ export const WalletProvider = ({ children }) => {
         // encode params
         const web3 = new Web3(Web3.givenProvider || detectCurrentProvider());
         const encodePayload = web3.eth.abi.encodeParameters(['string', 'address'], ['Ethereum', account]);
+        // get gas price
+        const result = await getGasPrice(NFT_CONTRACTS[chain].Name, "Ethereum", ADDRESS_ZERO, NFT_CONTRACTS[chain].Token);
+        console.log(result);
+        const totalGasPrice = 0;
+        // eth
+        // "0.000000002100000008"
+        // "2.100000008" gwei
+        // avax
+        // "0.000000171246838597"
+        // polygon
+        // "0.00000605381168802"
+
+        // 0.00097051
         // mint
-        await nftContract.methods.mint(mintAmount, encodePayload).send(tx);
+        // const res = await nftContract.methods.mint(mintAmount, encodePayload).estimateGas({ gas: 5000000, from: NFT_CONTRACTS[chain].Address });
+        // console.log('web3js estimate gas', res);
+        await nftContract.methods.mint(mintAmount, encodePayload).send({ ...tx });
+        // await nftContract.methods.mint(mintAmount, encodePayload).send({ ...tx, gasPrice: totalGasPrice });
       } else {
         await nftContract.methods.mint(mintAmount).send(tx);
       }

@@ -8,6 +8,7 @@ import CardListTemplate from "../../components/shared/card/CardListTemplate";
 
 import ModalConfirm from "../../components/shared/ModalConfirm";
 import { NFT_CONTRACTS as nftContractAddress, NFT_DEFAULT_CHAIN } from "../../utils/constants";
+import { numberToBigNumber } from "../../utils/calculator.util"; 
 
 const Market = () => {
   const history = useNavigate();
@@ -115,9 +116,11 @@ const Market = () => {
       {openModalBuyConfirm && (
         <ModalConfirm
           iconColor="text-purple-500"
-          title="Confirm Buy NFT"
-          desc={`Are you sure to Buy ${selectConverseNFT?.name} with ${selectConverseNFT?.price} ${nftContractAddress[chain]?.MintCost}?`}
-          textAction="Confirm Buy"
+          title={selectConverseNFT?.approve?.value? "Confirm Buy NFT": "Approve WETH"}
+          desc={selectConverseNFT?.approve?.value? 
+            `Are you sure to Buy ${selectConverseNFT?.name} with ${selectConverseNFT?.price} ${nftContractAddress[chain]?.MintCost}?`:
+            `You Approve ${selectConverseNFT?.approve?.allowance} WETH\n You must approve an additional ${numberToBigNumber(selectConverseNFT?.price).minus(numberToBigNumber(selectConverseNFT?.approve?.allowance)).toString()} WETH\n*Approval will increase by 50 WETH per time.`}
+          textAction={selectConverseNFT?.approve?.value? "Confirm Buy": `Approve 50 WETH`}
           buttonColor="btn-confirm-sell"
           objNFT={selectConverseNFT}
           onConfirm={onBuyConfirm}

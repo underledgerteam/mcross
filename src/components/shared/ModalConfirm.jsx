@@ -15,7 +15,7 @@ const ModalConfirm = ({ iconColor, title, desc, textAction, buttonColor, objNFT,
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg> 
                   <h2 className="text-xl font-bold py-4 ">{title}</h2>
-                  <p className="text-sm text-gray-500 px-8">{desc}</p>  
+                  <p className="text-sm text-gray-500 px-8" style={{whiteSpace: 'pre-line'}}>{desc}</p>  
                 </Fragment>  
               }
             </div>

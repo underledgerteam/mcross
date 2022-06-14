@@ -15,6 +15,7 @@ import {
   NFT_AVALANHCE_FUJI_ADDRESS,
   NFT_DEFAULT_CHAIN,
 } from "../utils/constants";
+import { numberToBigNumber } from "../utils/calculator.util"; 
 
 export const Web3Provider = createContext();
 
@@ -353,9 +354,11 @@ export const WalletProvider = ({ children }) => {
           nftContract: newObjGetMyMarketplace[i].nftContract,
           status: newObjGetMyMarketplace[i].status,
           jsonUri: uri,
+          approveLoading: false,
+          approve: await checkApproved("BuyMarketplace", objNFT)
         };
       }
-      setDetailMarketplace({ data: objMarkets, loading: false });
+      setDetailMarketplace({ data: {...objMarkets, approve: await checkApproved("BuyMarketplace", objMarkets)}, loading: false });
 
     } catch (error) {
       console.log(error);
@@ -440,9 +443,16 @@ export const WalletProvider = ({ children }) => {
       // throw new Error("Get Collection Error");
     }
   };
+  const getAllowanceWeth = async(account, address) => {
+    return await wethContract.methods.allowance(account, address).call()
+  };
+  const checkApproved = async (type, objNFT) => {
+    if (type === "BuyMarketplace") {
+      const allowance = Web3.utils.fromWei(await getAllowanceWeth(account, NFT_CONTRACTS[chain].AddressMarketplace));
+      return Number(allowance) >= Number(objNFT.price)? {value: true} : {allowance, value: false};
+    }
 
-  const checkApproved = async (type, nftId) => {
-    const isApprove = await nftContractCollection.methods.getApproved(nftId).call();
+    const isApprove = await nftContractCollection.methods.getApproved(objNFT.edition).call();
     let isApproveAddress;
     if (type === "Converse") {
       isApproveAddress = NFT_CONTRACTS[chain].AddressConverse;
@@ -452,22 +462,41 @@ export const WalletProvider = ({ children }) => {
     }
     return (isApprove.toLowerCase() === isApproveAddress?.toLowerCase()) ? true : false;
   };
-
   const BuyNFT = async (objNFT, handleSuccess = () => { }, handleError = () => { }) => {
     try {
       setSelectConverseNFT({ ...selectConverseNFT, approveLoading: true });
-      await nftContractMarketplaceList.methods.buyMarketItem(objNFT.edition).send({ from: account, value: Web3.utils.toWei(objNFT.price, "ether") });
-      setSelectConverseNFT({ ...selectConverseNFT, approve: true, approveLoading: false });
-      handleNewNotification({
-        type: "success",
-        title: 'Success',
-        message: `You Buy ${objNFT.name} Success`,
-      });
-      handleSuccess();
-      setListMarketplace({ ...listMarketplace, list: listMarketplace.list.filter(x => x.edition !== objNFT.edition) });
+      setDetailMarketplace({...detailMarketplace, data: {...detailMarketplace.data, approveLoading: true}});
+      const priceNft = Web3.utils.toWei(objNFT.price, "ether");
+      if (NFT_CONTRACTS[chain].CrossChain && !objNFT.approve.value) {
+        // const additionalWETH = numberToBigNumber(objNFT?.price, 18).minus(numberToBigNumber(objNFT?.approve?.allowance, 18));
+        const additionalWETH = 50;
+        await wethContract.methods.approve(
+          NFT_CONTRACTS[chain].AddressMarketplace,
+          Web3.utils.numberToHex(Web3.utils.toWei((numberToBigNumber(objNFT?.approve?.allowance, 18).plus(additionalWETH)).toString(), "ether"))
+        ).send({ from: account });
+        setSelectConverseNFT({ ...selectConverseNFT, approve: await checkApproved("BuyMarketplace", objNFT), approveLoading: false });
+        setDetailMarketplace({...detailMarketplace, data: {...detailMarketplace.data, approve: await checkApproved("BuyMarketplace", detailMarketplace.data), approveLoading: false}});
+        handleNewNotification({
+          type: "success",
+          title: 'Success',
+          message: `You Approve ${additionalWETH.toString()} WETH Success`,
+        });
+      }else{
+        await nftContractMarketplaceList.methods.buyMarketItem(objNFT.edition).send({ from: account, value: priceNft });
+        setSelectConverseNFT({ ...selectConverseNFT, approveLoading: false });
+        setDetailMarketplace({...detailMarketplace, data: {...detailMarketplace.data, approveLoading: false}});
+        handleNewNotification({
+          type: "success",
+          title: 'Success',
+          message: `You Buy ${objNFT.name} Success`,
+        });
+        handleSuccess();
+        setListMarketplace({ ...listMarketplace, list: listMarketplace.list.filter(x => x.edition !== objNFT.edition) });
+      }
     } catch (error) {
       console.log(error);
       setSelectConverseNFT({ ...selectConverseNFT, approveLoading: false });
+      setDetailMarketplace({...detailMarketplace, data: {...detailMarketplace.data, approveLoading: false}});
       handleError();
       handleNewNotification({
         type: "error",
@@ -484,7 +513,7 @@ export const WalletProvider = ({ children }) => {
     if (objNFT) {
       objNFT = {
         ...objNFT,
-        approve: await checkApproved(type, objNFT.edition),
+        approve: await checkApproved(type, objNFT),
         approveLoading: false,
         selected: true,
         fee: bridgeFee
@@ -721,6 +750,7 @@ export const WalletProvider = ({ children }) => {
         ChangeConverseNFT,
         ConverseNFT,
         BuyNFT,
+        getAllowanceWeth,
         isReload,
         nftContractCollection,
         nftContractMarketplace,

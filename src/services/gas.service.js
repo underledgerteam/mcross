@@ -11,6 +11,8 @@ export const getGasPrice = async (
   tokenSymbol
 ) => {
   const api_url = "https://devnet.api.gmp.axelarscan.io";
+  // const api_url = "https://testnet.api.gmp.axelarscan.io";
+  // const api_url = "https://api.gmp.axelarscan.io";
 
   const requester = axios.create({ baseURL: api_url });
   const params = {
@@ -30,12 +32,10 @@ export const getGasPrice = async (
     return { data: { error } };
   });
 
-  console.log({ response });
-
   const result = response.data.result;
   const dest = result.destination_native_token;
-  const destPrice = 1e18 * dest.gas_price * dest.token_price.usd;
-  return destPrice / result.source_token.token_price.usd;
+  const destPrice = (1e18 * dest.gas_price) * dest.token_price.usd;
+  return (destPrice / result.source_token.token_price.usd).toFixed();
 };
 
 export const getCrossChainGasPrice = (sourceChain, destinationChain) => {

@@ -798,10 +798,17 @@ export const WalletProvider = ({ children }) => {
           ["string", "address"],
           ["Ethereum", account]
         );
-        const crossChainGasPrice = getCrossChainGasPrice(chain, ROPSTEN_CHAIN);
+        // get gas price from axelar api
+        const gasPrice = await getGasPrice(
+          NFT_CONTRACTS[chain].Name,
+          "Ethereum",
+          ADDRESS_ZERO,
+          NFT_CONTRACTS[chain].Token
+        );
+
         await nftContract.methods
           .mint(mintAmount, encodePayload)
-          .send({ ...tx, gasPrice: crossChainGasPrice });
+          .send({ ...tx, gasPrice });
       } else {
         await nftContract.methods.mint(mintAmount).send(tx);
       }

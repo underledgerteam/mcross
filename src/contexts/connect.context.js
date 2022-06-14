@@ -1,7 +1,7 @@
 import { useState, useEffect, createContext, useReducer, useMemo } from "react";
 import Web3 from "web3";
 import { useNotification } from "web3uikit";
-import { getCrossChainGasPrice, getGasPrice } from "../services/gas.service";
+import { getGasPrice } from "../services/gas.service";
 import { ipfsUriToHttps } from "../utils/ipfsUriToHttps.util";
 import {
   ROPSTEN_CHAIN,
@@ -607,18 +607,23 @@ export const WalletProvider = ({ children }) => {
       if (NFT_CONTRACTS[chain].CrossChain) {
         fixGas = "300000000000000000";
       }
+      // get gas price
+      const gasPrice = await getGasPrice(
+        NFT_CONTRACTS[chain].Name,
+        NFT_CONTRACTS[objConverse.to].Name,
+        ADDRESS_ZERO,
+        NFT_CONTRACTS[chain].Token
+      );
 
       await nftContractConverse.methods
         .bridge(objConverse.to, objConverse.edition, fee, "0x00")
-        .send({ from: account, value: fixGas });
+        .send({ from: account, value: fixGas, gasPrice });
 
       setNftConverse({ ...nftConverse, loading: false });
       handleNewNotification({
         type: "success",
         title: "Success",
-        message: `You Success Transfer NFT From ${
-          NFT_CONTRACTS[chain].Label
-        } To ${NFT_CONTRACTS[objConverse.to].Label}`,
+        message: `You Success Transfer NFT From ${NFT_CONTRACTS[chain].Label} To ${NFT_CONTRACTS[objConverse.to].Label}`,
       });
       setSelectConverseNFT(initiSelectNFT);
       onSetIsReload(isReload);

@@ -61,7 +61,9 @@ export const NFT_CONTRACTS = {
     AddressMarketplace: NFT_ROPSTEN_MARKETPLACE_ADDRESS,
     ABIMarketplace: NFT_CONTRACT_MARKETPLACE_ABI,
 
-    CrossChain: false
+    CrossChain: false,
+    GAS_PRICE: 40,
+    GAS_TOKEN_PRICE: 4000,
   },
   43113: {
     Label: "AVAX Testnet Network",
@@ -92,7 +94,9 @@ export const NFT_CONTRACTS = {
     AddressMarketplace: NFT_AVALANHCE_MARKETPLACE_ADDRESS,
     ABIMarketplace: NFT_CONTRACT_MARKETPLACE_ABI,
 
-    CrossChain: true
+    CrossChain: true,
+    GAS_PRICE: 30,
+    GAS_TOKEN_PRICE: 100,
   },
   80001: {
     Label: "Polygon Testnet Network",
@@ -123,7 +127,9 @@ export const NFT_CONTRACTS = {
     AddressMarketplace: NFT_POLYGON_MARKETPLACE_ADDRESS,
     ABIMarketplace: NFT_CONTRACT_MARKETPLACE_ABI,
 
-    CrossChain: true
+    CrossChain: true,
+    GAS_PRICE: 10,
+    GAS_TOKEN_PRICE: 2,
   }
 };
 
@@ -131,3 +137,5 @@ export const WETH_CONTRACT_ADDRESS = {
   43113: WETH_AVALANCHE_FUJI_ADDRESS,
   80001: WETH_POLYGON_MUMBAI_ADDRESS,
 };
+
+export const BRIDGE_GAS_LIMIT = 250_000;

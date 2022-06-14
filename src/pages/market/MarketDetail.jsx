@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useContext } from "react";
+import { Fragment, useEffect, useContext, useState } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { Loading } from "web3uikit";
 
@@ -7,6 +7,8 @@ import { Web3Provider } from "../../contexts/connect.context";
 import Title from "../../components/shared/Title";
 
 import CardDetailTemplate from "../../components/shared/card/CardDetailTemplate";
+import ModalConfirm from "../../components/shared/ModalConfirm";
+import { NFT_CONTRACTS as nftContractAddress } from "../../utils/constants";
 
 const MarketDetail = () => {
   const params = useParams();
@@ -21,7 +23,10 @@ const MarketDetail = () => {
     ConnectedWallet,
     GetByIdCollection,
     getMarketplaceDetail,
-    detailMarketplace } = useContext(Web3Provider);
+    detailMarketplace,
+    BuyNFT
+  } = useContext(Web3Provider);
+  const [openModalBuyConfirm, setOpenModalBuyConfirm] = useState(false);
   const onHistoryBack = () => {
     if(location?.state?.isMyMarket){
       return navigate("/profile");
@@ -29,9 +34,14 @@ const MarketDetail = () => {
     navigate("/market");
   };
   const onOpenModal = () => {
-    console.log(1);
+    setOpenModalBuyConfirm(true);
   };
-
+  const onBuyConfirm = (objNFT) => {
+    BuyNFT(objNFT,()=> { setOpenModalBuyConfirm(false) },()=> {});
+  };
+  const onCloseModalBuyConfirm = () => {
+    setOpenModalBuyConfirm(false);
+  };
   useEffect(() => {
     if (account && nftContractCollection) {
       GetByIdCollection(params.id);
@@ -76,6 +86,18 @@ const MarketDetail = () => {
           )
         )}
       </div>
+      {openModalBuyConfirm && (
+        <ModalConfirm
+          iconColor="text-purple-500"
+          title="Confirm Buy NFT"
+          desc={`Are you sure to Buy ${detailMarketplace?.data?.name} with ${detailMarketplace?.data?.price} ${nftContractAddress[chain]?.MintCost}?`}
+          textAction="Confirm Buy"
+          buttonColor="btn-confirm-sell"
+          objNFT={detailMarketplace?.data}
+          onConfirm={onBuyConfirm}
+          onClose={onCloseModalBuyConfirm}
+        />
+      )}
     </Fragment>
   );
 };

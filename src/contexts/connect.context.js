@@ -1,6 +1,7 @@
 import { useState, useEffect, createContext, useReducer, useMemo } from "react";
 import Web3 from "web3";
 import { useNotification } from "web3uikit";
+import { getGasPrice } from "../services/gas.service";
 import { ipfsUriToHttps } from "../utils/ipfsUriToHttps.util";
 import {
   ROPSTEN_CHAIN,
@@ -14,16 +15,17 @@ import {
   NFT_CROSS_CONTRACT_ABI,
   NFT_AVALANHCE_FUJI_ADDRESS,
   NFT_DEFAULT_CHAIN,
+  ADDRESS_ZERO,
 } from "../utils/constants";
 
 export const Web3Provider = createContext();
-
 
 const initiSelectNFT = {
   selected: false,
   approve: false,
   approveLoading: false,
-  image: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAOEAAADhCAMAAAAJbSJIAAAANlBMVEX///+/v7+8vLzKysr8/Pzg4ODFxcXb29vT09Pj4+P4+PjBwcH6+vry8vLY2NjIyMjs7Ozo6Oia8u11AAAEdUlEQVR4nO2d65bqIAxGp/Smrb34/i971KqlEC7FGuJZ3/7dKewJBgK4/PsDAAAAAAAAAAAAAAAA4KUam5+i3m94UsUPoVoYwlA6MIShfGAIQ/nAEIbyOcBQSeNww9NZGOXBhuq8+w1fxugfDG1gmB0YBoFhdmAYBIbZgWEQGGYHhkFgmB0YBoFhdmAYBIbZyWB4qVI6mgyv4WUeH7u007lL7vFeWA3n8rUFrZqWK5KchnWvPapOTGFkNDQPOJrhk45Hw2d4Ns+oVPlRz2NhMxyawkTtv2OWAJvhSBwzfjBO2+g/5TLs7BDeSF4eDP0Y+yiX4UydFKtT4pRxa3SKTcVchtQgLYrobhq0Kj7+XIb0aX+fZtipHfH/ScPlZZG5Jq9hk2RYP96lTnFPcxnWpGF52d2eNrPGPc5lOJC5NDrl65Sv1fs16nEuw8v20sdCP+9uTh8NZVSuYVvTnKlBmjAdaqu/uH8Qm2FVWuNUJYSwOu3tLV9tcelNw5SF9yZjRaVixvpwbrZRTKnyuyKysRXOGn/QBqpK25QzptVm9598eyfqXDaPnah+GlNmwr/aGOcqYl3DvJtYzXU7jvU1bbVmVdExE+pP7Qjb6TiiOBFmOPuyD7XyC+djWYadGt2KxE5PzMpWluHtXc6KQZ/rNYK5RpThfWXnrGzp6iRcQ0ky7KbHK+iBup3rtQZD6wZJhq+9HDIsri89BBsUZPguIal0Y871K6ECRY6hXkFaimQeXQjVUHIMNwWkuVax5/q1xcC6Rozh0G+7vYmidaqzCaJ/whBjaEZJr608Y7QIHvBIMbR3/dfB55jr3/hrKCGGxMHN+vmi53rtSW+uEWLYUj1/dsY1169tetc1MgwHaw9HU3TN9Svec0huw4os6CZHcO7dcc/163O+XMNteC0JRfdk0Aby6BNfDcW9i1EquzedI4R36vAYLfy5htnwtnBRvaHo/SZxjN8Nz7UO5ltf97WnMgbqHCfhRbmHKa/hdXl2qxjzQQsaunMNr+FzUlD62W8bORD9TM4gshpe3xVg+Z7BonJlmN55mMhpWGkV4GughtacsbgvLnAa6hXga6B666I9OGsoRsPtMbCa7l2q6OVaAs6uMxpejXDdd+SPSTMP+vyGdri6+bAQui8u8BmaIbwxUdcXkg0dNRTjOf6BNiSOGirrXYxjcXQ+632ag6EPE7kMiU/h4dA1FJfhgUnTzZTRkCOEt8apYcpj+P1E6u4+j+H3E+kCdUmKxZAjkS4QrbMY8nwKC7qGYjFkSaQL9rqGw5AthORhIoMhUyJ9ksPwsDI+Brv97xtWY8mJNUwZYtixYu0qyjhd+yYwDALD7MAwCAyzA8MgMMwODIPAMDtHGxZ1JYvjDRvWajCC7SYRfhsBhvKBIQzlA0MYygeGMJQPDGEoHxjCUD4whKF8YAhD+cAQhvKBIQzlA0MYygeGMJQPDGEoHxjCUD4whKF8YAhD+cAQhvJJM/wpEgyv9U+R8iNaAAAAAAAAAAAAAAAAAP4r/gEYCYE2Xwz6DQAAAABJRU5ErkJggg=="
+  image:
+    "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAOEAAADhCAMAAAAJbSJIAAAANlBMVEX///+/v7+8vLzKysr8/Pzg4ODFxcXb29vT09Pj4+P4+PjBwcH6+vry8vLY2NjIyMjs7Ozo6Oia8u11AAAEdUlEQVR4nO2d65bqIAxGp/Smrb34/i971KqlEC7FGuJZ3/7dKewJBgK4/PsDAAAAAAAAAAAAAAAA4KUam5+i3m94UsUPoVoYwlA6MIShfGAIQ/nAEIbyOcBQSeNww9NZGOXBhuq8+w1fxugfDG1gmB0YBoFhdmAYBIbZgWEQGGYHhkFgmB0YBoFhdmAYBIbZyWB4qVI6mgyv4WUeH7u007lL7vFeWA3n8rUFrZqWK5KchnWvPapOTGFkNDQPOJrhk45Hw2d4Ns+oVPlRz2NhMxyawkTtv2OWAJvhSBwzfjBO2+g/5TLs7BDeSF4eDP0Y+yiX4UydFKtT4pRxa3SKTcVchtQgLYrobhq0Kj7+XIb0aX+fZtipHfH/ScPlZZG5Jq9hk2RYP96lTnFPcxnWpGF52d2eNrPGPc5lOJC5NDrl65Sv1fs16nEuw8v20sdCP+9uTh8NZVSuYVvTnKlBmjAdaqu/uH8Qm2FVWuNUJYSwOu3tLV9tcelNw5SF9yZjRaVixvpwbrZRTKnyuyKysRXOGn/QBqpK25QzptVm9598eyfqXDaPnah+GlNmwr/aGOcqYl3DvJtYzXU7jvU1bbVmVdExE+pP7Qjb6TiiOBFmOPuyD7XyC+djWYadGt2KxE5PzMpWluHtXc6KQZ/rNYK5RpThfWXnrGzp6iRcQ0ky7KbHK+iBup3rtQZD6wZJhq+9HDIsri89BBsUZPguIal0Y871K6ECRY6hXkFaimQeXQjVUHIMNwWkuVax5/q1xcC6Rozh0G+7vYmidaqzCaJ/whBjaEZJr608Y7QIHvBIMbR3/dfB55jr3/hrKCGGxMHN+vmi53rtSW+uEWLYUj1/dsY1169tetc1MgwHaw9HU3TN9Svec0huw4os6CZHcO7dcc/163O+XMNteC0JRfdk0Aby6BNfDcW9i1EquzedI4R36vAYLfy5htnwtnBRvaHo/SZxjN8Nz7UO5ltf97WnMgbqHCfhRbmHKa/hdXl2qxjzQQsaunMNr+FzUlD62W8bORD9TM4gshpe3xVg+Z7BonJlmN55mMhpWGkV4GughtacsbgvLnAa6hXga6B666I9OGsoRsPtMbCa7l2q6OVaAs6uMxpejXDdd+SPSTMP+vyGdri6+bAQui8u8BmaIbwxUdcXkg0dNRTjOf6BNiSOGirrXYxjcXQ+632ag6EPE7kMiU/h4dA1FJfhgUnTzZTRkCOEt8apYcpj+P1E6u4+j+H3E+kCdUmKxZAjkS4QrbMY8nwKC7qGYjFkSaQL9rqGw5AthORhIoMhUyJ9ksPwsDI+Brv97xtWY8mJNUwZYtixYu0qyjhd+yYwDALD7MAwCAyzA8MgMMwODIPAMDtHGxZ1JYvjDRvWajCC7SYRfhsBhvKBIQzlA0MYygeGMJQPDGEoHxjCUD4whKF8YAhD+cAQhvKBIQzlA0MYygeGMJQPDGEoHxjCUD4whKF8YAhD+cAQhvJJM/wpEgyv9U+R8iNaAAAAAAAAAAAAAAAAAP4r/gEYCYE2Xwz6DQAAAABJRU5ErkJggg==",
 };
 
 export const WalletProvider = ({ children }) => {
@@ -53,13 +55,13 @@ export const WalletProvider = ({ children }) => {
     loading: true,
   });
 
-
   const [selectConverseNFT, setSelectConverseNFT] = useState(initiSelectNFT);
   const [nftContract, setNftContract] = useState();
   const [nftContractCollection, setNftContractCollection] = useState();
   const [nftContractConverse, setNftContractConverse] = useState();
   const [nftContractMarketplace, setNftContractMarketplace] = useState();
-  const [nftContractMarketplaceList, setNftContractMarketplaceList] = useState();
+  const [nftContractMarketplaceList, setNftContractMarketplaceList] =
+    useState();
   const [loadingMintPage, setLoadingMintPage] = useState(true);
   const [mintProcessing, setMintProcessing] = useState(false);
   const [nftConverse, setNftConverse] = useState({ data: [], loading: false });
@@ -82,7 +84,7 @@ export const WalletProvider = ({ children }) => {
   });
   const [cost, setCost] = useState({
     mintCost: "",
-    feeCost: ""
+    feeCost: "",
   });
   const [wethContract, setWethContract] = useState();
   const [coreContract, setCoreContract] = useState();
@@ -108,7 +110,7 @@ export const WalletProvider = ({ children }) => {
   };
 
   const eventListener = (web3, currentProvider) => {
-    currentProvider.on('accountsChanged', (accounts) => {
+    currentProvider.on("accountsChanged", (accounts) => {
       if (accounts) {
         setAccount(accounts[0]);
         onSetIsReload(onEventListenReload);
@@ -116,7 +118,7 @@ export const WalletProvider = ({ children }) => {
         setAccount("");
       }
     });
-    currentProvider.on('chainChanged', (chainId) => {
+    currentProvider.on("chainChanged", (chainId) => {
       setChain(web3.utils.hexToNumber(chainId));
       createNftContract();
       onSetIsReload(onEventListenReload);
@@ -125,7 +127,9 @@ export const WalletProvider = ({ children }) => {
 
   const getPriceCryptoCurrency = async () => {
     return 0.0005;
-    let res = await fetch('http://rest.coinapi.io/v1/exchangerate/usd?apikey=AB5A6633-A858-4156-AE68-9F4AE466B308&filter_asset_id=ETH,AVAX,MATIC');
+    let res = await fetch(
+      "http://rest.coinapi.io/v1/exchangerate/usd?apikey=AB5A6633-A858-4156-AE68-9F4AE466B308&filter_asset_id=ETH,AVAX,MATIC"
+    );
     res = await res.json();
     let getPrice = 0;
     for (let i = 0; i < res.rates.length; i++) {
@@ -144,7 +148,7 @@ export const WalletProvider = ({ children }) => {
       try {
         setChain(chainId);
         await web3.currentProvider.request({
-          method: 'wallet_switchEthereumChain',
+          method: "wallet_switchEthereumChain",
           params: [{ chainId: Web3.utils.toHex(chainId) }],
         });
         createNftContract();
@@ -237,14 +241,16 @@ export const WalletProvider = ({ children }) => {
   const CreateSellCollection = async (
     objNFT,
     nftPrice,
-    handleSuccess = () => { },
-    handleError = () => { }
+    handleSuccess = () => {},
+    handleError = () => {}
   ) => {
     try {
       setSelectConverseNFT({ ...selectConverseNFT, approveLoading: true });
       const web3 = new Web3(window.ethereum);
       const toWei = web3.utils.toWei(nftPrice.toString(), "ether");
-      await nftContractMarketplace.methods.listItems(objNFT.edition, toWei).send({ from: account });
+      await nftContractMarketplace.methods
+        .listItems(objNFT.edition, toWei)
+        .send({ from: account });
       handleNewNotification({
         type: "success",
         title: "Success",
@@ -268,12 +274,14 @@ export const WalletProvider = ({ children }) => {
 
   const CancelSellCollection = async (
     objNFT,
-    handleSuccess = () => { },
-    handleError = () => { }
+    handleSuccess = () => {},
+    handleError = () => {}
   ) => {
     try {
       setSelectConverseNFT({ ...selectConverseNFT, approveLoading: true });
-      await nftContractMarketplace.methods.cancelListItem(objNFT.edition).send({ from: account });
+      await nftContractMarketplace.methods
+        .cancelListItem(objNFT.edition)
+        .send({ from: account });
       handleNewNotification({
         type: "success",
         title: "Success",
@@ -299,12 +307,17 @@ export const WalletProvider = ({ children }) => {
     try {
       const web3 = new Web3(window.ethereum);
       setListMarketplace({ ...listMarketplace, loading: true });
-      const getMyMarketplace = await nftContractMarketplaceList.methods.getAllMarketItems().call();
-      const newObjGetMyMarketplace = getMyMarketplace.filter((x) => x.status === "0");
+      const getMyMarketplace = await nftContractMarketplaceList.methods
+        .getAllMarketItems()
+        .call();
+      const newObjGetMyMarketplace = getMyMarketplace.filter(
+        (x) => x.status === "0"
+      );
       let objMarkets = [];
       for (var i = 0; i < newObjGetMyMarketplace.length; i++) {
-
-        const uri = await nftContractCollection.methods.tokenURI(newObjGetMyMarketplace[i].tokenId).call();
+        const uri = await nftContractCollection.methods
+          .tokenURI(newObjGetMyMarketplace[i].tokenId)
+          .call();
 
         const responseUri = await fetch(ipfsUriToHttps(uri));
 
@@ -321,32 +334,37 @@ export const WalletProvider = ({ children }) => {
           },
         ];
       }
-      setListMarketplace({ ...listMarketplace, list: objMarkets, loading: false });
-
+      setListMarketplace({
+        ...listMarketplace,
+        list: objMarkets,
+        loading: false,
+      });
     } catch (error) {
       console.log(error);
       setListMarketplace({ list: [], loading: false });
     }
-
-
   };
 
   const getMarketplaceDetail = async (id) => {
     try {
       const web3 = new Web3(window.ethereum);
       setDetailMarketplace({ detailMarketplace, loading: true });
-      const getMyMarketplace = await nftContractMarketplaceList.methods.getAllMarketItems().call();
-      const newObjGetMyMarketplace = getMyMarketplace.filter((x) => x.tokenId === id);
+      const getMyMarketplace = await nftContractMarketplaceList.methods
+        .getAllMarketItems()
+        .call();
+      const newObjGetMyMarketplace = getMyMarketplace.filter(
+        (x) => x.tokenId === id
+      );
       let objMarkets = [];
       for (var i = 0; i < newObjGetMyMarketplace.length; i++) {
-
-        const uri = await nftContractCollection.methods.tokenURI(newObjGetMyMarketplace[i].tokenId).call();
+        const uri = await nftContractCollection.methods
+          .tokenURI(newObjGetMyMarketplace[i].tokenId)
+          .call();
 
         const responseUri = await fetch(ipfsUriToHttps(uri));
 
         let objNFT = await responseUri.json();
-        objMarkets =
-        {
+        objMarkets = {
           ...objNFT,
           price: web3.utils.fromWei(newObjGetMyMarketplace[i].price, "ether"),
           owner: newObjGetMyMarketplace[i].owner,
@@ -356,13 +374,10 @@ export const WalletProvider = ({ children }) => {
         };
       }
       setDetailMarketplace({ data: objMarkets, loading: false });
-
     } catch (error) {
       console.log(error);
       setDetailMarketplace({ data: [], loading: false });
     }
-
-
   };
 
   const GetMyMarketplace = async () => {
@@ -370,11 +385,17 @@ export const WalletProvider = ({ children }) => {
       const web3 = new Web3(window.ethereum);
       setMyMarketplace({ ...myMarketplace, loading: true });
       // const getAllMarketItems = await nftContractMarketplace.methods.getAllMarketItems().call();
-      const getMyMarketplace = await nftContractMarketplace.methods.getMyMarketplace(account).call();
-      const newObjMarketplace = getMyMarketplace.filter((x) => x.tokenId !== "0");
+      const getMyMarketplace = await nftContractMarketplace.methods
+        .getMyMarketplace(account)
+        .call();
+      const newObjMarketplace = getMyMarketplace.filter(
+        (x) => x.tokenId !== "0"
+      );
       let objMarkets = [];
       for (var i = 0; i < newObjMarketplace.length; i++) {
-        const uri = await nftContractCollection.methods.tokenURI(newObjMarketplace[i].tokenId).call();
+        const uri = await nftContractCollection.methods
+          .tokenURI(newObjMarketplace[i].tokenId)
+          .call();
         const responseUri = await fetch(ipfsUriToHttps(uri));
         let objNFT = await responseUri.json();
         objMarkets = [
@@ -419,10 +440,14 @@ export const WalletProvider = ({ children }) => {
   const GetCollection = async () => {
     try {
       setMyCollection({ ...myCollection, loading: true });
-      const walletOfOwner = await nftContractCollection.methods.walletOfOwner(account).call();
+      const walletOfOwner = await nftContractCollection.methods
+        .walletOfOwner(account)
+        .call();
       let objNFTs = [];
       for (var i = 0; i < walletOfOwner.length; i++) {
-        const uri = await nftContractCollection.methods.tokenURI(walletOfOwner[i]).call();
+        const uri = await nftContractCollection.methods
+          .tokenURI(walletOfOwner[i])
+          .call();
         const responseUri = await fetch(ipfsUriToHttps(uri));
         let objNFT = await responseUri.json();
         objNFTs = [
@@ -433,7 +458,11 @@ export const WalletProvider = ({ children }) => {
           },
         ];
       }
-      setMyCollection({ ...myCollection, list: objNFTs.sort((a, b) => a.date - b.date), loading: false });
+      setMyCollection({
+        ...myCollection,
+        list: objNFTs.sort((a, b) => a.date - b.date),
+        loading: false,
+      });
     } catch (error) {
       console.log(error);
       setMyCollection({ list: [], loading: false });
@@ -442,36 +471,56 @@ export const WalletProvider = ({ children }) => {
   };
 
   const checkApproved = async (type, nftId) => {
-    const isApprove = await nftContractCollection.methods.getApproved(nftId).call();
-    let isApproveAssress;
+    const isApprove = await nftContractCollection.methods
+      .getApproved(nftId)
+      .call();
+    let isApproveAddress;
     if (type === "Converse") {
-      isApproveAssress = NFT_CONTRACTS[chain].AddressConverse;
+      isApproveAddress = NFT_CONTRACTS[chain].AddressConverse;
     }
     if (type === "Marketplace") {
-      isApproveAssress = NFT_CONTRACTS[chain].AddressMarketplace;
+      isApproveAddress = NFT_CONTRACTS[chain].AddressMarketplace;
     }
-    return (isApprove.toLowerCase() === isApproveAssress?.toLowerCase()) ? true : false;
+    return isApprove.toLowerCase() === isApproveAddress?.toLowerCase()
+      ? true
+      : false;
   };
 
-  const BuyNFT = async (objNFT, handleSuccess = () => { }, handleError = () => { }) => {
+  const BuyNFT = async (
+    objNFT,
+    handleSuccess = () => {},
+    handleError = () => {}
+  ) => {
     try {
       setSelectConverseNFT({ ...selectConverseNFT, approveLoading: true });
-      await nftContractMarketplaceList.methods.buyMarketItem(objNFT.edition).send({ from: account, value: Web3.utils.toWei(objNFT.price, "ether") });
-      setSelectConverseNFT({ ...selectConverseNFT, approve: true, approveLoading: false });
+      await nftContractMarketplaceList.methods
+        .buyMarketItem(objNFT.edition)
+        .send({
+          from: account,
+          value: Web3.utils.toWei(objNFT.price, "ether"),
+        });
+      setSelectConverseNFT({
+        ...selectConverseNFT,
+        approve: true,
+        approveLoading: false,
+      });
       handleNewNotification({
         type: "success",
-        title: 'Success',
+        title: "Success",
         message: `You Buy ${objNFT.name} Success`,
       });
       handleSuccess();
-      setListMarketplace({ ...listMarketplace, list: listMarketplace.list.filter(x => x.edition !== objNFT.edition) });
+      setListMarketplace({
+        ...listMarketplace,
+        list: listMarketplace.list.filter((x) => x.edition !== objNFT.edition),
+      });
     } catch (error) {
       console.log(error);
       setSelectConverseNFT({ ...selectConverseNFT, approveLoading: false });
       handleError();
       handleNewNotification({
         type: "error",
-        title: 'Rejected',
+        title: "Rejected",
         message: `MetaMask Signature. User denied transaction signature`,
       });
       throw new Error("Error Buy NFT");
@@ -480,25 +529,25 @@ export const WalletProvider = ({ children }) => {
 
   const ChangeConverseNFT = async (type, objNFT) => {
     setSelectConverseNFT(initiSelectNFT);
+    const bridgeFee = 0.0005;
     if (objNFT) {
       objNFT = {
         ...objNFT,
-        approve: true,
+        approve: await checkApproved(type, objNFT.edition),
         approveLoading: false,
         selected: true,
-        fee: await getPriceCryptoCurrency()
+        fee: bridgeFee,
       };
-      if (!NFT_CONTRACTS[chain].CrossChain || type === "Marketplace") {
-        objNFT = {
-          ...objNFT,
-          approve: await checkApproved(type, objNFT.edition),
-        };
-      }
       setSelectConverseNFT(objNFT);
     }
   };
 
-  const ConverseApproveNFT = async (type, objNFT, handleSuccess = () => { }, handleError = () => { }) => {
+  const ConverseApproveNFT = async (
+    type,
+    objNFT,
+    handleSuccess = () => {},
+    handleError = () => {}
+  ) => {
     try {
       setSelectConverseNFT({ ...selectConverseNFT, approveLoading: true });
       let approveAssress;
@@ -508,11 +557,17 @@ export const WalletProvider = ({ children }) => {
       if (type === "Marketplace") {
         approveAssress = NFT_CONTRACTS[chain].AddressMarketplace;
       }
-      await nftContractCollection.methods.approve(approveAssress, objNFT.edition).send({ from: account });
-      setSelectConverseNFT({ ...selectConverseNFT, approve: true, approveLoading: false });
+      await nftContractCollection.methods
+        .approve(approveAssress, objNFT.edition)
+        .send({ from: account });
+      setSelectConverseNFT({
+        ...selectConverseNFT,
+        approve: true,
+        approveLoading: false,
+      });
       handleNewNotification({
         type: "success",
-        title: 'Success',
+        title: "Success",
         message: `You Success Approve NFT`,
       });
       handleSuccess();
@@ -522,18 +577,26 @@ export const WalletProvider = ({ children }) => {
       handleError();
       handleNewNotification({
         type: "error",
-        title: 'Rejected',
+        title: "Rejected",
         message: `MetaMask Signature. User denied transaction signature`,
       });
       throw new Error("Object");
     }
   };
 
-  const ConverseNFT = async (objConverse, handleSuccess = () => { }, handleError = () => { }) => {
+  const ConverseNFT = async (
+    objConverse,
+    handleSuccess = () => {},
+    handleError = () => {}
+  ) => {
     try {
       const web3 = new Web3(window.ethereum);
       setNftConverse({ ...nftConverse, loading: true });
-      let arr = [objConverse.edition, NFT_CONTRACTS[objConverse.to].Icon, account];
+      let arr = [
+        objConverse.edition,
+        NFT_CONTRACTS[objConverse.to].Icon,
+        account,
+      ];
       if (!NFT_CONTRACTS[chain].CrossChain) {
         arr = [NFT_ROPSTEN_ADDRESS, ...arr];
       }
@@ -544,11 +607,22 @@ export const WalletProvider = ({ children }) => {
       if (NFT_CONTRACTS[chain].CrossChain) {
         fixGas = "300000000000000000";
       }
-      await nftContractConverse.methods.sendNFT(...arr).send({ from: account, value: fixGas });
+      // get gas price
+      const gasPrice = await getGasPrice(
+        NFT_CONTRACTS[chain].Name,
+        NFT_CONTRACTS[objConverse.to].Name,
+        ADDRESS_ZERO,
+        NFT_CONTRACTS[chain].Token
+      );
+
+      await nftContractConverse.methods
+        .bridge(objConverse.to, objConverse.edition, fee, "0x00")
+        .send({ from: account, value: fixGas, gasPrice });
+
       setNftConverse({ ...nftConverse, loading: false });
       handleNewNotification({
         type: "success",
-        title: 'Success',
+        title: "Success",
         message: `You Success Transfer NFT From ${NFT_CONTRACTS[chain].Label} To ${NFT_CONTRACTS[objConverse.to].Label}`,
       });
       setSelectConverseNFT(initiSelectNFT);
@@ -560,7 +634,7 @@ export const WalletProvider = ({ children }) => {
       handleError();
       handleNewNotification({
         type: "error",
-        title: 'Rejected',
+        title: "Rejected",
         message: `MetaMask Signature. User denied transaction signature`,
       });
       throw new Error("Object");
@@ -569,8 +643,15 @@ export const WalletProvider = ({ children }) => {
 
   const createNftContract = async () => {
     // init ropsten provider for get data
-    const ropstenProvider = new Web3(new Web3.providers.WebsocketProvider('wss://ropsten.infura.io/ws/v3/1e94515fc5874c4291a6491caeaff8f1'));
-    const coreContract = new ropstenProvider.eth.Contract(NFT_CONTRACT_ABI, NFT_ROPSTEN_ADDRESS);
+    const ropstenProvider = new Web3(
+      new Web3.providers.WebsocketProvider(
+        "wss://ropsten.infura.io/ws/v3/1e94515fc5874c4291a6491caeaff8f1"
+      )
+    );
+    const coreContract = new ropstenProvider.eth.Contract(
+      NFT_CONTRACT_ABI,
+      NFT_ROPSTEN_ADDRESS
+    );
 
     const owner = await coreContract.methods.owner().call();
     // init current provider
@@ -578,30 +659,32 @@ export const WalletProvider = ({ children }) => {
 
     // get contract by network id
     const chain = await getNetworkId();
-    const nftContract = new web3.eth.Contract(NFT_CONTRACTS[chain].ABI, NFT_CONTRACTS[chain].Address);
-    let contractCollection;
-    const contractConverse = new web3.eth.Contract(NFT_CONTRACTS[chain].ABIConverse, NFT_CONTRACTS[chain].AddressConverse);
-    const contractMarketplace = new web3.eth.Contract(NFT_CONTRACTS[chain].ABIMarketplace, NFT_CONTRACTS[chain].AddressMarketplace);
-    const contractMarketplaceList = new web3.eth.Contract(NFT_CONTRACTS[chain].ABIMarketplace, NFT_CONTRACTS[chain].AddressMarketplace);
+    const nftContract = new web3.eth.Contract(
+      NFT_CONTRACTS[chain].ABI,
+      NFT_CONTRACTS[chain].Address
+    );
+    const contractConverse = new web3.eth.Contract(
+      NFT_CONTRACTS[chain].ABIConverse,
+      NFT_CONTRACTS[chain].AddressConverse
+    );
+    const contractMarketplace = new web3.eth.Contract(
+      NFT_CONTRACTS[chain].ABIMarketplace,
+      NFT_CONTRACTS[chain].AddressMarketplace
+    );
+    const contractMarketplaceList = new web3.eth.Contract(
+      NFT_CONTRACTS[chain].ABIMarketplace,
+      NFT_CONTRACTS[chain].AddressMarketplace
+    );
+    const contractCollection = new web3.eth.Contract(
+      NFT_CONTRACTS[chain].ABICollection,
+      NFT_CONTRACTS[chain].AddressCollection
+    );
 
-    switch (chain) {
-      case ROPSTEN_CHAIN:
-        contractCollection = new web3.eth.Contract(NFT_CONTRACTS[chain].ABI, NFT_CONTRACTS[chain].Address);
-        break;
-      case AVALANCHE_FUJI_CHAIN:
-        contractCollection = new web3.eth.Contract(NFT_CONTRACTS[chain].ABIConverse, NFT_CONTRACTS[chain].AddressConverse);
-        break;
-      case POLYGON_MUMBAI_CHAIN:
-        contractCollection = new web3.eth.Contract(NFT_CONTRACTS[chain].ABIConverse, NFT_CONTRACTS[chain].AddressConverse);
-        break;
-      default:
-        console.log("not supported chain");
-        handleNewNotification({ type: "error", message: "Not supported chain" });
-        break;
-    }
     setCoreContract(coreContract); // ropsten chain
     setNftContract(nftContract);
-    setWethContract(new web3.eth.Contract(WETH_CONTRACT_ABI, WETH_CONTRACT_ADDRESS[chain]));
+    setWethContract(
+      new web3.eth.Contract(WETH_CONTRACT_ABI, WETH_CONTRACT_ADDRESS[chain])
+    );
     setNftContractMarketplace(contractMarketplace);
     setNftContractConverse(contractConverse);
     setNftContractCollection(contractCollection);
@@ -610,26 +693,43 @@ export const WalletProvider = ({ children }) => {
   };
 
   const checkConnectChain = () => {
-    if (chain === ROPSTEN_CHAIN || chain === AVALANCHE_FUJI_CHAIN || chain === POLYGON_MUMBAI_CHAIN) {
+    if (
+      chain === ROPSTEN_CHAIN ||
+      chain === AVALANCHE_FUJI_CHAIN ||
+      chain === POLYGON_MUMBAI_CHAIN
+    ) {
       setIsConnectChain(1);
     } else {
       setIsConnectChain("");
     }
-
   };
 
   // mint page
   const initMintPage = async () => {
     try {
       setLoadingMintPage(true);
-      const ropstenProvider = new Web3(new Web3.providers.WebsocketProvider('wss://ropsten.infura.io/ws/v3/1e94515fc5874c4291a6491caeaff8f1'));
-      const coreContract = new ropstenProvider.eth.Contract(NFT_CONTRACT_ABI, NFT_ROPSTEN_ADDRESS);
+      const ropstenProvider = new Web3(
+        new Web3.providers.WebsocketProvider(
+          "wss://ropsten.infura.io/ws/v3/1e94515fc5874c4291a6491caeaff8f1"
+        )
+      );
+      const coreContract = new ropstenProvider.eth.Contract(
+        NFT_CONTRACT_ABI,
+        NFT_ROPSTEN_ADDRESS
+      );
       const mintCost = await coreContract.methods.cost().call();
       const maxSupply = await coreContract.methods.maxSupply().call();
       const totalSupply = await coreContract.methods.totalSupply().call();
 
-      const avalancheProvider = new Web3(new Web3.providers.HttpProvider('https://api.avax-test.network/ext/bc/C/rpc'));
-      const crossContract = new avalancheProvider.eth.Contract(NFT_CROSS_CONTRACT_ABI, NFT_AVALANHCE_FUJI_ADDRESS);
+      const avalancheProvider = new Web3(
+        new Web3.providers.HttpProvider(
+          "https://api.avax-test.network/ext/bc/C/rpc"
+        )
+      );
+      const crossContract = new avalancheProvider.eth.Contract(
+        NFT_CROSS_CONTRACT_ABI,
+        NFT_AVALANHCE_FUJI_ADDRESS
+      );
       const feeCost = await crossContract.methods.costNFT().call();
 
       let cost;
@@ -644,23 +744,29 @@ export const WalletProvider = ({ children }) => {
           cost = await nftContract.methods.costNFT().call();
           break;
         default:
-          handleNewNotification({ type: "error", message: "Not supported chain" });
+          handleNewNotification({
+            type: "error",
+            message: "Not supported chain",
+          });
           break;
       }
 
       setMintCost({
         token: NFT_CONTRACTS[chain].MintCost,
         valueEth: Web3.utils.fromWei(cost, "ether"),
-        value: Number(cost)
+        value: Number(cost),
       });
       setMaxSupply(maxSupply);
       setTotalSupply(totalSupply);
       setCost({
         mintCost: Web3.utils.fromWei(mintCost, "ether"),
-        feeCost: Web3.utils.fromWei(Web3.utils.toBN(feeCost).sub(Web3.utils.toBN(mintCost)), "ether")
+        feeCost: Web3.utils.fromWei(
+          Web3.utils.toBN(feeCost).sub(Web3.utils.toBN(mintCost)),
+          "ether"
+        ),
       });
     } catch (error) {
-      console.log('initMintPage error', error);
+      console.log("initMintPage error", error);
     } finally {
       setLoadingMintPage(false);
     }
@@ -669,40 +775,61 @@ export const WalletProvider = ({ children }) => {
   const mintNft = async (mintAmount = 0) => {
     try {
       setMintProcessing(true);
-      // mock calculate estimate gasPrice. eth won't manual set gas price, cross chain must spare for axelar service
-      const fixGas = NFT_CONTRACTS[chain].CrossChain ? 3 * (10 ** 11).toString() : null;
       // calculate mint cost
       const tx = {
         from: account,
         // gas: (285000 * mintAmount).toString(),
-        gasPrice: fixGas,
+        // gasPrice: (285000 * mintAmount).toString(),
         value: Web3.utils.numberToHex(mintCost.value * mintAmount),
       };
       // case cross chain mint
       if (NFT_CONTRACTS[chain].CrossChain) {
         // call approve WETH abi
-        const allowance = await wethContract.methods.allowance(account, NFT_CONTRACTS[chain].Address).call();
+        const allowance = await wethContract.methods
+          .allowance(account, NFT_CONTRACTS[chain].Address)
+          .call();
         if (allowance <= 0) {
           // if no rules then user can mint all nft
-          const maxSupply = await coreContract.methods.maxSupply().call();
-          await wethContract.methods.approve(
-            NFT_CONTRACTS[chain].Address,
-            Web3.utils.numberToHex(mintCost.value * maxSupply)
-          ).send({ from: account });
+          await wethContract.methods
+            .approve(
+              NFT_CONTRACTS[chain].Address,
+              Web3.utils.numberToHex(mintCost.value * maxSupply)
+            )
+            .send({ from: account });
         }
         // encode params
         const web3 = new Web3(Web3.givenProvider || detectCurrentProvider());
-        const encodePayload = web3.eth.abi.encodeParameters(['string', 'address'], ['Ethereum', account]);
-        // mint
-        await nftContract.methods.mint(mintAmount, encodePayload).send(tx);
+        const encodePayload = web3.eth.abi.encodeParameters(
+          ["string", "address"],
+          ["Ethereum", account]
+        );
+        // get gas price from axelar api
+        const gasPrice = await getGasPrice(
+          NFT_CONTRACTS[chain].Name,
+          "Ethereum",
+          ADDRESS_ZERO,
+          NFT_CONTRACTS[chain].Token
+        );
+
+        await nftContract.methods
+          .mint(mintAmount, encodePayload)
+          .send({ ...tx, gasPrice });
       } else {
         await nftContract.methods.mint(mintAmount).send(tx);
       }
-      handleNewNotification({ type: "success", title: "Mint success", message: "Please wait a few minutes for minting precess." });
+      handleNewNotification({
+        type: "success",
+        title: "Mint success",
+        message: "Please wait a few minutes for minting precess.",
+      });
       return { success: true };
     } catch (error) {
       console.log({ error });
-      handleNewNotification({ type: "error", title: "Mint fail", message: error.message });
+      handleNewNotification({
+        type: "error",
+        title: "Mint fail",
+        message: error.message,
+      });
       return { success: false };
     } finally {
       setMintProcessing(false);
@@ -710,7 +837,10 @@ export const WalletProvider = ({ children }) => {
   };
 
   const calculateMintCost = (mintCost, mintAmount) => {
-    return Web3.utils.fromWei(Web3.utils.toBN(mintCost).mul(Web3.utils.toBN(mintAmount)), "ether");
+    return Web3.utils.fromWei(
+      Web3.utils.toBN(mintCost).mul(Web3.utils.toBN(mintAmount)),
+      "ether"
+    );
   };
   // mint page
 

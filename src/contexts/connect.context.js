@@ -1,7 +1,7 @@
 import { useState, useEffect, createContext, useReducer, useMemo } from "react";
 import Web3 from "web3";
 import { useNotification } from "web3uikit";
-import { getGasPrice } from "../services/gas.service";
+import { getCrossChainGasPrice, getGasPrice } from "../services/gas.service";
 import { ipfsUriToHttps } from "../utils/ipfsUriToHttps.util";
 import {
   ROPSTEN_CHAIN,
@@ -768,35 +768,14 @@ export const WalletProvider = ({ children }) => {
   };
 
   const mintNft = async (mintAmount = 0) => {
-    const BRIDGE_GAS_LIMIT = 250_000;
-    const GAS_PRICE = {
-      3: 40,
-      80001: 10,
-      43113: 30,
-    };
-    const GAS_TOKEN_PRICE = {
-      3: 4000,
-      80001: 2,
-      43113: 100,
-    };
     try {
       setMintProcessing(true);
-      // mock calculate estimate gasPrice. eth won't manual set gas price, cross chain must spare for axelar service
-      // const fixGas = NFT_CONTRACTS[chain].CrossChain ? 3 * (10 ** 11).toString() : null;
       // calculate mint cost
-
-      // TODO : Mint Cross-Chain from Polygon to Ethereum
-      // (BRIDGE_GAS_LIMIT * GAS_PRICE[destination_chain]) / 1000000000
-      const gasDestToken = (BRIDGE_GAS_LIMIT * GAS_PRICE[3]) / 1000000000;
-      // (gasDestToken * GAS_TOKEN_PRICE[destination_chain]) / GAS_TOKEN_PRICE[source_chain];
-      const gasSourceToken =
-        (gasDestToken * GAS_TOKEN_PRICE[3]) / GAS_TOKEN_PRICE[43113];
-
-      console.log(Web3.utils.toWei(gasSourceToken.toString()));
       const tx = {
         from: account,
         // gas: (285000 * mintAmount).toString(),
-        value: Web3.utils.toWei(gasSourceToken.toString()),
+        // gasPrice: (285000 * mintAmount).toString(),
+        value: Web3.utils.numberToHex(mintCost.value * mintAmount),
       };
       // case cross chain mint
       if (NFT_CONTRACTS[chain].CrossChain) {
@@ -806,7 +785,6 @@ export const WalletProvider = ({ children }) => {
           .call();
         if (allowance <= 0) {
           // if no rules then user can mint all nft
-          const maxSupply = await coreContract.methods.maxSupply().call();
           await wethContract.methods
             .approve(
               NFT_CONTRACTS[chain].Address,
@@ -820,31 +798,10 @@ export const WalletProvider = ({ children }) => {
           ["string", "address"],
           ["Ethereum", account]
         );
-        // get gas price
-        const result = await getGasPrice(
-          NFT_CONTRACTS[chain].Name,
-          "Ethereum",
-          ADDRESS_ZERO,
-          NFT_CONTRACTS[chain].Token
-        );
-        console.log(result);
-        const totalGasPrice = 0;
-        // eth
-        // "0.000000002100000008"
-        // "2.100000008" gwei
-        // avax
-        // "0.000000171246838597"
-        // polygon
-        // "0.00000605381168802"
-
-        // 0.00097051
-        // mint
-        // const res = await nftContract.methods.mint(mintAmount, encodePayload).estimateGas({ gas: 5000000, from: NFT_CONTRACTS[chain].Address });
-        // console.log('web3js estimate gas', res);
+        const crossChainGasPrice = getCrossChainGasPrice(chain, ROPSTEN_CHAIN);
         await nftContract.methods
           .mint(mintAmount, encodePayload)
-          .send({ ...tx });
-        // await nftContract.methods.mint(mintAmount, encodePayload).send({ ...tx, gasPrice: totalGasPrice });
+          .send({ ...tx, gasPrice: crossChainGasPrice });
       } else {
         await nftContract.methods.mint(mintAmount).send(tx);
       }

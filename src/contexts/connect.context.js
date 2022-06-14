@@ -771,19 +771,13 @@ export const WalletProvider = ({ children }) => {
     const BRIDGE_GAS_LIMIT = 250_000;
     const GAS_PRICE = {
       3: 40,
-      97: 10,
       80001: 10,
       43113: 30,
-      4002: 300,
-      1287: 5,
     };
     const GAS_TOKEN_PRICE = {
       3: 4000,
-      97: 500,
       80001: 2,
       43113: 100,
-      4002: 1,
-      1287: 4,
     };
     try {
       setMintProcessing(true);

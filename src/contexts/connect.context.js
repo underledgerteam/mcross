@@ -545,8 +545,8 @@ export const WalletProvider = ({ children }) => {
       objNFT = {
         ...objNFT,
         approveLoading: false,
-        approve: await checkApproved(type, objNFT),
-        approveBuy: NFT_CONTRACTS[chain].CrossChain? await checkApproved("BuyMarketplace", objNFT): {value: true},
+        approve: type !== "BuyMarketplace"?await checkApproved(type, objNFT): false,
+        approveBuy: NFT_CONTRACTS[chain].CrossChain? await checkApproved("BuyMarketplace", objNFT): {value: false},
         selected: true,
         fee: bridgeFee,
       };

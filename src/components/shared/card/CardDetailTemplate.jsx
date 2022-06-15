@@ -2,8 +2,8 @@ import { Fragment, useContext } from "react";
 import { CryptoLogos } from "web3uikit";
 
 import CardContainerTemplate from "./CardContainerTemplate";
+import NftImage from "../../shared/NftImage";
 import { shortenAddress } from "../../../utils/shortenAddress.util";
-import { ipfsUriToHttps } from "../../../utils/ipfsUriToHttps.util";
 
 import { Web3Provider } from "../../../contexts/connect.context";
 
@@ -23,7 +23,11 @@ const CardDetailTemplate = ({ name, image, chain, nft_owner, nft_creator, descri
         >
           <Fragment>
             <div className="flex justify-center">
-              <img className="w-48 h-48 lg:w-72 lg:h-72 object-cover border-8 border-purple-500" src={image && ipfsUriToHttps(image)} alt={name} />
+              <NftImage
+                className="w-48 h-48 lg:w-72 lg:h-72 object-cover border-8 border-purple-500"
+                src={image}
+                alt={name}
+              />
             </div>
             <div className="grid justify-items-center">
               <h2 className="text-2xl font-semibold mt-2">Chain : {nftContractAddress[chain]?.ShortLabel}</h2>
@@ -105,7 +109,7 @@ const CardDetailTemplate = ({ name, image, chain, nft_owner, nft_creator, descri
                 Back
               </button>
             </div>
-            { nft_owner?.toLowerCase() !== account?.toLowerCase() && (
+            {nft_owner?.toLowerCase() !== account?.toLowerCase() && (
               <div className="w-56">
                 <button
                   type="button"
@@ -114,9 +118,9 @@ const CardDetailTemplate = ({ name, image, chain, nft_owner, nft_creator, descri
                 >
                   {textAction}
                 </button>
-            </div>
-            ) }
-            
+              </div>
+            )}
+
           </div>
         </Fragment>
       </CardContainerTemplate>

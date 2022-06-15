@@ -1,6 +1,6 @@
-import React, { useContext }  from "react";
+import React, { useContext } from "react";
 import { Icon, CryptoLogos } from "web3uikit";
-import { ipfsUriToHttps } from "../../../utils/ipfsUriToHttps.util";
+import NftImage from "../../shared/NftImage";
 import { shortenAddress } from "../../../utils/shortenAddress.util";
 import { Web3Provider } from "../../../contexts/connect.context";
 import { NFT_CONTRACTS as nftContractAddress } from "../../../utils/constants";
@@ -13,7 +13,12 @@ const CardListTemplate = ({ id, name, owner, textAction, price, image, rarity, c
   };
   return (
     <div className="w-full rounded overflow-hidden shadow-md hover:shadow-xl bg-[#292929] relative group">
-      <img className="w-full cursor-pointer" src={image && ipfsUriToHttps(image)} alt={name} onClick={onClick} />
+      <NftImage
+        className="w-full cursor-pointer"
+        src={image}
+        alt={name}
+        onClick={onClick}
+      />
       {owner && (
         <div className="flex justify-center px-3 py-3 bg-[#C0C9F6]/30">
           <Icon
@@ -45,14 +50,14 @@ const CardListTemplate = ({ id, name, owner, textAction, price, image, rarity, c
                   <CryptoLogos
                     chain={nftContractAddress[chainId]?.Icon.toLowerCase()}
                     size="28px"
-                  /> 
-                  <div className="ml-2">{price} { nftContractAddress[chainId]?.MintCost }</div>
+                  />
+                  <div className="ml-2">{price} {nftContractAddress[chainId]?.MintCost}</div>
                 </div>
               </div>
             </div>
           </div>
         )}
-        { ((owner && account?.toLowerCase() !== owner?.toLowerCase()) || !owner) && (
+        {((owner && account?.toLowerCase() !== owner?.toLowerCase()) || !owner) && (
           <div className="mt-5">
             <button
               className={`w-full font-bold py-3 px-12 rounded bg-gradient-to-r ${colorButton[(sell) ? "sell" : "buy"]} z-50`}
@@ -61,7 +66,7 @@ const CardListTemplate = ({ id, name, owner, textAction, price, image, rarity, c
               {textAction}
             </button>
           </div>
-        ) }
+        )}
       </div>
     </div >
   );

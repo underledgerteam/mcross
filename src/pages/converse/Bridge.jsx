@@ -4,9 +4,9 @@ import { CryptoLogos, Loading } from "web3uikit";
 
 import { Web3Provider } from "../../contexts/connect.context";
 import Title from "../../components/shared/Title";
+import NftImage from "../../components/shared/NftImage";
 import CardContainerTemplate from "../../components/shared/card/CardContainerTemplate";
 import { shortenAddress } from "../../utils/shortenAddress.util";
-import { ipfsUriToHttps } from "../../utils/ipfsUriToHttps.util";
 
 import { NFT_CONTRACTS as nftContractAddress, NFT_DEFAULT_CHAIN } from "../../utils/constants";
 
@@ -161,9 +161,9 @@ const Bridge = () => {
                       </div>
 
                       <div className="flex justify-center mt-5">
-                        <img
+                        <NftImage
                           className="w-48 h-48 lg:w-72 lg:h-72 object-cover border-4 border-purple-500"
-                          src={ipfsUriToHttps(selectConverseNFT?.image)}
+                          src={selectConverseNFT?.image}
                           alt="selected_nft"
                         />
                       </div>

@@ -327,6 +327,7 @@ export const WalletProvider = ({ children }) => {
           ...objMarkets,
           {
             ...objNFT,
+            image: ipfsUriToHttps(objNFT.image),
             price: web3.utils.fromWei(newObjGetMyMarketplace[i].price, "ether"),
             owner: newObjGetMyMarketplace[i].owner,
             nftContract: newObjGetMyMarketplace[i].nftContract,
@@ -367,6 +368,7 @@ export const WalletProvider = ({ children }) => {
         let objNFT = await responseUri.json();
         objMarkets = {
           ...objNFT,
+          image: ipfsUriToHttps(objNFT.image),
           price: web3.utils.fromWei(newObjGetMyMarketplace[i].price, "ether"),
           owner: newObjGetMyMarketplace[i].owner,
           nftContract: newObjGetMyMarketplace[i].nftContract,
@@ -405,6 +407,7 @@ export const WalletProvider = ({ children }) => {
           ...objMarkets,
           {
             ...objNFT,
+            image: ipfsUriToHttps(objNFT.image),
             price: web3.utils.fromWei(newObjMarketplace[i].price, "ether"),
             owner: newObjMarketplace[i].owner,
             nftContract: newObjMarketplace[i].nftContract,
@@ -430,7 +433,11 @@ export const WalletProvider = ({ children }) => {
       const objNFT = await responseUri.json();
       setMyCollectionById({
         ...myCollectionById,
-        data: { ...objNFT, owner: owner },
+        data: {
+          ...objNFT,
+          image: ipfsUriToHttps(objNFT.image),
+          owner: owner
+        },
         loading: false,
       });
     } catch (error) {
@@ -457,6 +464,7 @@ export const WalletProvider = ({ children }) => {
           ...objNFTs,
           {
             ...objNFT,
+            image: ipfsUriToHttps(objNFT.image),
             jsonUri: uri,
           },
         ];

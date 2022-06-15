@@ -105,7 +105,7 @@ const CardDetailTemplate = ({ name, image, chain, nft_owner, nft_creator, descri
                 Back
               </button>
             </div>
-            { nft_owner !== account && (
+            { nft_owner?.toLowerCase() !== account?.toLowerCase() && (
               <div className="w-56">
                 <button
                   type="button"

@@ -8,7 +8,7 @@ import Title from "../../components/shared/Title";
 import CardContainerTemplate from "../../components/shared/card/CardContainerTemplate";
 import CardListTemplate from "../../components/shared/card/CardListTemplate";
 import ModalSell from "../../components/profile/ModalSell";
-import ModalCancelSell from "../../components/profile/ModalCancelSell";
+import ModalConfirm from "../../components/shared/ModalConfirm";
 
 import { shortenAddress } from "../../utils/shortenAddress.util";
 
@@ -248,7 +248,6 @@ const ProfilePage = () => {
                             image={item.image}
                             rarity={'Common'}
                             chain={nftContractAddress[chain]?.ShortLabel}
-                            owner={item.owner}
                             textAction={`Sell ${item.name}`}
                             onClick={() => handleClickName(item.edition, false)}
                             onClickAction={() => onOpenModalSell(item)}
@@ -284,7 +283,6 @@ const ProfilePage = () => {
                             image={item.image}
                             rarity={'Common'}
                             chain={nftContractAddress[chain]?.ShortLabel}
-                            owner={item.owner}
                             textAction={`Cancel Sell`}
                             sell={true}
                             onClick={() => handleClickName(item.edition, true)}
@@ -327,7 +325,12 @@ const ProfilePage = () => {
         )}
 
         {openModalCancelSell && (
-          <ModalCancelSell
+          <ModalConfirm
+            iconColor="text-red-500"
+            title="Are you sure?"
+            desc={`Do you really want to cancel sale NFT ${selectConverseNFT?.name} ?`}
+            textAction="Cancel Sell"
+            buttonColor="btn-cancel-sell"
             objNFT={selectConverseNFT}
             onConfirm={onConfirmCancelSell}
             onClose={onCloseModalCancelSell}

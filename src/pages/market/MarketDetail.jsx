@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useContext } from "react";
+import { Fragment, useEffect, useContext, useState } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { Loading } from "web3uikit";
 
@@ -7,6 +7,9 @@ import { Web3Provider } from "../../contexts/connect.context";
 import Title from "../../components/shared/Title";
 
 import CardDetailTemplate from "../../components/shared/card/CardDetailTemplate";
+import ModalConfirm from "../../components/shared/ModalConfirm";
+import { NFT_CONTRACTS as nftContractAddress } from "../../utils/constants";
+import { numberToBigNumber } from "../../utils/calculator.util"; 
 
 const MarketDetail = () => {
   const params = useParams();
@@ -21,7 +24,10 @@ const MarketDetail = () => {
     ConnectedWallet,
     GetByIdCollection,
     getMarketplaceDetail,
-    detailMarketplace } = useContext(Web3Provider);
+    detailMarketplace,
+    BuyNFT
+  } = useContext(Web3Provider);
+  const [openModalBuyConfirm, setOpenModalBuyConfirm] = useState(false);
   const onHistoryBack = () => {
     if(location?.state?.isMyMarket){
       return navigate("/profile");
@@ -29,9 +35,20 @@ const MarketDetail = () => {
     navigate("/market");
   };
   const onOpenModal = () => {
-    console.log(1);
+    setOpenModalBuyConfirm(true);
   };
-
+  const onBuyConfirm = (objNFT) => {
+    BuyNFT(objNFT,
+      ()=> { 
+        setOpenModalBuyConfirm(false); 
+        navigate("/market"); 
+      },
+      ()=> {}
+    );
+  };
+  const onCloseModalBuyConfirm = () => {
+    setOpenModalBuyConfirm(false);
+  };
   useEffect(() => {
     if (account && nftContractCollection) {
       GetByIdCollection(params.id);
@@ -76,6 +93,20 @@ const MarketDetail = () => {
           )
         )}
       </div>
+      {openModalBuyConfirm && (
+        <ModalConfirm
+          iconColor="text-purple-500"
+          title={detailMarketplace?.data?.approveBuy?.value? "Confirm Buy NFT": "Approve WETH"}
+          desc={detailMarketplace?.data?.approveBuy?.value? 
+            `Are you sure to Buy ${detailMarketplace?.data?.name} with ${detailMarketplace?.data?.price} ${nftContractAddress[chain]?.MintCost}?`:
+            `You Approve ${detailMarketplace?.data?.approveBuy?.allowance} WETH\n You must approve an additional ${numberToBigNumber(detailMarketplace?.data?.price).minus(numberToBigNumber(detailMarketplace?.data?.approveBuy?.allowance)).toString()} WETH\n*Approval will increase by 50 WETH per time.`}
+          textAction={detailMarketplace?.data?.approveBuy?.value? "Confirm Buy": `Approve 50 WETH`}
+          buttonColor="btn-confirm-sell"
+          objNFT={detailMarketplace?.data}
+          onConfirm={onBuyConfirm}
+          onClose={onCloseModalBuyConfirm}
+        />
+      )}
     </Fragment>
   );
 };

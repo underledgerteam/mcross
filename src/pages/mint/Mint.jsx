@@ -6,16 +6,21 @@ import Title from "../../components/shared/Title";
 import CardContainerTemplate from "../../components/shared/card/CardContainerTemplate";
 import { AVALANCHE_FUJI_CHAIN, POLYGON_MUMBAI_CHAIN, NFT_CONTRACTS, NFT_DEFAULT_CHAIN } from "../../utils/constants";
 const Mint = () => {
-  const { account, ConnectedWallet, mintNft, mintProcessing, mintCost, calculateMintCost, cost, chain, checkConnectChain, isConnectChain, ChangeChain } = useContext(Web3Provider);
+  const {
+    account, nftContract, ConnectedWallet, loadingMintPage, mintProcessing, mintCost, cost, chain, isConnectChain, maxSupply, totalSupply,
+    initMintPage, mintNft, calculateMintCost, checkConnectChain, ChangeChain
+  } = useContext(Web3Provider);
   const { token, value } = mintCost;
-  const [mintAmount, setMintAmount] = useState(1);
   const { mintCost: valueEth, feeCost } = cost;
+  const [mintAmount, setMintAmount] = useState(1);
 
   useEffect(() => {
     checkConnectChain();
-  });
+    if (account && nftContract) {
+      initMintPage();
+    }
+  }, [account, nftContract]);
 
-  const nftQty = "1,000";
   // func
   const mint = async () => {
     const { success } = await mintNft(mintAmount);
@@ -49,13 +54,13 @@ const Mint = () => {
             Mint simplifies the experience for brands to sell NFTs, launch branded marketplaces, and provide seamless transactions, interactions, and utility for collectors.
           </p>
           <p className="text-white font-semibold text-sm md:text-md lg:text-lg mb-4">
-            If you Mint NFT with Ropsten Chain, You can pay Ethereum cost {valueEth} ETH per Mint.
+            If you Mint NFT with Ropsten Chain, You can pay Ethereum cost {valueEth || "..."} ETH per Mint.
           </p>
           <p className="text-white font-semibold text-sm md:text-md lg:text-lg mb-4">
-            but You Mint NFT with Other Chain, You can pay WETH cost {valueEth} WETH and extra charged fee {feeCost} WETH per Mint.
+            but You Mint NFT with Other Chain, You can pay WETH cost {valueEth || "..."} WETH and extra charged fee {feeCost} WETH per Mint.
           </p>
           <p className="text-white font-bold text-sm md:text-md lg:text-lg">
-            Limited {nftQty} NFT only.
+            Limited {`${totalSupply} / ${maxSupply}`} NFT only.
           </p>
         </div>
 
@@ -92,48 +97,60 @@ const Mint = () => {
                     size="7.5rem"
                   />
                 </div>
-                <h1 className="text-white font-bold text-3xl md:text-5xl mb-8">
-                  Mint Collection
-                </h1>
-                <div className="flex flex-col p-0 lg:px-12">
-                  <div className="inline-block relative w-full text-gray-700 font-bold text-lg lg:text-xl mb-4">
-                    <select
-                      name="qty"
-                      className="block appearance-none w-full bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none focus:shadow-outline"
-                      defaultValue={mintAmount}
-                      onChange={(e) => setMintAmount(e.target.value)}
-                      disabled={mintProcessing}
-                    >
-                      {createSelectOptions()}
-                    </select>
-                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-                      <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" /></svg>
-                    </div>
-                  </div>
-                  <div className="flex justify-between font-semibold text-md md:text-lg lg:text-xl mb-4">
-                    <div>{`Mint fee:`}</div>
-                    <div>{`${valueEth} ${token} / Mint`}</div>
-                  </div>
-                  {chain === AVALANCHE_FUJI_CHAIN || chain === POLYGON_MUMBAI_CHAIN ?
-                    (
-                      <div className="flex justify-between font-semibold text-md md:text-lg lg:text-xl mb-4">
-                        <div>{`Other Chain fee:`}</div>
-                        <div>{`${feeCost} ${token} / Mint`}</div>
+                {loadingMintPage ? (
+                  <div className="flex justify-center mt-[5rem]">
+                    <Loading
+                      fontSize={20}
+                      size={100}
+                      spinnerColor="#fff"
+                      text="Loading...."
+                    />
+                  </div>) : (
+                  <>
+                    <h1 className="text-white font-bold text-3xl md:text-5xl mb-8">
+                      Mint Collection
+                    </h1>
+                    <div className="flex flex-col p-0 lg:px-12">
+                      <div className="inline-block relative w-full text-gray-700 font-bold text-lg lg:text-xl mb-4">
+                        <select
+                          name="qty"
+                          className="block appearance-none w-full bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none focus:shadow-outline"
+                          defaultValue={mintAmount}
+                          onChange={(e) => setMintAmount(e.target.value)}
+                          disabled={mintProcessing}
+                        >
+                          {createSelectOptions()}
+                        </select>
+                        <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                          <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" /></svg>
+                        </div>
                       </div>
-                    ) :
-                    (null)
-                  }
-                  <div className="flex justify-between font-bold text-md md:text-lg lg:text-xl mb-4">
-                    <div className="underline">{`Total fee:`}</div>
-                    <div>{`${calculateMintCost(value, mintAmount)} ${token}`}</div>
-                  </div>
-                  <button type="button" className="w-full px-10 py-4 btn-home " disabled={mintProcessing} onClick={() => mint()}>
-                    <div className="flex justify-center gap-2">
-                      {mintProcessing ? <Loading fontSize={20} size={20} direction="right" /> : null}
-                      Mint
+                      <div className="flex justify-between font-semibold text-md md:text-lg lg:text-xl mb-4">
+                        <div>{`Mint fee:`}</div>
+                        <div>{`${valueEth} ${token} / Mint`}</div>
+                      </div>
+                      {chain === AVALANCHE_FUJI_CHAIN || chain === POLYGON_MUMBAI_CHAIN ?
+                        (
+                          <div className="flex justify-between font-semibold text-md md:text-lg lg:text-xl mb-4">
+                            <div>{`Other Chain fee:`}</div>
+                            <div>{`${feeCost} ${token} / Mint`}</div>
+                          </div>
+                        ) :
+                        (null)
+                      }
+                      <div className="flex justify-between font-bold text-md md:text-lg lg:text-xl mb-4">
+                        <div className="underline">{`Total fee:`}</div>
+                        <div>{`${calculateMintCost(value, mintAmount)} ${token}`}</div>
+                      </div>
+                      <button type="button" className="w-full px-10 py-4 btn-home " disabled={mintProcessing} onClick={() => mint()}>
+                        <div className="flex justify-center gap-2">
+                          {mintProcessing ? <Loading fontSize={20} size={20} direction="right" /> : null}
+                          Mint
+                        </div>
+                      </button>
                     </div>
-                  </button>
-                </div>
+                  </>
+                )}
               </Fragment>
             </CardContainerTemplate>
           )

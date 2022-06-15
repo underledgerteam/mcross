@@ -116,11 +116,11 @@ const Market = () => {
       {openModalBuyConfirm && (
         <ModalConfirm
           iconColor="text-purple-500"
-          title={selectConverseNFT?.approve?.value? "Confirm Buy NFT": "Approve WETH"}
-          desc={selectConverseNFT?.approve?.value? 
+          title={selectConverseNFT?.approveBuy?.value? "Confirm Buy NFT": "Approve WETH"}
+          desc={selectConverseNFT?.approveBuy?.value? 
             `Are you sure to Buy ${selectConverseNFT?.name} with ${selectConverseNFT?.price} ${nftContractAddress[chain]?.MintCost}?`:
-            `You Approve ${selectConverseNFT?.approve?.allowance} WETH\n You must approve an additional ${numberToBigNumber(selectConverseNFT?.price).minus(numberToBigNumber(selectConverseNFT?.approve?.allowance)).toString()} WETH\n*Approval will increase by 50 WETH per time.`}
-          textAction={selectConverseNFT?.approve?.value? "Confirm Buy": `Approve 50 WETH`}
+            `You Approve ${selectConverseNFT?.approveBuy?.allowance} WETH\n You must approve an additional ${numberToBigNumber(selectConverseNFT?.price).minus(numberToBigNumber(selectConverseNFT?.approveBuy?.allowance)).toString()} WETH\n*Approval will increase by 50 WETH per time.`}
+          textAction={selectConverseNFT?.approveBuy?.value? "Confirm Buy": `Approve 50 WETH`}
           buttonColor="btn-confirm-sell"
           objNFT={selectConverseNFT}
           onConfirm={onBuyConfirm}

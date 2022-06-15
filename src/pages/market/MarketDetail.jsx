@@ -96,11 +96,11 @@ const MarketDetail = () => {
       {openModalBuyConfirm && (
         <ModalConfirm
           iconColor="text-purple-500"
-          title={detailMarketplace?.data?.approve?.value? "Confirm Buy NFT": "Approve WETH"}
-          desc={detailMarketplace?.data?.approve?.value? 
+          title={detailMarketplace?.data?.approveBuy?.value? "Confirm Buy NFT": "Approve WETH"}
+          desc={detailMarketplace?.data?.approveBuy?.value? 
             `Are you sure to Buy ${detailMarketplace?.data?.name} with ${detailMarketplace?.data?.price} ${nftContractAddress[chain]?.MintCost}?`:
-            `You Approve ${detailMarketplace?.data?.approve?.allowance} WETH\n You must approve an additional ${numberToBigNumber(detailMarketplace?.data?.price).minus(numberToBigNumber(detailMarketplace?.data?.approve?.allowance)).toString()} WETH\n*Approval will increase by 50 WETH per time.`}
-          textAction={detailMarketplace?.data?.approve?.value? "Confirm Buy": `Approve 50 WETH`}
+            `You Approve ${detailMarketplace?.data?.approveBuy?.allowance} WETH\n You must approve an additional ${numberToBigNumber(detailMarketplace?.data?.price).minus(numberToBigNumber(detailMarketplace?.data?.approveBuy?.allowance)).toString()} WETH\n*Approval will increase by 50 WETH per time.`}
+          textAction={detailMarketplace?.data?.approveBuy?.value? "Confirm Buy": `Approve 50 WETH`}
           buttonColor="btn-confirm-sell"
           objNFT={detailMarketplace?.data}
           onConfirm={onBuyConfirm}

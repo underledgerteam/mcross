@@ -1,7 +1,7 @@
 import { useState, useEffect, createContext, useReducer, useMemo } from "react";
 import Web3 from "web3";
 import { useNotification } from "web3uikit";
-import { getGasPrice } from "../services/gas.service";
+import { getGasPrice, getCrossChainGasPrice } from "../services/gas.service";
 import { ipfsUriToHttps } from "../utils/ipfsUriToHttps.util";
 import {
   ROPSTEN_CHAIN,
@@ -373,10 +373,10 @@ export const WalletProvider = ({ children }) => {
           status: newObjGetMyMarketplace[i].status,
           jsonUri: uri,
           approveLoading: false,
-          approve: await checkApproved("BuyMarketplace", objNFT)
+          approveBuy: NFT_CONTRACTS[chain].CrossChain? await checkApproved("BuyMarketplace", objNFT): {value: true}
         };
       }
-      setDetailMarketplace({ data: {...objMarkets, approve: await checkApproved("BuyMarketplace", objMarkets)}, loading: false });
+      setDetailMarketplace({ data: objMarkets, loading: false });
     } catch (error) {
       console.log(error);
       setDetailMarketplace({ data: [], loading: false });
@@ -498,15 +498,15 @@ export const WalletProvider = ({ children }) => {
       setSelectConverseNFT({ ...selectConverseNFT, approveLoading: true });
       setDetailMarketplace({...detailMarketplace, data: {...detailMarketplace.data, approveLoading: true}});
       const priceNft = Web3.utils.toWei(objNFT.price, "ether");
-      if (NFT_CONTRACTS[chain].CrossChain && !objNFT.approve.value) {
+      if (NFT_CONTRACTS[chain].CrossChain && !objNFT.approveBuy.value) {
         // const additionalWETH = numberToBigNumber(objNFT?.price, 18).minus(numberToBigNumber(objNFT?.approve?.allowance, 18));
         const additionalWETH = 50;
         await wethContract.methods.approve(
           NFT_CONTRACTS[chain].AddressMarketplace,
-          Web3.utils.numberToHex(Web3.utils.toWei((numberToBigNumber(objNFT?.approve?.allowance, 18).plus(additionalWETH)).toString(), "ether"))
+          Web3.utils.numberToHex(Web3.utils.toWei((numberToBigNumber(objNFT?.approveBuy?.allowance, 18).plus(additionalWETH)).toString(), "ether"))
         ).send({ from: account });
-        setSelectConverseNFT({ ...selectConverseNFT, approve: await checkApproved("BuyMarketplace", objNFT), approveLoading: false });
-        setDetailMarketplace({...detailMarketplace, data: {...detailMarketplace.data, approve: await checkApproved("BuyMarketplace", detailMarketplace.data), approveLoading: false}});
+        setSelectConverseNFT({ ...selectConverseNFT, approveBuy: await checkApproved("BuyMarketplace", objNFT), approveLoading: false });
+        setDetailMarketplace({...detailMarketplace, data: {...detailMarketplace.data, approveBuy: await checkApproved("BuyMarketplace", detailMarketplace.data), approveLoading: false}});
         handleNewNotification({
           type: "success",
           title: 'Success',
@@ -544,8 +544,8 @@ export const WalletProvider = ({ children }) => {
     if (objNFT) {
       objNFT = {
         ...objNFT,
-        approve: await checkApproved(type, objNFT),
         approveLoading: false,
+        approveBuy: NFT_CONTRACTS[chain].CrossChain? await checkApproved("BuyMarketplace", objNFT): {value: true},
         selected: true,
         fee: bridgeFee,
       };

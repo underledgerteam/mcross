@@ -550,7 +550,6 @@ export const WalletProvider = ({ children }) => {
         selected: true,
         fee: bridgeFee,
       };
-      console.log(objNFT)
       setSelectConverseNFT(objNFT);
     }
   };

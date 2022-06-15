@@ -545,10 +545,12 @@ export const WalletProvider = ({ children }) => {
       objNFT = {
         ...objNFT,
         approveLoading: false,
+        approve: await checkApproved(type, objNFT),
         approveBuy: NFT_CONTRACTS[chain].CrossChain? await checkApproved("BuyMarketplace", objNFT): {value: true},
         selected: true,
         fee: bridgeFee,
       };
+      console.log(objNFT)
       setSelectConverseNFT(objNFT);
     }
   };

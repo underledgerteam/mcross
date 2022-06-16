@@ -43,8 +43,8 @@ export const getCrossChainGasPrice = (sourceChain, destinationChain) => {
   // (gasDestToken * GAS_TOKEN_PRICE[destination_chain]) / GAS_TOKEN_PRICE[source_chain];
   const gasDestToken = ((BRIDGE_GAS_LIMIT * NFT_CONTRACTS[destinationChain].GAS_PRICE) / 1e+9); // 1e+9
   const gasSourceToken = (gasDestToken * NFT_CONTRACTS[destinationChain].GAS_TOKEN_PRICE) / NFT_CONTRACTS[sourceChain].GAS_TOKEN_PRICE;
-  console.log(gasSourceToken);
-  console.log(Web3.utils.toWei(gasSourceToken.toString()));
-  console.log(Web3.utils.toWei(gasSourceToken.toString(), "gwei"));
-  return Web3.utils.toWei(gasSourceToken.toString(), "gwei");
+  // console.log(gasSourceToken);
+  // console.log('wei', Web3.utils.toWei(gasSourceToken.toString()));
+  // console.log('gwei', Web3.utils.toWei(gasSourceToken.toString(), "gwei"));
+  return Web3.utils.toWei(gasSourceToken.toString());
 };

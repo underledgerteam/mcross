@@ -128,8 +128,8 @@ export const NFT_CONTRACTS = {
     ABIMarketplace: NFT_CONTRACT_MARKETPLACE_ABI,
 
     CrossChain: true,
-    GAS_PRICE: 10,
-    GAS_TOKEN_PRICE: 2,
+    GAS_PRICE: 30,
+    GAS_TOKEN_PRICE: 40,
   }
 };
 

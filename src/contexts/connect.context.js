@@ -507,7 +507,7 @@ export const WalletProvider = ({ children }) => {
       setDetailMarketplace({...detailMarketplace, data: {...detailMarketplace.data, approveLoading: true}});
       const priceNft = Web3.utils.toWei(objNFT.price, "ether");
       if (NFT_CONTRACTS[chain].CrossChain && !objNFT.approveBuy.value) {
-        const additionalWETH = numberToBigNumber(objNFT?.price, 18).minus(numberToBigNumber(objNFT?.approve?.allowance, 18));
+        const additionalWETH = numberToBigNumber(objNFT?.price, 18).minus(numberToBigNumber(objNFT?.approveBuy?.allowance, 18));
         // const additionalWETH = 50;
         await wethContract.methods.approve(
           NFT_CONTRACTS[chain].AddressMarketplace,
@@ -625,19 +625,19 @@ export const WalletProvider = ({ children }) => {
       arr = [...arr, fee];
       let fixGas = "10000000000000000";
       if (NFT_CONTRACTS[chain].CrossChain) {
-        fixGas = "300000000000000000";
+        fixGas = "1000000000000000000";
       }
       // get gas price
-      const gasPrice = await getGasPrice(
-        NFT_CONTRACTS[chain].Name,
-        NFT_CONTRACTS[objConverse.to].Name,
-        ADDRESS_ZERO,
-        NFT_CONTRACTS[chain].Token
-      );
+      // const gasPrice = await getGasPrice(
+      //   NFT_CONTRACTS[chain].Name,
+      //   NFT_CONTRACTS[objConverse.to].Name,
+      //   ADDRESS_ZERO,
+      //   NFT_CONTRACTS[chain].Token
+      // );
 
       await nftContractConverse.methods
         .bridge(objConverse.to, objConverse.edition, fee, "0x00")
-        .send({ from: account, value: fixGas, gasPrice });
+        .send({ from: account, value: fixGas });
 
       setNftConverse({ ...nftConverse, loading: false });
       handleNewNotification({
@@ -824,16 +824,18 @@ export const WalletProvider = ({ children }) => {
           ["Ethereum", account]
         );
         // get gas price from axelar api
-        const gasPrice = await getGasPrice(
-          NFT_CONTRACTS[chain].Name,
-          "Ethereum",
-          ADDRESS_ZERO,
-          NFT_CONTRACTS[chain].Token
-        );
+        // const gasPrice1 = await getGasPrice(
+        //   NFT_CONTRACTS[chain].Name,
+        //   "Ethereum",
+        //   ADDRESS_ZERO,
+        //   NFT_CONTRACTS[chain].Token
+        // );
+
+        const gasPrice = getCrossChainGasPrice(chain, 3);
 
         await nftContract.methods
           .mint(mintAmount, encodePayload)
-          .send({ ...tx, gasPrice });
+          .send({ ...tx, value: gasPrice });
       } else {
         await nftContract.methods.mint(mintAmount).send(tx);
       }

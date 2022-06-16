@@ -119,8 +119,8 @@ const Market = () => {
           title={selectConverseNFT?.approveBuy?.value? "Confirm Buy NFT": "Approve WETH"}
           desc={selectConverseNFT?.approveBuy?.value? 
             `Are you sure to Buy ${selectConverseNFT?.name} with ${selectConverseNFT?.price} ${nftContractAddress[chain]?.MintCost}?`:
-            `You Approve ${selectConverseNFT?.approveBuy?.allowance} WETH\n You must approve an additional ${numberToBigNumber(selectConverseNFT?.price).minus(numberToBigNumber(selectConverseNFT?.approveBuy?.allowance)).toString()} WETH\n*Approval will increase by 50 WETH per time.`}
-          textAction={selectConverseNFT?.approveBuy?.value? "Confirm Buy": `Approve 50 WETH`}
+            `You Approve ${selectConverseNFT?.approveBuy?.allowance} WETH\n You must approve an additional ${numberToBigNumber(selectConverseNFT?.price).minus(numberToBigNumber(selectConverseNFT?.approveBuy?.allowance)).toString()} WETH`}
+          textAction={selectConverseNFT?.approveBuy?.value? "Confirm Buy": `Approve WETH`}
           buttonColor="btn-confirm-sell"
           objNFT={selectConverseNFT}
           onConfirm={onBuyConfirm}

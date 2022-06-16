@@ -507,8 +507,8 @@ export const WalletProvider = ({ children }) => {
       setDetailMarketplace({...detailMarketplace, data: {...detailMarketplace.data, approveLoading: true}});
       const priceNft = Web3.utils.toWei(objNFT.price, "ether");
       if (NFT_CONTRACTS[chain].CrossChain && !objNFT.approveBuy.value) {
-        // const additionalWETH = numberToBigNumber(objNFT?.price, 18).minus(numberToBigNumber(objNFT?.approve?.allowance, 18));
-        const additionalWETH = 50;
+        const additionalWETH = numberToBigNumber(objNFT?.price, 18).minus(numberToBigNumber(objNFT?.approve?.allowance, 18));
+        // const additionalWETH = 50;
         await wethContract.methods.approve(
           NFT_CONTRACTS[chain].AddressMarketplace,
           Web3.utils.numberToHex(Web3.utils.toWei((numberToBigNumber(objNFT?.approveBuy?.allowance, 18).plus(additionalWETH)).toString(), "ether"))
@@ -553,8 +553,8 @@ export const WalletProvider = ({ children }) => {
       objNFT = {
         ...objNFT,
         approveLoading: false,
-        approve: type !== "BuyMarketplace"?await checkApproved(type, objNFT): false,
-        approveBuy: NFT_CONTRACTS[chain].CrossChain? await checkApproved("BuyMarketplace", objNFT): {value: false},
+        approve: type !== "BuyMarketplace"?await checkApproved(type, objNFT): true,
+        approveBuy: NFT_CONTRACTS[chain].CrossChain? await checkApproved("BuyMarketplace", objNFT): {value: true},
         selected: true,
         fee: bridgeFee,
       };

@@ -625,19 +625,19 @@ export const WalletProvider = ({ children }) => {
       arr = [...arr, fee];
       let fixGas = "10000000000000000";
       if (NFT_CONTRACTS[chain].CrossChain) {
-        fixGas = "300000000000000000";
+        fixGas = "1000000000000000000";
       }
       // get gas price
-      const gasPrice = await getGasPrice(
-        NFT_CONTRACTS[chain].Name,
-        NFT_CONTRACTS[objConverse.to].Name,
-        ADDRESS_ZERO,
-        NFT_CONTRACTS[chain].Token
-      );
+      // const gasPrice = await getGasPrice(
+      //   NFT_CONTRACTS[chain].Name,
+      //   NFT_CONTRACTS[objConverse.to].Name,
+      //   ADDRESS_ZERO,
+      //   NFT_CONTRACTS[chain].Token
+      // );
 
       await nftContractConverse.methods
         .bridge(objConverse.to, objConverse.edition, fee, "0x00")
-        .send({ from: account, value: fixGas, gasPrice });
+        .send({ from: account, value: fixGas });
 
       setNftConverse({ ...nftConverse, loading: false });
       handleNewNotification({

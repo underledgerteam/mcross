@@ -507,7 +507,7 @@ export const WalletProvider = ({ children }) => {
       setDetailMarketplace({...detailMarketplace, data: {...detailMarketplace.data, approveLoading: true}});
       const priceNft = Web3.utils.toWei(objNFT.price, "ether");
       if (NFT_CONTRACTS[chain].CrossChain && !objNFT.approveBuy.value) {
-        const additionalWETH = numberToBigNumber(objNFT?.price, 18).minus(numberToBigNumber(objNFT?.approve?.allowance, 18));
+        const additionalWETH = numberToBigNumber(objNFT?.price, 18).minus(numberToBigNumber(objNFT?.approveBuy?.allowance, 18));
         // const additionalWETH = 50;
         await wethContract.methods.approve(
           NFT_CONTRACTS[chain].AddressMarketplace,

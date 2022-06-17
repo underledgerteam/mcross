@@ -1,4 +1,4 @@
-import { useState, Fragment, useContext } from "react";
+import { useState, Fragment, useContext, useEffect } from "react";
 import { Loading, Input } from "web3uikit";
 import { Web3Provider } from "../../contexts/connect.context";
 import { numberToBigNumber } from "../../utils/calculator.util"; 
@@ -19,8 +19,8 @@ const ModalSell = ({ objNFT, onConfirm, onClose }) => {
     const amount = priceVal.minus(priceVal.times(serviceFee).div(percent));
     const total = amount.minus(amount.times(creatorFee).div(percent));
     let priceFee = total.toFixed(7);
-    if(total.isNaN() || !total.isPositive() || check7Decimal>7){
-      e.target.setCustomValidity('Please match the requested format, price sell started 0.0000001');
+    if(total.isNaN() || !total.isPositive() || check7Decimal>7 || priceVal.gt(1000000)){
+      e.target.setCustomValidity('Please Enter Price 0.0000001 - 1000000');
       priceFee = 0;
     }
     setPrice({
@@ -28,6 +28,9 @@ const ModalSell = ({ objNFT, onConfirm, onClose }) => {
       fee: priceFee
     });
   }
+  // useEffect(()=>{
+    // document.querySelectorAll(".sell-price").novalidate;
+  // },[]);
   return(
     <Fragment>
       <div className="min-w-screen h-screen fixed left-0 top-0 flex justify-center items-center inset-0 z-50 outline-none focus:outline-none">
@@ -43,10 +46,11 @@ const ModalSell = ({ objNFT, onConfirm, onClose }) => {
                     <h5 className="text-warmGray-200 text-2xl">Price: </h5>
                     <Input
                       type="number"
+                      title=""
                       autoFocus
                       disabled={objNFT?.approveLoading}
                       step={0.0000001}
-                      placeholder="Price max 7 decimal places."
+                      placeholder="0.0000001 - 1000000"
                       value={price.value}
                       validation={{
                         numberMin: 0.0000001,

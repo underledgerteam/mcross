@@ -19,7 +19,7 @@ const ModalSell = ({ objNFT, onConfirm, onClose }) => {
     const amount = priceVal.minus(priceVal.times(serviceFee).div(percent));
     const total = amount.minus(amount.times(creatorFee).div(percent));
     let priceFee = total.toFixed(7);
-    if(total.isNaN() || !total.isPositive() || check7Decimal>7 || priceVal.gt(1000000)){
+    if(total.isNaN() || !total.isPositive() || check7Decimal>7 || priceVal.gt(1000000) || priceVal.lte(0) ){
       e.target.setCustomValidity('Please Enter Price 0.0000001 - 1000000');
       priceFee = 0;
     }

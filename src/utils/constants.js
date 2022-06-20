@@ -129,7 +129,7 @@ export const NFT_CONTRACTS = {
 
     CrossChain: true,
     GAS_PRICE: 30,
-    GAS_TOKEN_PRICE: 40,
+    GAS_TOKEN_PRICE: 20,
   }
 };
 

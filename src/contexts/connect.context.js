@@ -486,7 +486,7 @@ export const WalletProvider = ({ children }) => {
   const checkApproved = async (type, objNFT) => {
     if (type === "BuyMarketplace") {
       const allowance = Web3.utils.fromWei(await getAllowanceWeth(account, NFT_CONTRACTS[chain].AddressMarketplace));
-      return Number(allowance) >= Number(objNFT.price)? {value: true} : {allowance, value: false};
+      return numberToBigNumber(allowance).gte(numberToBigNumber(objNFT.price))? {value: true} : {allowance, value: false};
     }
 
     const isApprove = await nftContractCollection.methods.getApproved(objNFT.edition).call();
@@ -502,13 +502,27 @@ export const WalletProvider = ({ children }) => {
       : false;
   };
   const BuyNFT = async (objNFT, handleSuccess = () => { }, handleError = () => { }) => {
+    const setApproveLoading = (status) => {
+      setSelectConverseNFT({ ...selectConverseNFT, approveLoading: status });
+      setDetailMarketplace({...detailMarketplace, data: {...detailMarketplace.data, approveLoading: status}});
+    }
     try {
-      setSelectConverseNFT({ ...selectConverseNFT, approveLoading: true });
-      setDetailMarketplace({...detailMarketplace, data: {...detailMarketplace.data, approveLoading: true}});
+      setApproveLoading(true);
       const priceNft = Web3.utils.toWei(objNFT.price, "ether");
       if (NFT_CONTRACTS[chain].CrossChain && !objNFT.approveBuy.value) {
+        const myBalance =  Web3.utils.fromWei(await wethContract.methods.balanceOf(account).call());
+        // const additionalWETH = objNFT?.price;
         const additionalWETH = numberToBigNumber(objNFT?.price, 18).minus(numberToBigNumber(objNFT?.approveBuy?.allowance, 18));
-        // const additionalWETH = 50;
+        if(numberToBigNumber(myBalance).lt(additionalWETH)){
+          return setTimeout(()=>{
+            setApproveLoading(false);
+            handleNewNotification({
+              type: "error",
+              title: 'Error',
+              message: `Unable to approve WETH due to insufficient balance`,
+            });
+          }, 350)
+        }
         await wethContract.methods.approve(
           NFT_CONTRACTS[chain].AddressMarketplace,
           Web3.utils.numberToHex(Web3.utils.toWei((numberToBigNumber(objNFT?.approveBuy?.allowance, 18).plus(additionalWETH)).toString(), "ether"))
@@ -522,8 +536,7 @@ export const WalletProvider = ({ children }) => {
         });
       }else{
         await nftContractMarketplaceList.methods.buyMarketItem(objNFT.edition).send({ from: account, value: priceNft });
-        setSelectConverseNFT({ ...selectConverseNFT, approveLoading: false });
-        setDetailMarketplace({...detailMarketplace, data: {...detailMarketplace.data, approveLoading: false}});
+        setApproveLoading(false);
         handleNewNotification({
           type: "success",
           title: 'Success',
@@ -534,8 +547,7 @@ export const WalletProvider = ({ children }) => {
       }
     } catch (error) {
       console.log(error);
-      setSelectConverseNFT({ ...selectConverseNFT, approveLoading: false });
-      setDetailMarketplace({...detailMarketplace, data: {...detailMarketplace.data, approveLoading: false}});
+      setApproveLoading(false);
       handleError();
       handleNewNotification({
         type: "error",

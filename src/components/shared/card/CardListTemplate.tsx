@@ -3,9 +3,22 @@ import { Icon, CryptoLogos } from "web3uikit";
 import NftImage from "../../shared/NftImage";
 import { shortenAddress } from "../../../utils/shortenAddress.util";
 import { Web3Provider } from "../../../contexts/connect.context";
-import { NFT_CONTRACTS as nftContractAddress } from "../../../utils/constants";
+import { NFT_CONTRACTS } from "../../../utils/constants";
+interface CardListTemplateInterface {
+  id: number, 
+  name: string, 
+  owner?: string, 
+  textAction: string, 
+  price: number, 
+  image: string, 
+  rarity: string, 
+  chain: string, 
+  sell?: boolean, 
+  onClick: ()=> void, 
+  onClickAction : ()=> void
+ }
 
-const CardListTemplate = ({ id, name, owner, textAction, price, image, rarity, chain, sell = false, onClick, onClickAction }) => {
+const CardListTemplate = ({ id, name, owner, textAction, price, image, rarity, chain, sell = false, onClick, onClickAction }: CardListTemplateInterface): JSX.Element  => {
   const { chain: chainId, account } = useContext(Web3Provider);
   const colorButton = {
     "buy": "from-green-500 to-blue-600 text-white hover:from-pink-500 hover:to-yellow-500",
@@ -24,7 +37,7 @@ const CardListTemplate = ({ id, name, owner, textAction, price, image, rarity, c
           <Icon
             fill="#ffffff"
             svg="user"
-            size="20px"
+            size={20}
           />&nbsp;Owner By : {owner && shortenAddress(owner)}
         </div>
       )}
@@ -48,10 +61,10 @@ const CardListTemplate = ({ id, name, owner, textAction, price, image, rarity, c
                 Price :<br />
                 <div className="flex mt-2">
                   <CryptoLogos
-                    chain={nftContractAddress[chainId]?.Icon.toLowerCase()}
+                    chain={NFT_CONTRACTS[chainId]?.Icon.toLowerCase()}
                     size="28px"
                   />
-                  <div className="ml-2">{price} {nftContractAddress[chainId]?.MintCost}</div>
+                  <div className="ml-2">{price} {NFT_CONTRACTS[chainId]?.MintCost}</div>
                 </div>
               </div>
             </div>

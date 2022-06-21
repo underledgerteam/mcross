@@ -8,6 +8,8 @@ import mockNftAbi from "./MCrossCollection.json";
 
 import wethAbi from "./WETH.json";
 
+
+
 export const NFT_CONTRACT_ABI = nftAbi;
 export const NFT_MOCK_ABI = mockNftAbi;
 export const NFT_CONTRACT_CONVERSE_ABI = nftConverseAbi;
@@ -40,7 +42,46 @@ export const POLYGON_MUMBAI_CHAIN = 80001;
 export const NFT_DEFAULT_CHAIN = 3;
 export const ADDRESS_ZERO = "0x0000000000000000000000000000000000000000";
 
-export const NFT_CONTRACTS = {
+
+
+interface NFT_CONTRACTS_INTERFACE {
+  [key: string] : {
+    Label: string,
+    ShortLabel: string,
+    Icon: string,
+    Name: string,
+    Token: string,
+    MintCost: string,
+
+    chainId?: string,
+    nativeCurrency?: {
+      name: string,
+      symbol: string,
+      decimals: number
+    },
+    rpcUrls: string[],
+    blockExplorerUrls: string[],
+
+    Address: string,
+    ABI: any,
+
+    AddressConverse: string,
+    ABIConverse: any,
+
+    AddressCollection: string,
+    ABICollection: any,
+
+    AddressMarketplace: string,
+    ABIMarketplace: any,
+
+    CrossChain: boolean,
+    GAS_PRICE: number,
+    GAS_TOKEN_PRICE: number,
+  }
+}
+
+interface TEST { [key: string]: any }
+export const NFT_CONTRACTS: TEST = {
   3: {
     Label: "Ropsten Testnet Network",
     ShortLabel: "Ropsten",

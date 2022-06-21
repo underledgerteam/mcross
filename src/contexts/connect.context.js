@@ -468,6 +468,7 @@ export const WalletProvider = ({ children }) => {
             jsonUri: uri,
           },
         ];
+        console.log(objNFTs)
       }
       setMyCollection({
         ...myCollection,

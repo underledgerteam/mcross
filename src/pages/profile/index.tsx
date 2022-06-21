@@ -3,7 +3,7 @@ import { Table, CryptoLogos, Loading } from "web3uikit";
 import { useNavigate } from "react-router-dom";
 
 import { Web3Provider } from "../../contexts/connect.context";
-import { NFT_CONTRACTS as nftContractAddress, NFT_DEFAULT_CHAIN } from "../../utils/constants";
+import { NFT_CONTRACTS, NFT_DEFAULT_CHAIN } from "../../utils/constants";
 import Title from "../../components/shared/Title";
 import CardContainerTemplate from "../../components/shared/card/CardContainerTemplate";
 import CardListTemplate from "../../components/shared/card/CardListTemplate";
@@ -11,6 +11,58 @@ import ModalSell from "../../components/profile/ModalSell";
 import ModalConfirm from "../../components/shared/ModalConfirm";
 
 import { shortenAddress } from "../../utils/shortenAddress.util";
+
+
+interface objNFTAttributesInterface {
+  trait_type: string
+  value: string
+}
+interface objNFTInterface {
+  attributes: objNFTAttributesInterface[],
+  compiler: string,
+  date: number,
+  description: string,
+  dna: string,
+  edition: number,
+  image: string,
+  jsonUri: string,
+  name: string,
+  price: number,
+}
+interface NFT_CONTRACTS_INTERFACE {
+  Label: string,
+  ShortLabel: string,
+  Icon: string,
+  Name: string,
+  Token: string,
+  MintCost: string,
+
+  chainId?: string,
+  nativeCurrency?: {
+    name: string,
+    symbol: string,
+    decimals: number
+  },
+  rpcUrls: string[],
+  blockExplorerUrls: string[],
+
+  Address: string,
+  ABI: any,
+
+  AddressConverse: string,
+  ABIConverse: any,
+
+  AddressCollection: string,
+  ABICollection: any,
+
+  AddressMarketplace: string,
+  ABIMarketplace: any,
+
+  CrossChain: boolean,
+  GAS_PRICE: number,
+  GAS_TOKEN_PRICE: number,
+}
+
 
 const menuProfile = [{
   text: "My Collection"
@@ -54,32 +106,31 @@ const ProfilePage = () => {
     isConnectChain
   } = useContext(Web3Provider);
 
-  const refSelectChain = useRef();
+  const refSelectChain = useRef<HTMLSelectElement>(null);
 
   const [tab, setTab] = useState(localStorage.getItem("myTab") || "My Collection");
   const [openModalSell, setOpenModalSell] = useState(false);
   const [openModalCancelSell, setOpenModalCancelSell] = useState(false);
 
   const onChangeChain = async () => {
-    ChangeChain(Number.parseInt(refSelectChain.current.value));
+    ChangeChain(Number.parseInt(refSelectChain.current!.value));
   };
-
-  const onClickTab = (tab) => {
+  const onClickTab = (tab: string) => {
     setTab(tab);
     localStorage.setItem("myTab", tab);
   };
   // for open Modal Sell
-  const handleClickName = (id, isSell = false) => {
+  const handleClickName = (id: number, isSell: boolean = false) => {
     if(isSell){
       return history(`/market/detail/${id}`, {state: { isMyMarket: true }});
     }
     history(`/profile/collection/${id}`);
   };
-  const onOpenModalSell = (objNFT) => {
+  const onOpenModalSell = (objNFT: objNFTInterface) => {
     setOpenModalSell(true);
     ChangeConverseNFT("Marketplace", objNFT);
   };
-  const onConfirmSellNFT = (isApprove, nftPrice) => {
+  const onConfirmSellNFT = (isApprove: boolean, nftPrice: number) => {
     if (isApprove) {
       CreateSellCollection(
         selectConverseNFT,
@@ -97,11 +148,11 @@ const ProfilePage = () => {
     setOpenModalSell(false);
   };
   // for open Modal Cancel Sell
-  const onOpenModalCancelSell = (objNFT) => {
+  const onOpenModalCancelSell = (objNFT: objNFTInterface) => {
     ChangeConverseNFT("Marketplace", objNFT);
     setOpenModalCancelSell(true);
   };
-  const onConfirmCancelSell = (objNFT) => {
+  const onConfirmCancelSell = (objNFT: objNFTInterface) => {
     // alert("Process MetaMask Sell NFT");
     CancelSellCollection(objNFT, () => {
       setOpenModalCancelSell(false);
@@ -127,7 +178,7 @@ const ProfilePage = () => {
 
   useEffect(() => {
     if (refSelectChain?.current?.value) {
-      refSelectChain.current.value = chain;
+      refSelectChain.current!.value = chain;
     }
   }, [chain]);
 
@@ -173,7 +224,7 @@ const ProfilePage = () => {
                   <Fragment>
                     <div className="flex justify-center -mt-16">
                       <CryptoLogos
-                        chain={nftContractAddress[chain]?.Icon.toLowerCase()}
+                        chain={NFT_CONTRACTS[chain]?.Icon.toLowerCase()}
                         size="7.5rem"
                       />
                     </div>
@@ -188,8 +239,8 @@ const ProfilePage = () => {
                             onChange={() => onChangeChain()}
                             defaultValue={chain}
                           >
-                            {Object.keys(nftContractAddress).map((key, index) => {
-                              return (<option key={index} value={key}>{nftContractAddress[key]?.Label}</option>);
+                            {Object.keys(NFT_CONTRACTS).map((key, index) => {
+                              return (<option key={index} value={key}>{NFT_CONTRACTS[key]?.Label}</option>);
                             })}
                           </select>
                           <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
@@ -230,13 +281,13 @@ const ProfilePage = () => {
                         spinnerColor="#fff"
                         text="Loading...."
                       /></div>) :
-                      (myCollection?.list.length > 0) ? myCollection.list.map((item, key) => {
+                      (myCollection?.list.length > 0) ? myCollection.list.map((item: objNFTInterface, key: number) => {
                         return (
                           // <CardNFT
                           //   key={key}
                           //   objNFT={{
                           //     ...item,
-                          //     chain: nftContractAddress[chain]?.ShortLabel
+                          //     chain: NFT_CONTRACTS[chain]?.ShortLabel
                           //   }}
                           //   onClickSell={(objNFT) => onOpenModalSell(objNFT)}
                           // />
@@ -247,7 +298,7 @@ const ProfilePage = () => {
                             price={item.price}
                             image={item.image}
                             rarity={'Common'}
-                            chain={nftContractAddress[chain]?.ShortLabel}
+                            chain={NFT_CONTRACTS[chain]?.ShortLabel}
                             textAction={`Sell ${item.name}`}
                             onClick={() => handleClickName(item.edition, false)}
                             onClickAction={() => onOpenModalSell(item)}
@@ -273,7 +324,7 @@ const ProfilePage = () => {
                         spinnerColor="#fff"
                         text="Loading...."
                       /></div>) :
-                      (myMarketplace?.list.length > 0) ? myMarketplace.list.map((item, key) => {
+                      (myMarketplace?.list.length > 0) ? myMarketplace.list.map((item: objNFTInterface, key: number) => {
                         return (
                           <CardListTemplate
                             key={key}
@@ -282,7 +333,7 @@ const ProfilePage = () => {
                             price={item.price}
                             image={item.image}
                             rarity={'Common'}
-                            chain={nftContractAddress[chain]?.ShortLabel}
+                            chain={NFT_CONTRACTS[chain]?.ShortLabel}
                             textAction={`Cancel Sell`}
                             sell={true}
                             onClick={() => handleClickName(item.edition, true)}

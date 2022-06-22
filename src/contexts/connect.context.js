@@ -859,10 +859,17 @@ export const WalletProvider = ({ children }) => {
       return { success: true };
     } catch (error) {
       console.log({ error });
+      let msg = "Please try again later.";
+      if (error.code === 4001) {
+        msg = error.message;
+
+      } else {
+        msg = "Please try again later.";
+      }
       handleNewNotification({
         type: "error",
         title: "Mint fail",
-        message: error.message,
+        message: msg,
       });
       return { success: false };
     } finally {

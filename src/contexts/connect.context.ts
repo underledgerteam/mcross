@@ -1,4 +1,4 @@
-import { useState, useEffect, createContext, useReducer, useMemo } from "react";
+import { useState, useEffect, createContext, useReducer, useMemo, PropsWithChildren } from "react";
 import Web3 from "web3";
 import { useNotification } from "web3uikit";
 import { getGasPrice, getCrossChainGasPrice } from "../services/gas.service";
@@ -18,8 +18,55 @@ import {
   ADDRESS_ZERO,
 } from "../utils/constants";
 import { numberToBigNumber } from "../utils/calculator.util"; 
+declare global {
+  interface Window { ethereum: any, web3: any }
+}
+interface Web3ProviderInterface {
+  ChangeChain: any,
+  GetMyMarketplace: any,
+  getMarketplaceList: any,
+  getMarketplaceDetail: any,
+  GetByIdCollection: any,
+  GetCollection: any,
+  ConnectedWallet: any,
+  CreateSellCollection: any,
+  CancelSellCollection: any,
+  ConverseApproveNFT: any,
+  ChangeConverseNFT: any,
+  ConverseNFT: any,
+  BuyNFT: any,
+  getAllowanceWeth: any,
+  isReload: any,
+  nftContractCollection: any,
+  nftContractMarketplace: any,
+  nftContractMarketplaceList: any,
+  chain: any,
+  nftConverse: any,
+  selectConverseNFT: any,
+  myMarketplace: any,
+  listMarketplace: any,
+  myCollection: any,
+  myCollectionById: any,
+  detailMarketplace: any,
+  owner: any,
+  balance: any,
+  account: any,
+  mintNft: any,
+  mintProcessing: any,
+  mintCost: any,
+  calculateMintCost: any,
+  cost: any,
+  isConnectChain: any,
+  checkConnectChain: any,
+  nftContract: any,
+  loadingMintPage: any,
+  maxSupply: any,
+  totalSupply: any,
+  initMintPage: any,
+}
 
-export const Web3Provider = createContext();
+
+export const Web3Provider = createContext<Web3ProviderInterface | null>(null);
 
 const initiSelectNFT = {
   selected: false,
@@ -29,12 +76,12 @@ const initiSelectNFT = {
     "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAOEAAADhCAMAAAAJbSJIAAAANlBMVEX///+/v7+8vLzKysr8/Pzg4ODFxcXb29vT09Pj4+P4+PjBwcH6+vry8vLY2NjIyMjs7Ozo6Oia8u11AAAEdUlEQVR4nO2d65bqIAxGp/Smrb34/i971KqlEC7FGuJZ3/7dKewJBgK4/PsDAAAAAAAAAAAAAAAA4KUam5+i3m94UsUPoVoYwlA6MIShfGAIQ/nAEIbyOcBQSeNww9NZGOXBhuq8+w1fxugfDG1gmB0YBoFhdmAYBIbZgWEQGGYHhkFgmB0YBoFhdmAYBIbZyWB4qVI6mgyv4WUeH7u007lL7vFeWA3n8rUFrZqWK5KchnWvPapOTGFkNDQPOJrhk45Hw2d4Ns+oVPlRz2NhMxyawkTtv2OWAJvhSBwzfjBO2+g/5TLs7BDeSF4eDP0Y+yiX4UydFKtT4pRxa3SKTcVchtQgLYrobhq0Kj7+XIb0aX+fZtipHfH/ScPlZZG5Jq9hk2RYP96lTnFPcxnWpGF52d2eNrPGPc5lOJC5NDrl65Sv1fs16nEuw8v20sdCP+9uTh8NZVSuYVvTnKlBmjAdaqu/uH8Qm2FVWuNUJYSwOu3tLV9tcelNw5SF9yZjRaVixvpwbrZRTKnyuyKysRXOGn/QBqpK25QzptVm9598eyfqXDaPnah+GlNmwr/aGOcqYl3DvJtYzXU7jvU1bbVmVdExE+pP7Qjb6TiiOBFmOPuyD7XyC+djWYadGt2KxE5PzMpWluHtXc6KQZ/rNYK5RpThfWXnrGzp6iRcQ0ky7KbHK+iBup3rtQZD6wZJhq+9HDIsri89BBsUZPguIal0Y871K6ECRY6hXkFaimQeXQjVUHIMNwWkuVax5/q1xcC6Rozh0G+7vYmidaqzCaJ/whBjaEZJr608Y7QIHvBIMbR3/dfB55jr3/hrKCGGxMHN+vmi53rtSW+uEWLYUj1/dsY1169tetc1MgwHaw9HU3TN9Svec0huw4os6CZHcO7dcc/163O+XMNteC0JRfdk0Aby6BNfDcW9i1EquzedI4R36vAYLfy5htnwtnBRvaHo/SZxjN8Nz7UO5ltf97WnMgbqHCfhRbmHKa/hdXl2qxjzQQsaunMNr+FzUlD62W8bORD9TM4gshpe3xVg+Z7BonJlmN55mMhpWGkV4GughtacsbgvLnAa6hXga6B666I9OGsoRsPtMbCa7l2q6OVaAs6uMxpejXDdd+SPSTMP+vyGdri6+bAQui8u8BmaIbwxUdcXkg0dNRTjOf6BNiSOGirrXYxjcXQ+632ag6EPE7kMiU/h4dA1FJfhgUnTzZTRkCOEt8apYcpj+P1E6u4+j+H3E+kCdUmKxZAjkS4QrbMY8nwKC7qGYjFkSaQL9rqGw5AthORhIoMhUyJ9ksPwsDI+Brv97xtWY8mJNUwZYtixYu0qyjhd+yYwDALD7MAwCAyzA8MgMMwODIPAMDtHGxZ1JYvjDRvWajCC7SYRfhsBhvKBIQzlA0MYygeGMJQPDGEoHxjCUD4whKF8YAhD+cAQhvKBIQzlA0MYygeGMJQPDGEoHxjCUD4whKF8YAhD+cAQhvJJM/wpEgyv9U+R8iNaAAAAAAAAAAAAAAAAAP4r/gEYCYE2Xwz6DQAAAABJRU5ErkJggg==",
 };
 
-export const WalletProvider = ({ children }) => {
+export const WalletProvider = ({ children }: PropsWithChildren) => {
   const dispatch = useNotification();
 
   const [account, setAccount] = useState("");
   const [owner, setOwner] = useState("");
-  const [balance, setBalance] = useState(0);
+  const [balance, setBalance] = useState<string | number>(0);
   const [myMarketplace, setMyMarketplace] = useState({
     list: [],
     loading: true,
@@ -47,22 +94,23 @@ export const WalletProvider = ({ children }) => {
     data: [],
     loading: true,
   });
-  const [listMarketplace, setListMarketplace] = useState({
+  interface listMarketplaceInterface { list: Array<object>, loading: boolean }
+  const [listMarketplace, setListMarketplace] = useState<listMarketplaceInterface>({
     list: [],
     loading: true,
   });
-  const [detailMarketplace, setDetailMarketplace] = useState({
+  interface detailMarketplaceInterface { data: any, loading: boolean }
+  const [detailMarketplace, setDetailMarketplace] = useState<detailMarketplaceInterface>({
     data: [],
     loading: true,
   });
 
   const [selectConverseNFT, setSelectConverseNFT] = useState(initiSelectNFT);
-  const [nftContract, setNftContract] = useState();
-  const [nftContractCollection, setNftContractCollection] = useState();
-  const [nftContractConverse, setNftContractConverse] = useState();
-  const [nftContractMarketplace, setNftContractMarketplace] = useState();
-  const [nftContractMarketplaceList, setNftContractMarketplaceList] =
-    useState();
+  const [nftContract, setNftContract] = useState<any>();
+  const [nftContractCollection, setNftContractCollection] = useState<any>();
+  const [nftContractConverse, setNftContractConverse] = useState<any>();
+  const [nftContractMarketplace, setNftContractMarketplace] = useState<any>();
+  const [nftContractMarketplaceList, setNftContractMarketplaceList] = useState<any>();
   const [loadingMintPage, setLoadingMintPage] = useState(true);
   const [mintProcessing, setMintProcessing] = useState(false);
   const [nftConverse, setNftConverse] = useState({ data: [], loading: false });
@@ -87,10 +135,10 @@ export const WalletProvider = ({ children }) => {
     mintCost: "",
     feeCost: "",
   });
-  const [wethContract, setWethContract] = useState();
-  const [coreContract, setCoreContract] = useState();
-
-  const handleNewNotification = ({ type, icon, title, message, position }) => {
+  const [wethContract, setWethContract] = useState<any>();
+  const [coreContract, setCoreContract] = useState<any>();
+  interface handleNewNotificationInterface { type: any, icon?: any, title?: string, message: string, position?: any }
+  const handleNewNotification = ({ type, icon, title, message, position }: handleNewNotificationInterface) => {
     dispatch({
       type,
       title: title || "New Notification",
@@ -99,7 +147,7 @@ export const WalletProvider = ({ children }) => {
       position: position || "topR",
     });
   };
-  const onSetIsReload = (isReload) => {
+  const onSetIsReload = (isReload: boolean) => {
     onEventListenReload = !isReload;
     setIsReload(onEventListenReload);
   };
@@ -110,8 +158,8 @@ export const WalletProvider = ({ children }) => {
     return currentChainId;
   };
 
-  const eventListener = (web3, currentProvider) => {
-    currentProvider.on("accountsChanged", (accounts) => {
+  const eventListener = (currentProvider: any) => {
+    currentProvider.on("accountsChanged", (accounts: string) => {
       if (accounts) {
         setAccount(accounts[0]);
         onSetIsReload(onEventListenReload);
@@ -119,30 +167,15 @@ export const WalletProvider = ({ children }) => {
         setAccount("");
       }
     });
-    currentProvider.on("chainChanged", (chainId) => {
-      setChain(web3.utils.hexToNumber(chainId));
+    currentProvider.on("chainChanged", (chainId: number) => {
+      setChain(Web3.utils.hexToNumber(chainId));
       createNftContract();
       onSetIsReload(onEventListenReload);
     });
   };
 
-  const getPriceCryptoCurrency = async () => {
-    return 0.0005;
-    let res = await fetch(
-      "http://rest.coinapi.io/v1/exchangerate/usd?apikey=AB5A6633-A858-4156-AE68-9F4AE466B308&filter_asset_id=ETH,AVAX,MATIC"
-    );
-    res = await res.json();
-    let getPrice = 0;
-    for (let i = 0; i < res.rates.length; i++) {
-      if (res.rates[i].asset_id_quote === NFT_CONTRACTS[chain].Token) {
-        getPrice = res.rates[i].rate;
-        return getPrice;
-      }
-    }
-  };
-
-  const ChangeChain = async (chainId) => {
-    const web3 = new Web3(window.ethereum);
+  const ChangeChain = async (chainId: number) => {
+    const web3: any = new Web3(window.ethereum);
     const currentChainId = await getNetworkId();
 
     if (currentChainId !== chainId) {
@@ -154,7 +187,7 @@ export const WalletProvider = ({ children }) => {
         });
         createNftContract();
         onSetIsReload(isReload);
-      } catch (switchError) {
+      } catch (switchError: object) {
         // This error code indicates that the chain has not been added to MetaMask.
         setChain(currentChainId);
         if (switchError.code === 4902) {
@@ -175,7 +208,7 @@ export const WalletProvider = ({ children }) => {
                 },
               ],
             });
-          } catch (addError) {
+          } catch (addError: object) {
             alert(addError.message);
           }
         }
@@ -204,7 +237,7 @@ export const WalletProvider = ({ children }) => {
       const web3 = new Web3(currentProvider);
       const userAccount = await web3.eth.getAccounts();
       const ethBalance = await web3.eth.getBalance(userAccount[0]);
-      eventListener(web3, currentProvider);
+      eventListener(currentProvider);
       setAccount(userAccount[0]);
       setBalance(ethBalance);
     } catch (error) {
@@ -223,7 +256,7 @@ export const WalletProvider = ({ children }) => {
         const web3 = new Web3(currentProvider);
         const userAccount = await web3.eth.getAccounts();
         const ethBalance = await web3.eth.getBalance(userAccount[0]);
-        eventListener(web3, currentProvider);
+        eventListener(currentProvider);
 
         setChain(await web3.eth.getChainId());
         setAccount(userAccount[0]);
@@ -240,8 +273,8 @@ export const WalletProvider = ({ children }) => {
   };
 
   const CreateSellCollection = async (
-    objNFT,
-    nftPrice,
+    objNFT: object,
+    nftPrice: number,
     handleSuccess = () => {},
     handleError = () => {}
   ) => {
@@ -274,7 +307,7 @@ export const WalletProvider = ({ children }) => {
   };
 
   const CancelSellCollection = async (
-    objNFT,
+    objNFT: object,
     handleSuccess = () => {},
     handleError = () => {}
   ) => {
@@ -308,13 +341,13 @@ export const WalletProvider = ({ children }) => {
     try {
       const web3 = new Web3(window.ethereum);
       setListMarketplace({ ...listMarketplace, loading: true });
-      const getMyMarketplace = await nftContractMarketplaceList.methods
+      const getMyMarketplace: Array<object> = await nftContractMarketplaceList.methods
         .getAllMarketItems()
         .call();
       const newObjGetMyMarketplace = getMyMarketplace.filter(
         (x) => x.status === "0"
       );
-      let objMarkets = [];
+      let objMarkets: Array<object> = [];
       for (var i = 0; i < newObjGetMyMarketplace.length; i++) {
         const uri = await nftContractCollection.methods
           .tokenURI(newObjGetMyMarketplace[i].tokenId)
@@ -547,7 +580,7 @@ export const WalletProvider = ({ children }) => {
     }
   };
 
-  const ChangeConverseNFT = async (type, objNFT) => {
+  const ChangeConverseNFT = async (type: string, objNFT: object) => {
     setSelectConverseNFT(initiSelectNFT);
     const bridgeFee = 0.0005;
     if (objNFT) {
@@ -564,10 +597,10 @@ export const WalletProvider = ({ children }) => {
   };
 
   const ConverseApproveNFT = async (
-    type,
-    objNFT,
-    handleSuccess = () => {},
-    handleError = () => {}
+    type: string, 
+    objNFT: object,
+    handleSuccess: ()=> void = () => {},
+    handleError: ()=> void = () => {}
   ) => {
     try {
       setSelectConverseNFT({ ...selectConverseNFT, approveLoading: true });
@@ -606,7 +639,7 @@ export const WalletProvider = ({ children }) => {
   };
 
   const ConverseNFT = async (
-    objConverse,
+    objConverse: object,
     handleSuccess = () => {},
     handleError = () => {}
   ) => {

@@ -10,30 +10,30 @@ import wethAbi from "./WETH.json";
 
 
 
-export const NFT_CONTRACT_ABI = nftAbi;
-export const NFT_MOCK_ABI = mockNftAbi;
-export const NFT_CONTRACT_CONVERSE_ABI = nftConverseAbi;
-export const NFT_CROSS_CONTRACT_CONVERSE_ABI = nftConverseCrossAbi;
-export const NFT_CONTRACT_MARKETPLACE_ABI = nftMarketplaceAbi;
-export const NFT_CROSS_CONTRACT_ABI = nftCrossAbi;
-export const WETH_CONTRACT_ABI = wethAbi;
+export const NFT_CONTRACT_ABI: any = nftAbi;
+export const NFT_MOCK_ABI: any = mockNftAbi;
+export const NFT_CONTRACT_CONVERSE_ABI: any = nftConverseAbi;
+export const NFT_CROSS_CONTRACT_CONVERSE_ABI: any = nftConverseCrossAbi;
+export const NFT_CONTRACT_MARKETPLACE_ABI: any = nftMarketplaceAbi;
+export const NFT_CROSS_CONTRACT_ABI: any = nftCrossAbi;
+export const WETH_CONTRACT_ABI: any = wethAbi;
 
-export const NFT_ROPSTEN_ADDRESS = "0xACC880D9318349C5e6484e83C8AEa6a3a1591878";
-export const NFT_ROPSTEN_CONVERSE_ADDRESS = "0x7Fb50EFB1Fb534BEe353EF60715E54Ba31694065";
-export const NFT_ROPSTEN_MARKETPLACE_ADDRESS = "0xa6b9b3b92d22815d7154982df0b527c6dd5e1a8c";
+export const NFT_ROPSTEN_ADDRESS: string = "0xACC880D9318349C5e6484e83C8AEa6a3a1591878";
+export const NFT_ROPSTEN_CONVERSE_ADDRESS: string = "0x7Fb50EFB1Fb534BEe353EF60715E54Ba31694065";
+export const NFT_ROPSTEN_MARKETPLACE_ADDRESS: string = "0xa6b9b3b92d22815d7154982df0b527c6dd5e1a8c";
 
-export const NFT_AVALANHCE_FUJI_ADDRESS = "0x847f14bAbA858d81DC56449EF8C07DB8F8A1dc20";
-export const NFT_AVALANHCE_MOCK_COLLECTION_ADDRESS = "0x8cfa110e91c99bb74c59b89c351dbd0944d15590";
-export const NFT_AVALANHCE_CONVERSE_ADDRESS = "0xae6Bee16840278244060A618465C4A4F08EDEd04";
-export const NFT_AVALANHCE_MARKETPLACE_ADDRESS = "0xbc664c66ce2d5a494d7a54dfc60eab25f8b0c98a";
+export const NFT_AVALANHCE_FUJI_ADDRESS: string = "0x847f14bAbA858d81DC56449EF8C07DB8F8A1dc20";
+export const NFT_AVALANHCE_MOCK_COLLECTION_ADDRESS: string = "0x8cfa110e91c99bb74c59b89c351dbd0944d15590";
+export const NFT_AVALANHCE_CONVERSE_ADDRESS: string = "0xae6Bee16840278244060A618465C4A4F08EDEd04";
+export const NFT_AVALANHCE_MARKETPLACE_ADDRESS: string = "0xbc664c66ce2d5a494d7a54dfc60eab25f8b0c98a";
 
-export const NFT_POLYGON_MUMBAI_ADDRESS = "0xC1123b8A09b2Ec4C4e4f635e68393893b415a677";
-export const NFT_POLYGON_MOCK_COLLECTION_ADDRESS = "0xf8d99a22b3a6bddd45a1ec65f413d8c59de3b880";
-export const NFT_POLYGON_CONVERSE_ADDRESS = "0x7bbF0937583BA80c963b06f1b7F945A43F3e364A";
-export const NFT_POLYGON_MARKETPLACE_ADDRESS = "0xfa0e5554c1f4616a4707f63c568ef40c21efc855";
+export const NFT_POLYGON_MUMBAI_ADDRESS: string = "0xC1123b8A09b2Ec4C4e4f635e68393893b415a677";
+export const NFT_POLYGON_MOCK_COLLECTION_ADDRESS: string = "0xf8d99a22b3a6bddd45a1ec65f413d8c59de3b880";
+export const NFT_POLYGON_CONVERSE_ADDRESS: string = "0x7bbF0937583BA80c963b06f1b7F945A43F3e364A";
+export const NFT_POLYGON_MARKETPLACE_ADDRESS: string = "0xfa0e5554c1f4616a4707f63c568ef40c21efc855";
 
-export const WETH_AVALANCHE_FUJI_ADDRESS = "0x3613C187b3eF813619A25322595bA5E297E4C08a";
-export const WETH_POLYGON_MUMBAI_ADDRESS = "0xfba15fFF35558fE2A469B96A90AeD7727FE38fAE";
+export const WETH_AVALANCHE_FUJI_ADDRESS: string = "0x3613C187b3eF813619A25322595bA5E297E4C08a";
+export const WETH_POLYGON_MUMBAI_ADDRESS: string = "0xfba15fFF35558fE2A469B96A90AeD7727FE38fAE";
 
 export const ROPSTEN_CHAIN = 3;
 export const AVALANCHE_FUJI_CHAIN = 43113;
@@ -59,8 +59,8 @@ interface NFT_CONTRACTS_INTERFACE {
       symbol: string,
       decimals: number
     },
-    rpcUrls: string[],
-    blockExplorerUrls: string[],
+    rpcUrls?: string[],
+    blockExplorerUrls?: string[],
 
     Address: string,
     ABI: any,
@@ -81,7 +81,7 @@ interface NFT_CONTRACTS_INTERFACE {
 }
 
 interface TEST { [key: string]: any }
-export const NFT_CONTRACTS: TEST = {
+export const NFT_CONTRACTS: NFT_CONTRACTS_INTERFACE = {
   3: {
     Label: "Ropsten Testnet Network",
     ShortLabel: "Ropsten",
@@ -174,7 +174,7 @@ export const NFT_CONTRACTS: TEST = {
   }
 };
 
-export const WETH_CONTRACT_ADDRESS = {
+export const WETH_CONTRACT_ADDRESS: TEST = {
   43113: WETH_AVALANCHE_FUJI_ADDRESS,
   80001: WETH_POLYGON_MUMBAI_ADDRESS,
 };

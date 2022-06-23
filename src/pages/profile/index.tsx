@@ -12,57 +12,8 @@ import ModalConfirm from "../../components/shared/ModalConfirm";
 
 import { shortenAddress } from "../../utils/shortenAddress.util";
 
-
-interface objNFTAttributesInterface {
-  trait_type: string
-  value: string
-}
-interface objNFTInterface {
-  attributes: objNFTAttributesInterface[],
-  compiler: string,
-  date: number,
-  description: string,
-  dna: string,
-  edition: number,
-  image: string,
-  jsonUri: string,
-  name: string,
-  price: number,
-}
-interface NFT_CONTRACTS_INTERFACE {
-  Label: string,
-  ShortLabel: string,
-  Icon: string,
-  Name: string,
-  Token: string,
-  MintCost: string,
-
-  chainId?: string,
-  nativeCurrency?: {
-    name: string,
-    symbol: string,
-    decimals: number
-  },
-  rpcUrls: string[],
-  blockExplorerUrls: string[],
-
-  Address: string,
-  ABI: any,
-
-  AddressConverse: string,
-  ABIConverse: any,
-
-  AddressCollection: string,
-  ABICollection: any,
-
-  AddressMarketplace: string,
-  ABIMarketplace: any,
-
-  CrossChain: boolean,
-  GAS_PRICE: number,
-  GAS_TOKEN_PRICE: number,
-}
-
+import { Web3ProviderInterface } from  "../../types/connect.context"
+import { objNFTInterface } from  "../../types/index"
 
 const menuProfile = [{
   text: "My Collection"
@@ -104,7 +55,7 @@ const ProfilePage = () => {
     nftContractCollection,
     checkConnectChain,
     isConnectChain
-  } = useContext(Web3Provider);
+  } = useContext(Web3Provider) as Web3ProviderInterface;
 
   const refSelectChain = useRef<HTMLSelectElement>(null);
 

@@ -48,17 +48,13 @@ interface NFT_CONTRACTS_INTERFACE {
   [key: string] : {
     Label: string,
     ShortLabel: string,
-    Icon: string,
+    Icon: any,
     Name: string,
     Token: string,
     MintCost: string,
 
     chainId?: string,
-    nativeCurrency?: {
-      name: string,
-      symbol: string,
-      decimals: number
-    },
+    nativeCurrency?: any,
     rpcUrls?: string[],
     blockExplorerUrls?: string[],
 

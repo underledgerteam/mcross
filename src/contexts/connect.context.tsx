@@ -1,4 +1,4 @@
-import { useState, useEffect, createContext, useReducer, useMemo, PropsWithChildren } from "react";
+import { useState, useEffect, createContext, useReducer, useMemo, PropsWithChildren, ReactNode, FC } from "react";
 import Web3 from "web3";
 import { useNotification } from "web3uikit";
 import { getGasPrice, getCrossChainGasPrice } from "../services/gas.service";
@@ -18,53 +18,7 @@ import {
   ADDRESS_ZERO,
 } from "../utils/constants";
 import { numberToBigNumber } from "../utils/calculator.util"; 
-declare global {
-  interface Window { ethereum: any, web3: any }
-}
-interface Web3ProviderInterface {
-  ChangeChain: any,
-  GetMyMarketplace: any,
-  getMarketplaceList: any,
-  getMarketplaceDetail: any,
-  GetByIdCollection: any,
-  GetCollection: any,
-  ConnectedWallet: any,
-  CreateSellCollection: any,
-  CancelSellCollection: any,
-  ConverseApproveNFT: any,
-  ChangeConverseNFT: any,
-  ConverseNFT: any,
-  BuyNFT: any,
-  getAllowanceWeth: any,
-  isReload: any,
-  nftContractCollection: any,
-  nftContractMarketplace: any,
-  nftContractMarketplaceList: any,
-  chain: any,
-  nftConverse: any,
-  selectConverseNFT: any,
-  myMarketplace: any,
-  listMarketplace: any,
-  myCollection: any,
-  myCollectionById: any,
-  detailMarketplace: any,
-  owner: any,
-  balance: any,
-  account: any,
-  mintNft: any,
-  mintProcessing: any,
-  mintCost: any,
-  calculateMintCost: any,
-  cost: any,
-  isConnectChain: any,
-  checkConnectChain: any,
-  nftContract: any,
-  loadingMintPage: any,
-  maxSupply: any,
-  totalSupply: any,
-  initMintPage: any,
-}
-
+import { ObjectNFTInterface,Web3ProviderInterface,WalletProviderInterface,mintCostInterface,handleNewNotificationInterface,listNFT,dataNFT } from  "../types/connect.context"
 
 export const Web3Provider = createContext<Web3ProviderInterface | null>(null);
 
@@ -76,36 +30,35 @@ const initiSelectNFT = {
     "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAOEAAADhCAMAAAAJbSJIAAAANlBMVEX///+/v7+8vLzKysr8/Pzg4ODFxcXb29vT09Pj4+P4+PjBwcH6+vry8vLY2NjIyMjs7Ozo6Oia8u11AAAEdUlEQVR4nO2d65bqIAxGp/Smrb34/i971KqlEC7FGuJZ3/7dKewJBgK4/PsDAAAAAAAAAAAAAAAA4KUam5+i3m94UsUPoVoYwlA6MIShfGAIQ/nAEIbyOcBQSeNww9NZGOXBhuq8+w1fxugfDG1gmB0YBoFhdmAYBIbZgWEQGGYHhkFgmB0YBoFhdmAYBIbZyWB4qVI6mgyv4WUeH7u007lL7vFeWA3n8rUFrZqWK5KchnWvPapOTGFkNDQPOJrhk45Hw2d4Ns+oVPlRz2NhMxyawkTtv2OWAJvhSBwzfjBO2+g/5TLs7BDeSF4eDP0Y+yiX4UydFKtT4pRxa3SKTcVchtQgLYrobhq0Kj7+XIb0aX+fZtipHfH/ScPlZZG5Jq9hk2RYP96lTnFPcxnWpGF52d2eNrPGPc5lOJC5NDrl65Sv1fs16nEuw8v20sdCP+9uTh8NZVSuYVvTnKlBmjAdaqu/uH8Qm2FVWuNUJYSwOu3tLV9tcelNw5SF9yZjRaVixvpwbrZRTKnyuyKysRXOGn/QBqpK25QzptVm9598eyfqXDaPnah+GlNmwr/aGOcqYl3DvJtYzXU7jvU1bbVmVdExE+pP7Qjb6TiiOBFmOPuyD7XyC+djWYadGt2KxE5PzMpWluHtXc6KQZ/rNYK5RpThfWXnrGzp6iRcQ0ky7KbHK+iBup3rtQZD6wZJhq+9HDIsri89BBsUZPguIal0Y871K6ECRY6hXkFaimQeXQjVUHIMNwWkuVax5/q1xcC6Rozh0G+7vYmidaqzCaJ/whBjaEZJr608Y7QIHvBIMbR3/dfB55jr3/hrKCGGxMHN+vmi53rtSW+uEWLYUj1/dsY1169tetc1MgwHaw9HU3TN9Svec0huw4os6CZHcO7dcc/163O+XMNteC0JRfdk0Aby6BNfDcW9i1EquzedI4R36vAYLfy5htnwtnBRvaHo/SZxjN8Nz7UO5ltf97WnMgbqHCfhRbmHKa/hdXl2qxjzQQsaunMNr+FzUlD62W8bORD9TM4gshpe3xVg+Z7BonJlmN55mMhpWGkV4GughtacsbgvLnAa6hXga6B666I9OGsoRsPtMbCa7l2q6OVaAs6uMxpejXDdd+SPSTMP+vyGdri6+bAQui8u8BmaIbwxUdcXkg0dNRTjOf6BNiSOGirrXYxjcXQ+632ag6EPE7kMiU/h4dA1FJfhgUnTzZTRkCOEt8apYcpj+P1E6u4+j+H3E+kCdUmKxZAjkS4QrbMY8nwKC7qGYjFkSaQL9rqGw5AthORhIoMhUyJ9ksPwsDI+Brv97xtWY8mJNUwZYtixYu0qyjhd+yYwDALD7MAwCAyzA8MgMMwODIPAMDtHGxZ1JYvjDRvWajCC7SYRfhsBhvKBIQzlA0MYygeGMJQPDGEoHxjCUD4whKF8YAhD+cAQhvKBIQzlA0MYygeGMJQPDGEoHxjCUD4whKF8YAhD+cAQhvJJM/wpEgyv9U+R8iNaAAAAAAAAAAAAAAAAAP4r/gEYCYE2Xwz6DQAAAABJRU5ErkJggg==",
 };
 
-export const WalletProvider = ({ children }: PropsWithChildren) => {
+export const WalletProvider = ({ children }: WalletProviderInterface) => {
   const dispatch = useNotification();
 
   const [account, setAccount] = useState("");
   const [owner, setOwner] = useState("");
   const [balance, setBalance] = useState<string | number>(0);
-  const [myMarketplace, setMyMarketplace] = useState({
+
+  const [myMarketplace, setMyMarketplace] = useState<listNFT>({
     list: [],
     loading: true,
   });
-  const [myCollection, setMyCollection] = useState({
+  const [myCollection, setMyCollection] = useState<listNFT>({
     list: [],
     loading: true,
   });
-  const [myCollectionById, setMyCollectionById] = useState({
+  const [myCollectionById, setMyCollectionById] = useState<dataNFT>({
     data: [],
     loading: true,
   });
-  interface listMarketplaceInterface { list: Array<object>, loading: boolean }
-  const [listMarketplace, setListMarketplace] = useState<listMarketplaceInterface>({
+  const [listMarketplace, setListMarketplace] = useState<listNFT>({
     list: [],
     loading: true,
   });
-  interface detailMarketplaceInterface { data: any, loading: boolean }
-  const [detailMarketplace, setDetailMarketplace] = useState<detailMarketplaceInterface>({
+  const [detailMarketplace, setDetailMarketplace] = useState<dataNFT>({
     data: [],
     loading: true,
   });
 
-  const [selectConverseNFT, setSelectConverseNFT] = useState(initiSelectNFT);
+  const [selectConverseNFT, setSelectConverseNFT] = useState<dataNFT['data']>(initiSelectNFT);
   const [nftContract, setNftContract] = useState<any>();
   const [nftContractCollection, setNftContractCollection] = useState<any>();
   const [nftContractConverse, setNftContractConverse] = useState<any>();
@@ -117,19 +70,20 @@ export const WalletProvider = ({ children }: PropsWithChildren) => {
   const [chain, setChain] = useState(NFT_DEFAULT_CHAIN);
   const [isReload, setIsReload] = useState(false);
   const [isConnectChain, setIsConnectChain] = useState("");
-  const [maxSupply, setMaxSupply] = useState("...");
+  const [maxSupply, setMaxSupply] = useState<any>("...");
   const [totalSupply, setTotalSupply] = useState("...");
 
   /* onEventListenReload use swap true/false isReload in function eventListener
   on function eventListener cant get state current of isReload */
   let onEventListenReload = false;
   // const [mintResult, setMintResult] = useState({ data: [], loading: false });
-  const [mintCost, setMintCost] = useState({
+  
+  const [mintCost, setMintCost] = useState<mintCostInterface>({
     token: "",
-    valueEth: "",
-    value: "",
-    feeEth: "",
-    fee: "",
+    valueEth: 0,
+    value: 0,
+    feeEth: 0,
+    fee: 0,
   });
   const [cost, setCost] = useState({
     mintCost: "",
@@ -137,7 +91,6 @@ export const WalletProvider = ({ children }: PropsWithChildren) => {
   });
   const [wethContract, setWethContract] = useState<any>();
   const [coreContract, setCoreContract] = useState<any>();
-  interface handleNewNotificationInterface { type: any, icon?: any, title?: string, message: string, position?: any }
   const handleNewNotification = ({ type, icon, title, message, position }: handleNewNotificationInterface) => {
     dispatch({
       type,
@@ -187,7 +140,7 @@ export const WalletProvider = ({ children }: PropsWithChildren) => {
         });
         createNftContract();
         onSetIsReload(isReload);
-      } catch (switchError: object) {
+      } catch (switchError: any) {
         // This error code indicates that the chain has not been added to MetaMask.
         setChain(currentChainId);
         if (switchError.code === 4902) {
@@ -208,7 +161,7 @@ export const WalletProvider = ({ children }: PropsWithChildren) => {
                 },
               ],
             });
-          } catch (addError: object) {
+          } catch (addError: any) {
             alert(addError.message);
           }
         }
@@ -273,7 +226,7 @@ export const WalletProvider = ({ children }: PropsWithChildren) => {
   };
 
   const CreateSellCollection = async (
-    objNFT: object,
+    objNFT: ObjectNFTInterface,
     nftPrice: number,
     handleSuccess = () => {},
     handleError = () => {}
@@ -307,7 +260,7 @@ export const WalletProvider = ({ children }: PropsWithChildren) => {
   };
 
   const CancelSellCollection = async (
-    objNFT: object,
+    objNFT: ObjectNFTInterface,
     handleSuccess = () => {},
     handleError = () => {}
   ) => {
@@ -341,13 +294,13 @@ export const WalletProvider = ({ children }: PropsWithChildren) => {
     try {
       const web3 = new Web3(window.ethereum);
       setListMarketplace({ ...listMarketplace, loading: true });
-      const getMyMarketplace: Array<object> = await nftContractMarketplaceList.methods
+      const getMyMarketplace: ObjectNFTInterface[] = await nftContractMarketplaceList.methods
         .getAllMarketItems()
         .call();
-      const newObjGetMyMarketplace = getMyMarketplace.filter(
+      const newObjGetMyMarketplace: ObjectNFTInterface[] = getMyMarketplace.filter(
         (x) => x.status === "0"
       );
-      let objMarkets: Array<object> = [];
+      let objMarkets: ObjectNFTInterface[] = [];
       for (var i = 0; i < newObjGetMyMarketplace.length; i++) {
         const uri = await nftContractCollection.methods
           .tokenURI(newObjGetMyMarketplace[i].tokenId)
@@ -380,11 +333,11 @@ export const WalletProvider = ({ children }: PropsWithChildren) => {
     }
   };
 
-  const getMarketplaceDetail = async (id) => {
+  const getMarketplaceDetail = async (id: string) => {
     try {
       const web3 = new Web3(window.ethereum);
-      setDetailMarketplace({ detailMarketplace, loading: true });
-      const getMyMarketplace = await nftContractMarketplaceList.methods
+      setDetailMarketplace({ ...detailMarketplace, loading: true });
+      const getMyMarketplace: ObjectNFTInterface[] = await nftContractMarketplaceList.methods
         .getAllMarketItems()
         .call();
       const newObjGetMyMarketplace = getMyMarketplace.filter(
@@ -423,13 +376,13 @@ export const WalletProvider = ({ children }: PropsWithChildren) => {
       const web3 = new Web3(window.ethereum);
       setMyMarketplace({ ...myMarketplace, loading: true });
       // const getAllMarketItems = await nftContractMarketplace.methods.getAllMarketItems().call();
-      const getMyMarketplace = await nftContractMarketplace.methods
+      const getMyMarketplace: ObjectNFTInterface[] = await nftContractMarketplace.methods
         .getMyMarketplace(account)
         .call();
       const newObjMarketplace = getMyMarketplace.filter(
         (x) => x.tokenId !== "0"
       );
-      let objMarkets = [];
+      let objMarkets: ObjectNFTInterface[] = [];
       for (var i = 0; i < newObjMarketplace.length; i++) {
         const uri = await nftContractCollection.methods
           .tokenURI(newObjMarketplace[i].tokenId)
@@ -457,7 +410,7 @@ export const WalletProvider = ({ children }: PropsWithChildren) => {
     }
   };
 
-  const GetByIdCollection = async (id) => {
+  const GetByIdCollection = async (id: string) => {
     try {
       setMyCollectionById({ ...myCollectionById, data: {}, loading: true });
       const uri = await nftContractCollection.methods.tokenURI(id).call();
@@ -486,13 +439,13 @@ export const WalletProvider = ({ children }: PropsWithChildren) => {
       const walletOfOwner = await nftContractCollection.methods
         .walletOfOwner(account)
         .call();
-      let objNFTs = [];
+      let objNFTs: ObjectNFTInterface[] = [];
       for (var i = 0; i < walletOfOwner.length; i++) {
         const uri = await nftContractCollection.methods
           .tokenURI(walletOfOwner[i])
           .call();
         const responseUri = await fetch(ipfsUriToHttps(uri));
-        let objNFT = await responseUri.json();
+        let objNFT: ObjectNFTInterface = await responseUri.json();
         objNFTs = [
           ...objNFTs,
           {
@@ -514,10 +467,10 @@ export const WalletProvider = ({ children }: PropsWithChildren) => {
       // throw new Error("Get Collection Error");
     }
   };
-  const getAllowanceWeth = async(account, address) => {
+  const getAllowanceWeth = async(account: string, address: string) => {
     return await wethContract.methods.allowance(account, address).call()
   };
-  const checkApproved = async (type, objNFT) => {
+  const checkApproved = async (type: string, objNFT: any) => {
     if (type === "BuyMarketplace") {
       const allowance = Web3.utils.fromWei(await getAllowanceWeth(account, NFT_CONTRACTS[chain].AddressMarketplace));
       return Number(allowance) >= Number(objNFT.price)? {value: true} : {allowance, value: false};
@@ -535,12 +488,12 @@ export const WalletProvider = ({ children }: PropsWithChildren) => {
       ? true
       : false;
   };
-  const BuyNFT = async (objNFT, handleSuccess = () => { }, handleError = () => { }) => {
+  const BuyNFT = async (objNFT: ObjectNFTInterface, handleSuccess = () => { }, handleError = () => { }) => {
     try {
       setSelectConverseNFT({ ...selectConverseNFT, approveLoading: true });
       setDetailMarketplace({...detailMarketplace, data: {...detailMarketplace.data, approveLoading: true}});
       const priceNft = Web3.utils.toWei(objNFT.price, "ether");
-      if (NFT_CONTRACTS[chain].CrossChain && !objNFT.approveBuy.value) {
+      if (NFT_CONTRACTS[chain].CrossChain && !objNFT?.approveBuy.value) {
         const additionalWETH = numberToBigNumber(objNFT?.price, 18).minus(numberToBigNumber(objNFT?.approveBuy?.allowance, 18));
         // const additionalWETH = 50;
         await wethContract.methods.approve(
@@ -580,7 +533,7 @@ export const WalletProvider = ({ children }: PropsWithChildren) => {
     }
   };
 
-  const ChangeConverseNFT = async (type: string, objNFT: object) => {
+  const ChangeConverseNFT = async (type: string, objNFT: ObjectNFTInterface) => {
     setSelectConverseNFT(initiSelectNFT);
     const bridgeFee = 0.0005;
     if (objNFT) {
@@ -598,7 +551,7 @@ export const WalletProvider = ({ children }: PropsWithChildren) => {
 
   const ConverseApproveNFT = async (
     type: string, 
-    objNFT: object,
+    objNFT: ObjectNFTInterface,
     handleSuccess: ()=> void = () => {},
     handleError: ()=> void = () => {}
   ) => {
@@ -639,7 +592,7 @@ export const WalletProvider = ({ children }: PropsWithChildren) => {
   };
 
   const ConverseNFT = async (
-    objConverse: object,
+    objConverse: ObjectNFTInterface,
     handleSuccess = () => {},
     handleError = () => {}
   ) => {
@@ -654,7 +607,7 @@ export const WalletProvider = ({ children }: PropsWithChildren) => {
       if (!NFT_CONTRACTS[chain].CrossChain) {
         arr = [NFT_ROPSTEN_ADDRESS, ...arr];
       }
-      let fee = objConverse.fee;
+      let fee: any = objConverse.fee;
       fee = web3.utils.toWei(fee.toString(), "ether");
       arr = [...arr, fee];
       let fixGas = "10000000000000000";
@@ -752,7 +705,7 @@ export const WalletProvider = ({ children }: PropsWithChildren) => {
       chain === AVALANCHE_FUJI_CHAIN ||
       chain === POLYGON_MUMBAI_CHAIN
     ) {
-      setIsConnectChain(1);
+      setIsConnectChain("1");
     } else {
       setIsConnectChain("");
     }
@@ -810,7 +763,7 @@ export const WalletProvider = ({ children }: PropsWithChildren) => {
         valueEth: Web3.utils.fromWei(cost, "ether"),
         value: Number(cost),
       });
-      setMaxSupply(maxSupply);
+      setMaxSupply(Number(maxSupply));
       setTotalSupply(totalSupply);
       setCost({
         mintCost: Web3.utils.fromWei(mintCost, "ether"),
@@ -826,7 +779,7 @@ export const WalletProvider = ({ children }: PropsWithChildren) => {
     }
   };
 
-  const mintNft = async (mintAmount = 0) => {
+  const mintNft = async (mintAmount: number = 0) => {
     try {
       setMintProcessing(true);
       // calculate mint cost
@@ -879,7 +832,7 @@ export const WalletProvider = ({ children }: PropsWithChildren) => {
         message: "Please wait a few minutes for minting precess.",
       });
       return { success: true };
-    } catch (error) {
+    } catch (error: any) {
       console.log({ error });
       handleNewNotification({
         type: "error",
@@ -892,7 +845,7 @@ export const WalletProvider = ({ children }: PropsWithChildren) => {
     }
   };
 
-  const calculateMintCost = (mintCost, mintAmount) => {
+  const calculateMintCost = (mintCost: number, mintAmount: number) => {
     return Web3.utils.fromWei(
       Web3.utils.toBN(mintCost).mul(Web3.utils.toBN(mintAmount)),
       "ether"

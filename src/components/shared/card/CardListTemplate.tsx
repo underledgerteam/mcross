@@ -4,22 +4,12 @@ import NftImage from "../../shared/NftImage";
 import { shortenAddress } from "../../../utils/shortenAddress.util";
 import { Web3Provider } from "../../../contexts/connect.context";
 import { NFT_CONTRACTS } from "../../../utils/constants";
-interface CardListTemplateInterface {
-  id: number, 
-  name: string, 
-  owner?: string, 
-  textAction: string, 
-  price: number, 
-  image: string, 
-  rarity: string, 
-  chain: string, 
-  sell?: boolean, 
-  onClick: ()=> void, 
-  onClickAction : ()=> void
- }
+
+import { Web3ProviderInterface } from  "../../../types/connect.context"
+import { CardListTemplateInterface } from  "../../../types/CardListTemplate"
 
 const CardListTemplate = ({ id, name, owner, textAction, price, image, rarity, chain, sell = false, onClick, onClickAction }: CardListTemplateInterface): JSX.Element  => {
-  const { chain: chainId, account } = useContext(Web3Provider);
+  const { chain: chainId, account } = useContext(Web3Provider) as Web3ProviderInterface;
   const colorButton = {
     "buy": "from-green-500 to-blue-600 text-white hover:from-pink-500 hover:to-yellow-500",
     "sell": "from-red-500 to-pink-600 text-white hover:from-red-600 hover:to-pink-700"

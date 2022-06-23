@@ -20,7 +20,7 @@ import {
 import { numberToBigNumber } from "../utils/calculator.util"; 
 import { ObjectNFTInterface,Web3ProviderInterface,WalletProviderInterface,mintCostInterface,handleNewNotificationInterface,listNFT,dataNFT } from  "../types/connect.context"
 
-export const Web3Provider = createContext<Web3ProviderInterface | null>(null);
+export const Web3Provider = createContext<Web3ProviderInterface | undefined>(undefined);
 
 const initiSelectNFT = {
   selected: false,
@@ -58,7 +58,7 @@ export const WalletProvider = ({ children }: WalletProviderInterface) => {
     loading: true,
   });
 
-  const [selectConverseNFT, setSelectConverseNFT] = useState<dataNFT['data']>(initiSelectNFT);
+  const [selectConverseNFT, setSelectConverseNFT] = useState<ObjectNFTInterface>(initiSelectNFT);
   const [nftContract, setNftContract] = useState<any>();
   const [nftContractCollection, setNftContractCollection] = useState<any>();
   const [nftContractConverse, setNftContractConverse] = useState<any>();
@@ -228,8 +228,8 @@ export const WalletProvider = ({ children }: WalletProviderInterface) => {
   const CreateSellCollection = async (
     objNFT: ObjectNFTInterface,
     nftPrice: number,
-    handleSuccess = () => {},
-    handleError = () => {}
+    handleSuccess: ()=> void = () => {},
+    handleError: ()=> void = () => {}
   ) => {
     try {
       setSelectConverseNFT({ ...selectConverseNFT, approveLoading: true });
@@ -261,8 +261,8 @@ export const WalletProvider = ({ children }: WalletProviderInterface) => {
 
   const CancelSellCollection = async (
     objNFT: ObjectNFTInterface,
-    handleSuccess = () => {},
-    handleError = () => {}
+    handleSuccess: ()=> void = () => {},
+    handleError: ()=> void = () => {}
   ) => {
     try {
       setSelectConverseNFT({ ...selectConverseNFT, approveLoading: true });
@@ -488,7 +488,11 @@ export const WalletProvider = ({ children }: WalletProviderInterface) => {
       ? true
       : false;
   };
-  const BuyNFT = async (objNFT: ObjectNFTInterface, handleSuccess = () => { }, handleError = () => { }) => {
+  const BuyNFT = async (
+    objNFT: ObjectNFTInterface, 
+    handleSuccess: ()=> void = () => { },
+    handleError: ()=> void = () => { }) => 
+  {
     try {
       setSelectConverseNFT({ ...selectConverseNFT, approveLoading: true });
       setDetailMarketplace({...detailMarketplace, data: {...detailMarketplace.data, approveLoading: true}});
@@ -533,7 +537,7 @@ export const WalletProvider = ({ children }: WalletProviderInterface) => {
     }
   };
 
-  const ChangeConverseNFT = async (type: string, objNFT: ObjectNFTInterface) => {
+  const ChangeConverseNFT = async (type: string, objNFT?: ObjectNFTInterface) => {
     setSelectConverseNFT(initiSelectNFT);
     const bridgeFee = 0.0005;
     if (objNFT) {
@@ -593,8 +597,8 @@ export const WalletProvider = ({ children }: WalletProviderInterface) => {
 
   const ConverseNFT = async (
     objConverse: ObjectNFTInterface,
-    handleSuccess = () => {},
-    handleError = () => {}
+    handleSuccess: ()=> void = () => {},
+    handleError: ()=> void = () => {}
   ) => {
     try {
       const web3 = new Web3(window.ethereum);

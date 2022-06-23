@@ -35,6 +35,13 @@ const data = [...Array(32)].map((v, key) => {
 
 const ProfilePage = () => {
   const history = useNavigate();
+  function useWeb3Provider() {
+    const web3Context = useContext(Web3Provider);
+    if (!web3Context) {
+      throw new Error('usePostsContext must be used within the PostsContext.Provider');
+    }
+    return web3Context;
+  }
   const {
     chain,
     account,
@@ -54,7 +61,7 @@ const ProfilePage = () => {
     nftContractCollection,
     checkConnectChain,
     isConnectChain
-  } = useContext(Web3Provider) as Web3ProviderInterface;
+  } = useWeb3Provider(); // useContext(Web3Provider) as Web3ProviderInterface;
 
   const refSelectChain = useRef<HTMLSelectElement>(null);
 
@@ -134,7 +141,7 @@ const ProfilePage = () => {
 
   useEffect(() => {
     if (account && nftContractCollection && nftContractMarketplace) {
-      ChangeConverseNFT("Marketplace", null);
+      ChangeConverseNFT("Marketplace");
       GetCollection();
       GetMyMarketplace();
     }

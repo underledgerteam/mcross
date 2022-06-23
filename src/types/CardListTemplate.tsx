@@ -1,12 +1,7 @@
-export interface CardListTemplateInterface {
-  id: number, 
-  name: string, 
-  owner?: string, 
+import { ObjectNFTInterface } from "./connect.context"
+
+export interface CardListTemplateInterface extends ObjectNFTInterface {
   textAction: string, 
-  price: number, 
-  image: string, 
-  rarity: string, 
-  chain: string, 
   sell?: boolean, 
   onClick: ()=> void, 
   onClickAction : ()=> void

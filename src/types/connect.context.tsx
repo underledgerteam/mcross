@@ -17,6 +17,9 @@ export interface ObjectNFTInterface {
   ],
   compiler?: string,
 
+  id?: number, 
+  rarity?: string, 
+  chain?: string, 
   status?: string,
   tokenId?: string,
   nftContract?: string,

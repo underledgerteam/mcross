@@ -12,8 +12,7 @@ import ModalConfirm from "../../components/shared/ModalConfirm";
 
 import { shortenAddress } from "../../utils/shortenAddress.util";
 
-import { Web3ProviderInterface } from  "../../types/connect.context"
-import { objNFTInterface } from  "../../types/index"
+import { Web3ProviderInterface, ObjectNFTInterface } from  "../../types/connect.context"
 
 const menuProfile = [{
   text: "My Collection"
@@ -71,13 +70,13 @@ const ProfilePage = () => {
     localStorage.setItem("myTab", tab);
   };
   // for open Modal Sell
-  const handleClickName = (id: number, isSell: boolean = false) => {
+  const handleClickName = (id?: number, isSell: boolean = false) => {
     if(isSell){
       return history(`/market/detail/${id}`, {state: { isMyMarket: true }});
     }
     history(`/profile/collection/${id}`);
   };
-  const onOpenModalSell = (objNFT: objNFTInterface) => {
+  const onOpenModalSell = (objNFT: ObjectNFTInterface) => {
     setOpenModalSell(true);
     ChangeConverseNFT("Marketplace", objNFT);
   };
@@ -99,11 +98,11 @@ const ProfilePage = () => {
     setOpenModalSell(false);
   };
   // for open Modal Cancel Sell
-  const onOpenModalCancelSell = (objNFT: objNFTInterface) => {
+  const onOpenModalCancelSell = (objNFT: ObjectNFTInterface) => {
     ChangeConverseNFT("Marketplace", objNFT);
     setOpenModalCancelSell(true);
   };
-  const onConfirmCancelSell = (objNFT: objNFTInterface) => {
+  const onConfirmCancelSell = (objNFT: ObjectNFTInterface) => {
     // alert("Process MetaMask Sell NFT");
     CancelSellCollection(objNFT, () => {
       setOpenModalCancelSell(false);
@@ -232,7 +231,7 @@ const ProfilePage = () => {
                         spinnerColor="#fff"
                         text="Loading...."
                       /></div>) :
-                      (myCollection?.list.length > 0) ? myCollection.list.map((item: objNFTInterface, key: number) => {
+                      (myCollection?.list.length > 0) ? myCollection.list.map((item: ObjectNFTInterface, key: number) => {
                         return (
                           // <CardNFT
                           //   key={key}
@@ -275,7 +274,7 @@ const ProfilePage = () => {
                         spinnerColor="#fff"
                         text="Loading...."
                       /></div>) :
-                      (myMarketplace?.list.length > 0) ? myMarketplace.list.map((item: objNFTInterface, key: number) => {
+                      (myMarketplace?.list.length > 0) ? myMarketplace.list.map((item: ObjectNFTInterface, key: number) => {
                         return (
                           <CardListTemplate
                             key={key}

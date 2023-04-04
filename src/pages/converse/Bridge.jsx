@@ -95,7 +95,7 @@ const Bridge = () => {
               <div className="w-full lg:w-1/2 flex-auto py-8 px-8 text-center">
                 <div className="">
                   <button type="button" className="w-full md:w-96 px-10 py-4 btn-home" onClick={onChangeNetwork}>
-                    Switch to Ropsten
+                    Switch to Goerli
                   </button>
                 </div>
               </div>

@@ -54,7 +54,7 @@ const Mint = () => {
             Mint simplifies the experience for brands to sell NFTs, launch branded marketplaces, and provide seamless transactions, interactions, and utility for collectors.
           </p>
           <p className="text-white font-semibold text-sm md:text-md lg:text-lg mb-4">
-            If you Mint NFT with Ropsten Chain, You can pay Ethereum cost {valueEth || "..."} ETH per Mint.
+            If you Mint NFT with Goerli Chain, You can pay Ethereum cost {valueEth || "..."} ETH per Mint.
           </p>
           <p className="text-white font-semibold text-sm md:text-md lg:text-lg mb-4">
             but You Mint NFT with Other Chain, You can pay WETH cost {valueEth || "..."} WETH and extra charged fee {feeCost} WETH per Mint.
@@ -80,7 +80,7 @@ const Mint = () => {
             <div className="w-full lg:w-1/2 flex-auto py-8 px-8 text-center">
               <div className="">
                 <button type="button" className="w-full md:w-96 px-10 py-4 btn-home" onClick={onChangeNetwork}>
-                  Switch to Ropsten
+                  Switch to Goerli
                 </button>
               </div>
             </div>

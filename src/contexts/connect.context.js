@@ -897,7 +897,7 @@ export const WalletProvider = ({ children }) => {
         //   NFT_CONTRACTS[chain].Token
         // );
 
-        const gasPrice = getCrossChainGasPrice(chain, 3);
+        const gasPrice = getCrossChainGasPrice(chain, GOERLI_CHAIN);
 
         await nftContract.methods
           .mint(mintAmount, encodePayload)

@@ -796,7 +796,7 @@ export const WalletProvider = ({ children }) => {
       setLoadingMintPage(true);
       const GOERLIProvider = new Web3(
         new Web3.providers.WebsocketProvider(
-          "wss://GOERLI.infura.io/ws/v3/1e94515fc5874c4291a6491caeaff8f1"
+          "wss://goerli.infura.io/ws/v3/1e94515fc5874c4291a6491caeaff8f1"
         )
       );
       const coreContract = new GOERLIProvider.eth.Contract(
@@ -887,7 +887,7 @@ export const WalletProvider = ({ children }) => {
         const web3 = new Web3(Web3.givenProvider || detectCurrentProvider());
         const encodePayload = web3.eth.abi.encodeParameters(
           ["string", "address"],
-          ["Ethereum", account]
+          ["ethereum-2", account]
         );
         // get gas price from axelar api
         // const gasPrice1 = await getGasPrice(
